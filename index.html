@@ -8,11 +8,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --navy:#1E2D63;--navy-light:#3D5FA0;--navy-tint:#EBEEF7;
-  --charcoal:#4A4A4A;--gray:#83838A;--paper:#F6F7F9;
-  --surface:#FFFFFF;--line:#E1E3E9;--radius:10px;
-  --shadow:0 12px 30px -18px rgba(30,45,99,.30);
-  --gold:#F0B429;--green:#22783C;--green-tint:#EFF6EE;
+  --navy:#1B2B5E;--navy-light:#3D5FA0;--navy-tint:#EEF1F9;
+  --charcoal:#363B45;--gray:#888E9A;--paper:#F4F6FA;
+  --surface:#FFFFFF;--line:#E8EBF2;--radius:14px;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 10px 28px -14px rgba(27,43,94,.20);
+  --shadow-sm:0 1px 2px rgba(16,24,40,.05), 0 4px 12px -8px rgba(27,43,94,.16);
+  --gold:#EEAF21;--green:#22783C;--green-tint:#EFF6EE;
 }
 *{box-sizing:border-box;}html,body{margin:0;min-height:100vh;}
 body{background:var(--paper);color:var(--charcoal);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
@@ -45,7 +46,7 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
 .builder__head h2{font-size:1rem;text-transform:uppercase;letter-spacing:.14em;color:var(--charcoal);font-weight:600;}
 
 /* SCHEDULE */
-.schedule-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);border-top:3px solid var(--navy);margin-bottom:12px;padding:16px 20px;}
+.schedule-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);border-top:3px solid var(--navy);margin-bottom:12px;padding:18px 22px;box-shadow:var(--shadow-sm);}
 .schedule-card__title{font-family:'Playfair Display',Georgia,serif;font-size:.82rem;text-transform:uppercase;letter-spacing:.18em;color:var(--navy);font-weight:600;margin-bottom:12px;}
 .schedule-phases{display:flex;flex-direction:column;gap:8px;}
 .schedule-row{display:grid;grid-template-columns:56px 52px 16px 52px 1fr;align-items:center;gap:6px;}
@@ -55,11 +56,11 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
 .sr-total{font-size:.97rem;font-weight:700;color:var(--navy);padding-left:6px;}
 .phase-input{font-family:'IBM Plex Mono',monospace;font-size:.9rem;font-weight:600;color:var(--navy);border:1px solid var(--line);border-radius:6px;padding:6px 4px;text-align:center;background:var(--surface);width:100%;}
 .phase-input:focus{outline:none;border-color:var(--navy-light);}
-.schedule-totals{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);}
+.schedule-totals{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);}
 .schedule-totals__text{font-size:.88rem;color:var(--charcoal);}
 
 /* CATEGORIES */
-.category{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;}
+.category{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow-sm);}
 .category__head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 20px;background:none;border:none;cursor:pointer;font-family:'Playfair Display',Georgia,serif;font-size:1.02rem;font-weight:600;color:var(--navy);text-align:left;}
 .category__head:hover{background:var(--navy-tint);}
 .category__meta{display:flex;align-items:center;gap:10px;flex-shrink:0;}
@@ -82,13 +83,13 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
 .ins-note{font-size:.7rem;color:var(--navy-light);margin-top:6px;font-style:italic;}
 
 /* ITEMS */
-.item{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 0;border-bottom:1px dashed var(--line);}
+.item{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 0;border-bottom:1px solid var(--line);}
 .item:last-child{border-bottom:none;}
 .item__info{display:flex;flex-direction:column;gap:2px;}
 .item__name{font-weight:500;font-size:.97rem;color:var(--charcoal);}
 .item__price{font-size:.8rem;color:var(--gray);display:none;align-items:center;gap:4px;}
 .category.prices-visible .item__price{display:flex;}.category[data-cat="nutrition"] .item__price{display:flex;}
-.item__price .price-input{width:62px;font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--navy);text-align:right;border:none;border-bottom:1px dashed var(--line);background:transparent;padding:0 2px;}
+.item__price .price-input{width:62px;font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--navy);text-align:right;border:none;border-bottom:1px solid var(--line);background:transparent;padding:0 2px;}
 .item__price .price-input:focus{outline:none;border-bottom-color:var(--navy-light);}
 .item__price .unit{color:var(--gray);}
 .item__copay{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:5px;}
@@ -164,7 +165,7 @@ input[type=number]{-moz-appearance:textfield;}
 .plan-line__name{flex:1;}
 .plan-line__qty{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:.78rem;color:var(--navy-light);white-space:nowrap;}
 .plan-empty{font-size:.8rem;color:var(--gray);font-style:italic;padding:3px 0;}
-.receipt-divider{border-top:1px dashed var(--line);margin:12px 0;}
+.receipt-divider{border-top:1px solid var(--line);margin:12px 0;}
 .summary-row{display:flex;justify-content:space-between;align-items:baseline;font-size:.88rem;padding:3px 0;}
 .summary-row .lbl{color:var(--gray);}
 .summary-row .amt{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--navy);}
@@ -206,9 +207,9 @@ input[type=number]{-moz-appearance:textfield;}
 .switch input:checked+.switch__track::before{transform:translateX(15px);}
 
 /* BUILDER FINANCING */
-.builder-fin{margin-top:16px;padding-top:16px;border-top:1px dashed var(--line);}
+.builder-fin{margin-top:16px;padding-top:16px;border-top:1px solid var(--line);}
 .builder-fin__label{font-family:'Playfair Display',Georgia,serif;font-size:.78rem;text-transform:uppercase;letter-spacing:.18em;color:var(--charcoal);font-weight:600;margin-bottom:10px;}
-.fin-card{border:1px solid var(--line);border-radius:8px;padding:10px 6px;text-align:center;background:var(--paper);}
+.fin-card{border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center;background:var(--paper);}
 .fin-card .fc-label{font-size:.68rem;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;font-weight:600;}
 .fin-card .fc-amount{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1rem;margin-top:5px;color:var(--navy);}
 .fin-card .fc-sub{font-size:.65rem;color:var(--gray);margin-top:4px;line-height:1.35;}
@@ -465,7 +466,7 @@ body.pres-mode .app-header{display:none;}
 /* Care Plan Templates */
 .template-bar{
   background:var(--surface);border:1px solid var(--line);
-  border-radius:var(--radius);margin-bottom:14px;overflow:hidden;
+  border-radius:var(--radius);margin-bottom:14px;overflow:hidden;box-shadow:var(--shadow-sm);
 }
 .template-bar__head{
   padding:11px 18px;border-bottom:1px solid var(--line);
@@ -492,7 +493,7 @@ body.pres-mode .app-header{display:none;}
 .tpl-btn__meta{font-size:.65rem;color:var(--gray);margin-top:1px;}
 .tpl-clear{
   font-size:.68rem;font-weight:600;color:var(--gray);
-  background:none;border:1px dashed var(--line);border-radius:6px;
+  background:none;border:1px solid var(--line);border-radius:6px;
   padding:6px 10px;cursor:pointer;align-self:center;
   transition:all .15s;white-space:nowrap;
 }
@@ -661,9 +662,9 @@ body.pres-mode .app-header{display:none;}
       <div class="builder-fin">
         <div class="builder-fin__label">Lowest Monthly Payment</div>
         <div class="fin-card" id="fin60">
-          <div class="fc-label">60-Month Plan</div>
+          <div class="fc-label" id="fin60label">60-Month Plan</div>
           <div class="fc-amount" id="fin60amt">$0.00/mo</div>
-          <div class="fc-sub">CareCredit® / UnitedCredit® · Est. 12% APR</div>
+          <div class="fc-sub" id="fin60sub">CareCredit or similar</div>
         </div>
       </div>
       <div class="disclaimer">Pay-in-Full applies 10% off. 60-month estimate is approximate — confirm APR and terms with provider.</div>
@@ -796,9 +797,9 @@ body.pres-mode .app-header{display:none;}
     <div class="pres-pay-60-wrap">
       <div class="pres-pay-60-inner" id="ps60Inner">
         <div class="pres-pay-60-body">
-          <div class="pres-pay-60-label">60-Month Plan</div>
+          <div class="pres-pay-60-label" id="ps60Label">60-Month Plan</div>
           <div class="pres-pay-60-amount" id="ps60Amount">$0.00/mo</div>
-          <div class="pres-pay-60-sub">Lowest available monthly payment</div>
+          <div class="pres-pay-60-sub" id="ps60Sub">Lowest available monthly payment</div>
         </div>
         <div class="pres-pay-60-foot">
           <span class="pres-pay-60-foot-label">CareCredit or similar</span>
@@ -906,6 +907,8 @@ let psSvcShow = false;
 let selIns = '';
 const fmt = n => '$' + n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const amort = (p,r,m) => { if(p<=0)return 0; const rate=r/12; if(!rate)return p/m; const f=Math.pow(1+rate,m); return p*(rate*f)/(f-1); };
+// Financing guardrails by plan total: <$1,000 → 18 mo @ 0%; $1,000–$2,499 → up to 48 mo; $2,500+ → up to 60 mo
+function maxFin(base){ return base < 1000 ? {m:18,apr:0} : (base < 2500 ? {m:48,apr:0.12} : {m:60,apr:0.12}); }
 const catCount = c => ITEMS.filter(i=>i.cat===c&&i.qty>0).length;
 const el = id => document.getElementById(id);
 
@@ -1191,7 +1194,10 @@ function render() {
   el('cardStd').classList.toggle('selected', selPlan==='standard');
   el('cardPif').classList.toggle('selected', selPlan==='pif');
   // 60mo
-  var fin60 = el('fin60amt'); if(fin60) fin60.textContent = c.base>0 ? fmt(amort(c.base,0.12,60))+'/mo' : '$0.00/mo';
+  var afm = maxFin(c.base);
+  if(el('fin60label')) el('fin60label').textContent = afm.m+'-Month Plan';
+  var fin60 = el('fin60amt'); if(fin60) fin60.textContent = c.base>0 ? fmt(amort(c.base,afm.apr,afm.m))+'/mo' : '$0.00/mo';
+  if(el('fin60sub')) el('fin60sub').textContent = afm.apr===0 ? 'No interest · longest 0% term' : 'CareCredit or similar';
 }
 
 // ── RENDER PRESENTATION ───────────────────────────────────────────
@@ -1322,8 +1328,11 @@ function renderPres() {
   el('psStdAmt').textContent = fmt(c.base);
   el('psPifAmt').textContent = fmt(c.pif);
   el('psPifSav').textContent = 'Save ' + fmt(c.base*0.1) + ' — 10% discount';
-  // 60mo hero card update
-  if(el('ps60Amount')) el('ps60Amount').textContent = c.base>0 ? fmt(amort(c.base,0.12,60))+'/mo' : '$0.00/mo';
+  // Financing hero \u2014 longest term allowed for this plan total (guardrails)
+  var mf = maxFin(c.base);
+  if(el('ps60Label')) el('ps60Label').textContent = mf.m + '-Month Plan';
+  if(el('ps60Amount')) el('ps60Amount').textContent = c.base>0 ? fmt(amort(c.base,mf.apr,mf.m))+'/mo' : '$0.00/mo';
+  if(el('ps60Sub')) el('ps60Sub').textContent = mf.apr===0 ? 'No interest \u00b7 longest 0% term available' : 'Lowest available monthly payment';
   if(el('ps60Inner'))  el('ps60Inner').classList.toggle('selected', psSelPlan==='60mo');
   if(el('ps60SelBtn')) el('ps60SelBtn').textContent = psSelPlan==='60mo' ? '\u2713 Selected' : 'Select';
 
@@ -1339,10 +1348,10 @@ function renderPres() {
   var payOpts = [
     {id:'weekly',  label:'Weekly',     amt:amort(c.base,0,WEEKLY), sub:WEEKLY+' payments · 0% interest', per:'/wk',  en:c.base>0},
     {id:'3month',  label:'3 Months',   amt:amort(c.base,0,3),  sub:'0% interest · in-house',   per:'/mo', en:c.base>0},
-    {id:'12month', label:'12 Months',  amt:amort(c.base,0,12), sub:'No interest if paid in time',  per:'/mo', en:c.base>0},
-    {id:'18month', label:'18 Months',  amt:amort(c.base,0,18), sub:'No interest if paid in time',  per:'/mo', en:c.base>0},
-    {id:'48month', label:'48 Months',  amt:amort(c.base,0.12,48),sub:'CareCredit® / UnitedCredit®',per:'/mo',en:c.base>0},
-  ];
+    {id:'12month', label:'12 Months',  amt:amort(c.base,0,12), sub:'0% interest',  per:'/mo', en:c.base>0},
+    {id:'18month', label:'18 Months',  amt:amort(c.base,0,18), sub:'0% interest',  per:'/mo', en:c.base>0 && mf.m>18},
+    {id:'48month', label:'48 Months',  amt:amort(c.base,0.12,48),sub:'CareCredit or similar',per:'/mo',en:c.base>0 && mf.m>48},
+  ].filter(function(o){ return o.en; });   // hide terms longer than the plan total allows
   el('psPayGrid').innerHTML = payOpts.map(function(o) {
     return '<div class="pres-pay-item'+(psSelPlan===o.id?' selected':'')+'" data-payid="'+o.id+'">' +
       '<div class="pres-pay-chk"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1E2D63" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>' +
@@ -1455,7 +1464,7 @@ el('psPrintBtn').addEventListener('click', function() {
   var insSelected = insAll.filter(function(i2){return i2.qty>0;});
   var planLabel = psSelPlan==='pif' ? 'Pay in Full: '+fmt(c.pif) :
     psSelPlan==='standard' ? 'Today\u2019s Investment: '+fmt(c.base) :
-    psSelPlan==='60mo' ? '60-Month Plan: '+fmt(amort(c.base,0.12,60))+'/mo' :
+    psSelPlan==='60mo' ? (function(){var mf=maxFin(c.base);return mf.m+'-Month Plan: '+fmt(amort(c.base,mf.apr,mf.m))+'/mo';})() :
     psSelPlan==='weekly' ? 'Weekly: '+fmt(amort(c.base,0,WEEKLY))+'/wk' :
     psSelPlan==='3month' ? '3-Month: '+fmt(amort(c.base,0,3))+'/mo' :
     psSelPlan==='12month' ? '12-Month: '+fmt(amort(c.base,0,12))+'/mo' :
