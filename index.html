@@ -1216,18 +1216,12 @@ function renderPres() {
   el('psInsSection').style.display = 'block';
   el('psInsBody').innerHTML = '<div class="ps-item-grid">' + insAllItems.map(function(i) {
     var sel = i.qty>0;
-    var amt = i.copay>0 ? i.copay*i.qty : i.price*i.qty*(insurancePct/100);
-    var cm = i.name.match(/\d{5}/);
-    var code = cm ? cm[0] : '';
-    var cleanName = i.name.replace(/^\d{5}[^a-zA-Z]+/,'').replace(/\(\d+\)$/,'').trim();
-    var copayTag = (sel && i.copay>0) ? '<span class="ps-item-card__copay">CoPay</span>' : '';
-    var amtHtml = (sel && psInsShow) ? '<div class="ps-item-card__amt">'+fmt(amt)+'</div>' : '';
-    return '<div class="ps-item-card'+(sel?' selected':'')+(psInsShow?' show-amt':'')+'">' +
+    // Strip CPT codes from the name; show no visit counts \u2014 just highlight what's being used
+    var cleanName = i.name.replace(/^\d{5}[^a-zA-Z]+/,'').replace(/\s*\(\d+\)\s*$/,'').trim();
+    return '<div class="ps-item-card'+(sel?' selected':'')+'">' +
       '<div class="ps-item-card__name">'+cleanName+'</div>' +
-      '<div class="ps-item-card__bottom">' +
-        '<span class="ps-item-card__code">'+code+'</span>' +
-        '<span class="ps-item-card__qty">'+(sel?'\u00d7'+i.qty:'\u2014')+'</span>' +
-      '</div>' + copayTag + amtHtml + '</div>';
+      (sel ? '<div class="ps-item-card__bottom"><span class="ps-item-card__qty">\u2713 Included</span></div>' : '') +
+      '</div>';
   }).join('') + '</div>';
   el('psInsTotalAmt').textContent = fmt(c.insP);
   el('psInsTotal').classList.toggle('visible', psInsShow && insAct.length>0);
@@ -1265,20 +1259,30 @@ function renderPres() {
                   'nasalrelease','injection','reexam','llxray','labs','nutrition'];
   // Display-name overrides for items kept under their billing name elsewhere (insurance section unchanged)
   var PS_NAME = {ist:'IST', manualtherapy:'Manual Therapy', rehab:'Corrective Exercise', reexam:'ReExams'};
+  // Combined visit counts: some rows show the SUM of related admin items (insurance + therapy). Pricing untouched.
+  var PS_AGG = {
+    wellnessadj: ['cpt98941','cpt98940','cpt98943','wellnessadj'], // Adjustments = CMT codes + Wellness Adjustment
+    acupuncture: ['ins_acu','acupuncture']                          // Acupuncture (97810) + Dry Needling/Acupuncture
+  };
+  function aggQty(id){
+    if(PS_AGG[id]) return PS_AGG[id].reduce(function(s,k){ var it=ITEMS.find(function(x){return x.id===k;}); return s+(it?(it.qty||0):0); },0);
+    var self=ITEMS.find(function(x){return x.id===id;}); return self?(self.qty||0):0;
+  }
   var svcItems = PS_STACK.map(function(id){ return ITEMS.find(function(x){return x.id===id;}); }).filter(Boolean);
-  var spAct = svcItems.filter(function(i){return i.qty>0;});
+  var spAct = svcItems.filter(function(i){return aggQty(i.id)>0;});
   el('psSvcCount').textContent = spAct.length;
   var catLabel = {therapy:'Therapy',nutrition:'Nutrition',equipment:'Equipment',insurance:'Therapy'};
-  var svcTotal = spAct.reduce(function(s,i){return s+i.price*i.qty;},0);
+  var svcTotal = svcItems.reduce(function(s,i){return s + (aggQty(i.id)>0 ? i.price*i.qty : 0);},0);
   el('psSvcBody').innerHTML = '<div class="ps-item-grid">' + svcItems.map(function(i) {
-    var sel = i.qty>0;
+    var q = aggQty(i.id);
+    var sel = q>0;
     var dispName = PS_NAME[i.id] || i.name;
     var amtHtml = (sel && psSvcShow) ? '<div class="ps-item-card__amt">'+fmt(i.price*i.qty)+'</div>' : '';
     return '<div class="ps-item-card'+(sel?' selected':'')+(psSvcShow?' show-amt':'')+'">' +
       '<div class="ps-item-card__name">'+dispName+'</div>' +
       '<div class="ps-item-card__bottom">' +
         '<span class="ps-item-card__code">'+(catLabel[i.cat]||'')+'</span>' +
-        '<span class="ps-item-card__qty">'+(sel?'\u00d7'+i.qty:'\u2014')+'</span>' +
+        '<span class="ps-item-card__qty">'+(sel?'\u00d7'+q:'\u2014')+'</span>' +
       '</div>' + amtHtml + '</div>';
   }).join('') + '</div>';
   if(el('psSvcTotal')) el('psSvcTotal').classList.toggle('visible', psSvcShow && spAct.length>0);
