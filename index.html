@@ -1570,7 +1570,7 @@ if(el('logPlanBtn')) {
 
   var SCOPE = 'https://www.googleapis.com/auth/drive';
 
-  var tokenClient = null, accessToken = null, pickerReady = false, pendingAction = null;
+  var tokenClient = null, accessToken = null, pickerReady = false, pendingAction = null, tokenExpiry = 0;
   var currentFileId = null, loadedName = '';
   var folderId = localStorage.getItem('motusDriveFolderId') || DRIVE_CONFIG.FOLDER_ID || '';
 
@@ -1649,22 +1649,43 @@ if(el('logPlanBtn')) {
     setStatus('Drive not set up', 'err');
     alert('Google Drive is not configured yet.\n\nOpen this HTML file, find the DRIVE_CONFIG block near the bottom, and paste in your OAuth Client ID and API key, then re-upload to GitHub Pages.');
   }
+  function ensureTokenClient(){
+    if(tokenClient) return;
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: DRIVE_CONFIG.CLIENT_ID, scope: SCOPE,
+      callback: function(resp){
+        if(resp && resp.error){ setStatus('Sign-in failed', 'err'); pendingAction = null; return; }
+        accessToken = resp.access_token;
+        tokenExpiry = Date.now() + (((resp.expires_in ? resp.expires_in : 3600) * 1000) - 60000);
+        $save.disabled = false; $load.disabled = false;
+        localStorage.setItem('motusDriveConnected', '1');   // remember so we can silently reconnect next time
+        setStatus('Connected to Google Drive', 'ok');
+        var a = pendingAction; pendingAction = null; if(a) a();
+      },
+      error_callback: function(){
+        // A silent (no-popup) attempt couldn't get a token without the user signing in
+        pendingAction = null;
+        setStatus(localStorage.getItem('motusDriveConnected') ? 'Click “Connect Drive” to sign in' : 'Not connected', '');
+      }
+    });
+  }
+
   function withToken(action){
     if(!configured()){ notConfigured(); return; }
-    if(!tokenClient){
-      tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: DRIVE_CONFIG.CLIENT_ID, scope: SCOPE,
-        callback: function(resp){
-          if(resp && resp.error){ setStatus('Sign-in failed', 'err'); pendingAction = null; return; }
-          accessToken = resp.access_token;
-          $save.disabled = false; $load.disabled = false;
-          setStatus('Connected to Google Drive', 'ok');
-          var a = pendingAction; pendingAction = null; if(a) a();
-        }
-      });
-    }
-    if(accessToken){ action && action(); }
-    else { pendingAction = action || null; tokenClient.requestAccessToken({ prompt: 'consent' }); }
+    ensureTokenClient();
+    if(accessToken && Date.now() < tokenExpiry){ action && action(); return; }
+    pendingAction = action || null;
+    // If this browser has connected before, try silently (no popup); otherwise ask for consent once.
+    tokenClient.requestAccessToken({ prompt: localStorage.getItem('motusDriveConnected') ? '' : 'consent' });
+  }
+
+  // Auto-reconnect on page load — only if the user has approved before (no surprise popups for first-timers)
+  function autoConnect(){
+    if(!configured() || !localStorage.getItem('motusDriveConnected')) return;
+    ensureTokenClient();
+    pendingAction = null;
+    setStatus('Connecting…');
+    try { tokenClient.requestAccessToken({ prompt: '' }); } catch(e){}
   }
 
   function driveFetch(url, opts){
@@ -1804,6 +1825,7 @@ if(el('logPlanBtn')) {
   if($load) $load.addEventListener('click', loadFromDrive);
 
   setStatus(configured() ? 'Not connected' : 'Drive not set up — add API keys', configured() ? '' : 'err');
+  autoConnect();
 })();
 
 </script>
