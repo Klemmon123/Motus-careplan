@@ -1030,25 +1030,27 @@ function buildCats() {
       sum.innerHTML =
         '<div class="ins-bucket">' +
           '<div class="ins-bucket__title">Deductible / Coinsurance</div>' +
-          '<div class="ins-bucket__desc">Lines without a CoPay — patient pays % of allowed amount</div>' +
+          '<div class="ins-bucket__desc">Before the deductible is met the patient pays 100% of allowed; only the amount above it gets the coinsurance %. CoPays add on top.</div>' +
           '<div class="ins-bucket__row"><span>Allowed (no copay)</span><span class="mono" id="iDB">$0.00</span></div>' +
-          '<div class="ins-pct-wrap">' +
-            '<span class="pct-label">Patient pays</span>' +
-            '<div class="pct-presets">' +
-              '<button type="button" class="pct-btn" data-pct="100">100%</button>' +
-              '<button type="button" class="pct-btn" data-pct="20">20%</button>' +
-              '<button type="button" class="pct-btn" data-pct="0">0%</button>' +
-            '</div>' +
-            '<div class="pct-input-wrap"><input type="number" id="iPctIn" class="mono" min="0" max="100" step="1" value="100"><span>%</span></div>' +
-            '<span class="pct-hint">100% = deductible not met · 20% = coinsurance · 0% = OOP met</span>' +
-          '</div>' +
-          '<div class="ins-bucket__row subtotal"><span>Deductible patient portion</span><span class="mono" id="iDP">$0.00</span></div>' +
           '<div class="ins-ded-wrap">' +
             '<span class="pct-label">Deductible</span>' +
             '<div class="ded-input-wrap"><span>$</span><input type="number" id="iDedIn" class="mono" min="0" step="1" value="0"></div>' +
             '<span class="pct-label">Met</span>' +
             '<div class="ded-input-wrap"><span>$</span><input type="number" id="iDedMetIn" class="mono" min="0" step="1" value="0"></div>' +
           '</div>' +
+          '<div class="pct-hint" id="iDedHint" style="display:block;margin-top:6px;"></div>' +
+          '<div class="ins-pct-wrap">' +
+            '<span class="pct-label">Coinsurance after deductible — patient pays</span>' +
+            '<div class="pct-presets">' +
+              '<button type="button" class="pct-btn" data-pct="100">100%</button>' +
+              '<button type="button" class="pct-btn" data-pct="20">20%</button>' +
+              '<button type="button" class="pct-btn" data-pct="0">0%</button>' +
+            '</div>' +
+            '<div class="pct-input-wrap"><input type="number" id="iPctIn" class="mono" min="0" max="100" step="1" value="100"><span>%</span></div>' +
+          '</div>' +
+          '<div class="ins-bucket__row"><span>Applied to deductible (100%)</span><span class="mono" id="iPRE">$0.00</span></div>' +
+          '<div class="ins-bucket__row"><span>After deductible (coinsurance)</span><span class="mono" id="iAFT">$0.00</span></div>' +
+          '<div class="ins-bucket__row subtotal"><span>Deductible + coinsurance portion</span><span class="mono" id="iDP">$0.00</span></div>' +
         '</div>' +
         '<div class="ins-bucket ins-bucket--copay">' +
           '<div class="ins-bucket__title">CoPay</div>' +
@@ -1101,14 +1103,19 @@ function compute() {
   var insD = ITEMS.filter(function(i){return i.cat==='insurance'&&!(i.copay>0);});
   var insC = ITEMS.filter(function(i){return i.cat==='insurance'&&(i.copay>0);});
   var iDB = insD.reduce(function(s,i){return s+i.price*i.qty;},0);
-  var iDP = iDB*(insurancePct/100);
+  // Deductible-aware: charges up to the remaining deductible are billed at 100% (and count toward it);
+  // only the amount above the remaining deductible gets the coinsurance %.
+  var dedRemaining = Math.max(0, deductible - deductibleMet);
+  var preDed = Math.min(iDB, dedRemaining);     // patient pays 100% (applies to deductible)
+  var afterDed = Math.max(0, iDB - preDed);     // coinsurance % applies to this
+  var iDP = preDed + afterDed*(insurancePct/100);
   var iCT = insC.reduce(function(s,i){return s+i.copay*i.qty;},0);
   var insP = iDP+iCT;
   var base = cash+insP;
   var full = (cash/0.8)+insP;
   var pif = base*0.9;
   var adj = sv>0?sv:ITEMS.filter(function(i){return i.id==='cpt98941'||i.id==='cpt98940'||i.id==='wellnessadj';}).reduce(function(s,i){return s+i.qty;},0);
-  return {sv:sv,cash:cash,iDB:iDB,iDP:iDP,iCT:iCT,insP:insP,base:base,full:full,pif:pif,adj:adj};
+  return {sv:sv,cash:cash,iDB:iDB,iDP:iDP,iCT:iCT,insP:insP,base:base,full:full,pif:pif,adj:adj,preDed:preDed,afterDed:afterDed,dedRemaining:dedRemaining};
 }
 
 // ── RENDER (BUILDER) ──────────────────────────────────────────────
@@ -1122,9 +1129,16 @@ function render() {
   if(el('schedW')) el('schedW').textContent = phases.reduce(function(s,p){return s+p.w;},0);
   // Insurance summary
   if(el('iDB'))  el('iDB').textContent  = fmt(c.iDB);
+  if(el('iPRE')) el('iPRE').textContent = fmt(c.preDed);
+  if(el('iAFT')) el('iAFT').textContent = fmt(c.afterDed*(insurancePct/100));
   if(el('iDP'))  el('iDP').textContent  = fmt(c.iDP);
   if(el('iCT'))  el('iCT').textContent  = fmt(c.iCT);
   if(el('iPP'))  el('iPP').textContent  = fmt(c.insP);
+  if(el('iDedHint')) {
+    el('iDedHint').textContent = deductible>0
+      ? (c.dedRemaining>0 ? fmt(c.dedRemaining)+' left to meet deductible — charges above this get coinsurance' : 'Deductible met — coinsurance applies to all allowed')
+      : 'No deductible entered — coinsurance % applies to all allowed';
+  }
   var pi = el('iPctIn'); if(pi && document.activeElement!==pi) pi.value = insurancePct;
   document.querySelectorAll('.pct-btn').forEach(function(b) {
     b.classList.toggle('active', parseFloat(b.dataset.pct)===insurancePct);
