@@ -102,6 +102,10 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
 .ded-input-wrap span{font-size:.82rem;color:var(--navy-light);font-weight:600;}
 .ded-input-wrap input{width:74px;font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--navy);font-weight:600;border:none;background:transparent;text-align:right;}
 .ded-input-wrap input:focus{outline:none;}
+.nutrition-type-wrap{margin-top:12px;display:flex;flex-direction:column;gap:5px;}
+.nutr-type-label{font-size:.72rem;font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:.08em;}
+.nutr-type-input{font-family:'Inter',sans-serif;font-size:.9rem;color:var(--charcoal);border:1.5px solid var(--line);border-radius:8px;padding:8px 12px;background:var(--paper);}
+.nutr-type-input:focus{outline:none;border-color:var(--navy-light);}
 .pres-ins-coverage{padding:2px 20px 0;}
 .pres-cov-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:.88rem;}
 .pres-cov-row__label{font-weight:600;color:var(--navy);}
@@ -298,9 +302,12 @@ input[type=number]{-moz-appearance:textfield;}
 .pres-std-card:hover{border-color:var(--navy-light);transform:translateY(-1px);}
 .pres-std-card.selected{border-color:var(--navy);box-shadow:0 0 0 2px rgba(30,45,99,.12);}
 .pres-std-inner{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
-.pres-std-label{font-size:.72rem;color:var(--gray);text-transform:uppercase;letter-spacing:.14em;margin-bottom:2px;}
-.pres-std-amount{font-family:'IBM Plex Mono',monospace;font-size:1.8rem;font-weight:700;color:var(--navy);}
-.pres-std-sub{font-size:.72rem;color:var(--gray);margin-top:3px;}
+.pres-std-body{padding:24px 26px 18px;}
+.pres-std-foot{padding:12px 26px;background:var(--navy-tint);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.pres-std-foot-label{font-size:.74rem;color:var(--gray);}
+.pres-std-label{font-size:.7rem;color:var(--gray);text-transform:uppercase;letter-spacing:.18em;margin-bottom:4px;}
+.pres-std-amount{font-family:'IBM Plex Mono',monospace;font-size:3.2rem;font-weight:700;color:var(--navy);line-height:1;letter-spacing:-.02em;}
+.pres-std-sub{font-size:.78rem;color:var(--gray);margin-top:8px;}
 .pres-std-sel-btn{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--navy);background:var(--navy-tint);border:1px solid var(--navy);border-radius:99px;padding:6px 16px;cursor:pointer;transition:all .15s;flex-shrink:0;white-space:nowrap;}
 .pres-std-card.selected .pres-std-sel-btn{background:var(--navy);color:#fff;}
 
@@ -413,22 +420,21 @@ input[type=number]{-moz-appearance:textfield;}
 .ps-svc-total .amt{font-family:'IBM Plex Mono',monospace;font-size:1rem;}
 
 /* Payment — 60mo default, others hidden */
-.pres-pay-60-wrap{padding:12px 16px;background:var(--navy-tint);}
+.pres-pay-60-wrap{padding:12px 16px;}
 .pres-pay-60-inner{
-  background:#fff;border-radius:10px;padding:14px 16px;
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  border:2px solid transparent;cursor:pointer;transition:border-color .15s;
+  background:#fff;border-radius:12px;overflow:hidden;display:block;
+  border:2px solid var(--line);cursor:pointer;transition:border-color .2s,box-shadow .15s;
 }
 .pres-pay-60-inner:hover{border-color:var(--navy-light);}
-.pres-pay-60-inner.selected{border-color:var(--navy);background:var(--navy);}
-.pres-pay-60-inner.selected .pres-pay-60-label{color:rgba(255,255,255,.6);}
-.pres-pay-60-inner.selected .pres-pay-60-amount{color:#fff;}
-.pres-pay-60-inner.selected .pres-pay-60-sub{color:rgba(255,255,255,.5);}
-.pres-pay-60-label{font-size:.68rem;color:var(--navy-light);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:2px;}
-.pres-pay-60-amount{font-family:'IBM Plex Mono',monospace;font-size:1.5rem;font-weight:700;color:var(--navy);}
+.pres-pay-60-inner.selected{border-color:var(--navy);box-shadow:0 0 0 2px rgba(30,45,99,.12);}
+.pres-pay-60-body{padding:24px 26px 18px;}
+.pres-pay-60-foot{padding:12px 26px;background:var(--navy-tint);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.pres-pay-60-foot-label{font-size:.74rem;color:var(--gray);}
+.pres-pay-60-label{font-size:.7rem;color:var(--navy-light);text-transform:uppercase;letter-spacing:.18em;font-weight:600;margin-bottom:4px;}
+.pres-pay-60-amount{font-family:'IBM Plex Mono',monospace;font-size:3.2rem;font-weight:700;color:var(--navy);line-height:1;letter-spacing:-.02em;}
 .pres-pay-60-sub{font-size:.68rem;color:var(--gray);margin-top:2px;}
 .pres-pay-60-sel-btn{font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--navy);background:var(--navy-tint);border:1px solid var(--navy);border-radius:99px;padding:5px 12px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s;}
-.pres-pay-60-inner.selected .pres-pay-60-sel-btn{background:rgba(255,255,255,.2);color:#fff;border-color:rgba(255,255,255,.3);}
+.pres-pay-60-inner.selected .pres-pay-60-sel-btn{background:var(--navy);color:#fff;border-color:var(--navy);}
 .pres-pay-more{
   padding:10px 16px;border-top:1px solid var(--line);
   display:flex;align-items:center;justify-content:center;gap:8px;
@@ -745,12 +751,13 @@ body.pres-mode .app-header{display:none;}
 
   <!-- 4. FINANCIALS -->
   <div class="pres-std-card" id="psStdCard">
-    <div class="pres-std-inner">
-      <div>
-        <div class="pres-std-label">Today\'s Investment</div>
-        <div class="pres-std-amount" id="psStdAmt">$0.00</div>
-        <div class="pres-std-sub">Choose a payment plan below</div>
-      </div>
+    <div class="pres-std-body">
+      <div class="pres-std-label">Total Care Plan Cost</div>
+      <div class="pres-std-amount" id="psStdAmt">$0.00</div>
+      <div class="pres-std-sub">Choose a payment plan below</div>
+    </div>
+    <div class="pres-std-foot">
+      <span class="pres-std-foot-label">Includes everything in this plan</span>
       <button class="pres-std-sel-btn" id="psStdBtn">Select</button>
     </div>
   </div>
@@ -788,12 +795,15 @@ body.pres-mode .app-header{display:none;}
     <!-- 60-month hero (default visible) -->
     <div class="pres-pay-60-wrap">
       <div class="pres-pay-60-inner" id="ps60Inner">
-        <div>
+        <div class="pres-pay-60-body">
           <div class="pres-pay-60-label">60-Month Plan</div>
           <div class="pres-pay-60-amount" id="ps60Amount">$0.00/mo</div>
-          <div class="pres-pay-60-sub">Lowest available monthly payment · CareCredit&#174;</div>
+          <div class="pres-pay-60-sub">Lowest available monthly payment</div>
         </div>
-        <button class="pres-pay-60-sel-btn" id="ps60SelBtn">Select</button>
+        <div class="pres-pay-60-foot">
+          <span class="pres-pay-60-foot-label">CareCredit or similar</span>
+          <button class="pres-pay-60-sel-btn" id="ps60SelBtn">Select</button>
+        </div>
       </div>
     </div>
 
@@ -881,10 +891,12 @@ const ITEMS = [
 ];
 const WEEKLY = 13;
 const syncSet = new Set();
-const priceCats = new Set(['insurance','therapy','equipment']);
+const priceCats = new Set(['insurance','therapy','equipment','nutrition']);
 let insurancePct = 100;
 let deductible = 0;       // patient's plan deductible (admin-entered)
 let deductibleMet = 0;    // how much of the deductible already met (admin-entered)
+let nutritionType = '';   // free-text nutrition description (admin-entered)
+var sigResize = null;     // set by the signature pad; called when Patient View becomes visible
 let phases = [{f:0,w:0},{f:0,w:0},{f:0,w:0}];
 let selPlan = 'standard';
 let psSelPlan = 'standard';
@@ -904,7 +916,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab===t));
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.id==='tab-'+t));
     document.body.classList.toggle('pres-mode', t==='present');
-    if(t==='present') renderPres();
+    if(t==='present') { renderPres(); if(sigResize) sigResize(); }
   });
 });
 
@@ -917,7 +929,7 @@ function buildCats() {
     const sec = document.createElement('div');
     sec.className = 'category' + (cat.open ? ' open' : '') + (priceCats.has(cat.id) ? ' prices-visible' : '');
     sec.dataset.cat = cat.id;
-    const hasPT = (cat.id==='insurance'||cat.id==='therapy'||cat.id==='equipment');
+    const hasPT = false;  // price toggles removed — prices always shown and editable for every category
     const ptActive = priceCats.has(cat.id);
     const head = document.createElement('button');
     head.className = 'category__head';
@@ -1069,6 +1081,16 @@ function buildCats() {
       var note = document.createElement('div'); note.className = 'insurance-note';
       note.textContent = "Patient's insurance portion is included in the investment totals below.";
       inner.appendChild(note);
+    }
+
+    if(cat.id === 'nutrition') {
+      var nt = document.createElement('div'); nt.className = 'nutrition-type-wrap';
+      nt.innerHTML = '<label class="nutr-type-label">Nutrition type / notes</label>' +
+        '<input type="text" id="nutrTypeIn" class="nutr-type-input" placeholder="e.g. Magnesium, Vitamin D, custom protocol">';
+      var nti = nt.querySelector('#nutrTypeIn');
+      nti.value = nutritionType;
+      nti.addEventListener('input', function(e){ nutritionType = e.target.value; render(); });
+      inner.appendChild(nt);
     }
 
     body.appendChild(inner); sec.appendChild(head); sec.appendChild(body); wrap.appendChild(sec);
@@ -1234,20 +1256,28 @@ function renderPres() {
       covHtml += '<div class="pres-cov-row"><span class="pres-cov-row__label">CoPay</span>' +
                  '<span class="pres-cov-row__val">'+fmt(maxCopay)+' / visit</span></div>';
     }
+    // Visits expected to be covered by insurance (98941 + 98940)
+    var cv1 = ITEMS.find(function(x){return x.id==='cpt98941';});
+    var cv2 = ITEMS.find(function(x){return x.id==='cpt98940';});
+    var coveredVisits = (cv1?cv1.qty:0) + (cv2?cv2.qty:0);
+    covHtml += '<div class="pres-cov-row"><span class="pres-cov-row__label">Visits covered by insurance</span>' +
+               '<span class="pres-cov-row__val">' + coveredVisits + '</span></div>';
     var coveredPct = Math.max(0, 100 - insurancePct);
     covHtml += '<div class="pres-cov-row"><span class="pres-cov-row__label">CoInsurance</span>' +
                '<span class="pres-cov-row__val">' + (insurancePct>=100 ? 'After deductible is met' : 'Covered at '+coveredPct+'%') + '</span></div>';
     if(deductible>0) {
-      var remaining = Math.max(0, deductible-deductibleMet);
-      var hit = deductibleMet>=deductible;
-      var pctMet = Math.max(0, Math.min(100, Math.round((deductibleMet/deductible)*100)));
+      var prevMet = deductibleMet;
+      var nowMet = Math.min(deductible, deductibleMet + (c.preDed||0));  // includes this plan's charges applied at 100%
+      var remaining = Math.max(0, deductible - nowMet);
+      var hit = nowMet >= deductible;
+      var pctMet = Math.max(0, Math.min(100, Math.round((nowMet/deductible)*100)));
       covHtml += '<div class="pres-cov-ded">' +
         '<div class="pres-cov-row" style="border-bottom:none;padding-bottom:2px;">' +
-          '<span class="pres-cov-row__label">Deductible</span>' +
+          '<span class="pres-cov-row__label">Deductible ('+fmt(deductible)+')</span>' +
           '<span class="pres-cov-row__val'+(hit?' met':'')+'">' + (hit ? 'Met ✓' : fmt(remaining)+' to go') + '</span>' +
         '</div>' +
         '<div class="pres-ded-bar"><div class="pres-ded-fill" style="width:'+pctMet+'%"></div></div>' +
-        '<div class="pres-ded-note">'+fmt(deductibleMet)+' of '+fmt(deductible)+' met</div>' +
+        '<div class="pres-ded-note">Previously met '+fmt(prevMet)+' · now '+fmt(nowMet)+' of '+fmt(deductible)+' met</div>' +
       '</div>';
     }
     el('psInsCoverage').innerHTML = covHtml;
@@ -1261,7 +1291,7 @@ function renderPres() {
   var PS_NAME = {ist:'IST', manualtherapy:'Manual Therapy', rehab:'Corrective Exercise', reexam:'ReExams'};
   // Combined visit counts: some rows show the SUM of related admin items (insurance + therapy). Pricing untouched.
   var PS_AGG = {
-    wellnessadj: ['cpt98941','cpt98940','cpt98943','wellnessadj'], // Adjustments = CMT codes + Wellness Adjustment
+    wellnessadj: ['cpt98941','cpt98940','wellnessadj'], // Adjustments = 98941 + 98940 + Wellness (98943 excluded; shows only as insurance coverage)
     acupuncture: ['ins_acu','acupuncture']                          // Acupuncture (97810) + Dry Needling/Acupuncture
   };
   function aggQty(id){
@@ -1277,6 +1307,7 @@ function renderPres() {
     var q = aggQty(i.id);
     var sel = q>0;
     var dispName = PS_NAME[i.id] || i.name;
+    if(i.id==='nutrition' && nutritionType) dispName += ' — ' + nutritionType;
     var amtHtml = (sel && psSvcShow) ? '<div class="ps-item-card__amt">'+fmt(i.price*i.qty)+'</div>' : '';
     return '<div class="ps-item-card'+(sel?' selected':'')+(psSvcShow?' show-amt':'')+'">' +
       '<div class="ps-item-card__name">'+dispName+'</div>' +
@@ -1388,9 +1419,13 @@ el('psSvcBtn').addEventListener('click', function() {
   var drawing = false, lx=0, ly=0;
   function resize() {
     var dpr=window.devicePixelRatio||1, r=canvas.getBoundingClientRect();
-    canvas.width=r.width*dpr; canvas.height=r.height*dpr;
+    var w=Math.round(r.width*dpr), h=Math.round(r.height*dpr);
+    if(!w||!h) return;                                 // Patient View hidden — can't size yet
+    if(canvas.width===w && canvas.height===h) return;  // already sized — don't wipe the signature
+    canvas.width=w; canvas.height=h;
     ctx.scale(dpr,dpr); ctx.strokeStyle='#1E2D63'; ctx.lineWidth=2; ctx.lineCap='round'; ctx.lineJoin='round';
   }
+  sigResize = resize;   // let the tab switch size the canvas once Patient View is visible
   function pos(e) { var r=canvas.getBoundingClientRect(), s=e.touches?e.touches[0]:e; return {x:s.clientX-r.left,y:s.clientY-r.top}; }
   canvas.addEventListener('mousedown', function(e){e.preventDefault();drawing=true;var p=pos(e);lx=p.x;ly=p.y;});
   canvas.addEventListener('mousemove', function(e){e.preventDefault();if(!drawing)return;var p=pos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;});
@@ -1692,6 +1727,7 @@ if(el('logPlanBtn')) {
       insurancePct: insurancePct,
       deductible: deductible,
       deductibleMet: deductibleMet,
+      nutritionType: nutritionType,
       phases: phases.map(function(p){ return { f: p.f||0, w: p.w||0 }; }),
       selPlan: selPlan, psSelPlan: psSelPlan, selIns: selIns,
       signature: sig
@@ -1715,6 +1751,7 @@ if(el('logPlanBtn')) {
     if(typeof d.insurancePct === 'number') insurancePct = d.insurancePct;
     if(typeof d.deductible === 'number') deductible = d.deductible;
     if(typeof d.deductibleMet === 'number') deductibleMet = d.deductibleMet;
+    if(typeof d.nutritionType === 'string') nutritionType = d.nutritionType;
     if(Array.isArray(d.phases)){
       phases = d.phases.slice(0,3).map(function(p){ return { f: p.f||0, w: p.w||0 }; });
       while(phases.length < 3) phases.push({ f:0, w:0 });
