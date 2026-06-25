@@ -553,9 +553,9 @@ body.pres-mode .app-header{display:none;}
 .drive-status.ok{color:#1E2D63;font-weight:600;}
 .drive-status.err{color:#b3261e;font-weight:600;}
 </style>
-<!-- Google Drive integration (OAuth + Drive REST + Picker) -->
-<script src="https://apis.google.com/js/api.js"></script>
-<script src="https://accounts.google.com/gsi/client"></script>
+<!-- Google Drive integration (OAuth + Drive REST + Picker) — async so a blocked/slow Google (e.g. Safari Private Relay) never stops the page from loading -->
+<script src="https://apis.google.com/js/api.js" async defer></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -1814,8 +1814,10 @@ if(el('logPlanBtn')) {
     });
   }
 
+  function gisReady(){ return typeof google!=='undefined' && google.accounts && google.accounts.oauth2; }
   function withToken(action){
     if(!configured()){ notConfigured(); return; }
+    if(!gisReady()){ setStatus('Google sign-in still loading — tap again in a moment','err'); return; }
     ensureTokenClient();
     if(accessToken && Date.now() < tokenExpiry){ action && action(); return; }
     pendingAction = action || null;
@@ -1826,6 +1828,11 @@ if(el('logPlanBtn')) {
   // Auto-reconnect on page load — only if the user has approved before (no surprise popups for first-timers)
   function autoConnect(){
     if(!configured() || !localStorage.getItem('motusDriveConnected')) return;
+    if(!gisReady()){                                   // async GIS not loaded yet — wait and retry
+      autoConnect._n = (autoConnect._n||0) + 1;
+      if(autoConnect._n <= 20) setTimeout(autoConnect, 300);
+      return;
+    }
     ensureTokenClient();
     pendingAction = null;
     setStatus('Connecting…');
@@ -1843,6 +1850,7 @@ if(el('logPlanBtn')) {
 
   // ---- Google Picker (load + folder selection; works on Shared Drives) ----
   function loadPicker(cb){
+    if(typeof gapi === 'undefined'){ setStatus('Drive still loading — tap again in a moment','err'); return; }
     if(pickerReady){ cb(); return; }
     gapi.load('picker', function(){ pickerReady = true; cb(); });
   }
