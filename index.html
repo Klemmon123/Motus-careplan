@@ -1564,11 +1564,11 @@ if(el('logPlanBtn')) {
   var DRIVE_CONFIG = {
     CLIENT_ID: '828412315373-e4g5gosll30qoovcpc9behiqcsnbj9pc.apps.googleusercontent.com',
     API_KEY:   'AIzaSyB1YVcPJxBP_Ljk-JI8RZEjTgdsO6QTQzg',
-    FOLDER_ID: ''   // optional: paste your Shared Drive folder ID to skip the folder picker
+    FOLDER_ID: '1Uv-CGkrMkaIe2pqFTJZhNk57PKjvygBD'   // "Motus Care Plans" folder — all patient files save here
   };
   /* ============================================================ */
 
-  var SCOPE = 'https://www.googleapis.com/auth/drive.file';
+  var SCOPE = 'https://www.googleapis.com/auth/drive';
 
   var tokenClient = null, accessToken = null, pickerReady = false, pendingAction = null;
   var currentFileId = null, loadedName = '';
@@ -1716,36 +1716,45 @@ if(el('logPlanBtn')) {
       setStatus('Saving…');
       var data = serialize();
       ensureFolder(function(fid){
-        var meta = { name: name + '.json', mimeType: 'application/json' };
-        if(!currentFileId) meta.parents = [fid];
-        var boundary = 'motus_' + Date.now() + '_' + Math.random().toString(16).slice(2);
-        var body =
-          '--' + boundary + '\r\n' +
-          'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-          JSON.stringify(meta) + '\r\n' +
-          '--' + boundary + '\r\n' +
-          'Content-Type: application/json\r\n\r\n' +
-          JSON.stringify(data) + '\r\n' +
-          '--' + boundary + '--';
-        var base = 'https://www.googleapis.com/upload/drive/v3/files';
-        var url = currentFileId
-          ? base + '/' + currentFileId + '?uploadType=multipart&supportsAllDrives=true&fields=id,name'
-          : base + '?uploadType=multipart&supportsAllDrives=true&fields=id,name';
-        driveFetch(url, {
-          method: currentFileId ? 'PATCH' : 'POST',
-          headers: { 'Content-Type': 'multipart/related; boundary=' + boundary },
-          body: body
-        }).then(function(r){ return r.json().then(function(j){ if(!r.ok) throw j; return j; }); })
-          .then(function(res){
-            currentFileId = res.id; loadedName = name;
-            setStatus('Saved “' + name + '”', 'ok');
-          })
-          .catch(function(err){
-            if(err && err.code === 401){ saveToDrive(); return; }
-            console.error('Drive save failed', err);
-            setStatus('Save failed', 'err');
-            alert('Save failed: ' + ((err && err.error && err.error.message) || 'see browser console for details'));
-          });
+        function doUpload(){
+          var meta = { name: name + '.json', mimeType: 'application/json' };
+          if(!currentFileId) meta.parents = [fid];
+          var boundary = 'motus_' + Date.now() + '_' + Math.random().toString(16).slice(2);
+          var body =
+            '--' + boundary + '\r\n' +
+            'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+            JSON.stringify(meta) + '\r\n' +
+            '--' + boundary + '\r\n' +
+            'Content-Type: application/json\r\n\r\n' +
+            JSON.stringify(data) + '\r\n' +
+            '--' + boundary + '--';
+          var base = 'https://www.googleapis.com/upload/drive/v3/files';
+          var url = currentFileId
+            ? base + '/' + currentFileId + '?uploadType=multipart&supportsAllDrives=true&fields=id,name'
+            : base + '?uploadType=multipart&supportsAllDrives=true&fields=id,name';
+          driveFetch(url, {
+            method: currentFileId ? 'PATCH' : 'POST',
+            headers: { 'Content-Type': 'multipart/related; boundary=' + boundary },
+            body: body
+          }).then(function(r){ return r.json().then(function(j){ if(!r.ok) throw j; return j; }); })
+            .then(function(res){
+              currentFileId = res.id; loadedName = name;
+              setStatus('Saved “' + name + '”', 'ok');
+            })
+            .catch(function(err){
+              if(err && err.code === 401){ saveToDrive(); return; }
+              console.error('Drive save failed', err);
+              setStatus('Save failed', 'err');
+              alert('Save failed: ' + ((err && err.error && err.error.message) || 'see browser console for details'));
+            });
+        }
+        if(currentFileId){ doUpload(); return; }
+        // No known file id yet — reuse an existing file with this patient name if one exists (avoids duplicates)
+        var q = "name = '" + name.replace(/'/g, "\\'") + ".json' and '" + fid + "' in parents and trashed = false";
+        driveFetch('https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent(q) + '&fields=files(id,name)&supportsAllDrives=true&includeItemsFromAllDrives=true', {})
+          .then(function(r){ return r.json(); })
+          .then(function(j){ if(j && j.files && j.files.length){ currentFileId = j.files[0].id; loadedName = name; } doUpload(); })
+          .catch(function(){ doUpload(); });
       });
     });
   }
