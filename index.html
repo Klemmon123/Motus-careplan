@@ -516,7 +516,21 @@ body.pres-mode .app-header{display:none;}
 .csig-img{width:100%;height:52px;border:none;border-bottom:1.5px solid #1E2D63;object-fit:contain;display:block;}
 .csig-blank{height:52px;border-bottom:1.5px solid #1E2D63;}
 .csig-v{font-size:9pt;font-weight:700;color:#1E2D63;border-bottom:1.5px solid #1E2D63;padding-bottom:3px;min-height:18px;margin-top:3px;}
+/* GOOGLE DRIVE BAR */
+.drive-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.drive-btn{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;padding:8px 14px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--charcoal);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:border-color .15s,background .15s,opacity .15s;}
+.drive-btn:hover:not(:disabled){border-color:var(--navy-light);}
+.drive-btn--primary{background:#1E2D63;border-color:#1E2D63;color:#fff;}
+.drive-btn--primary:hover:not(:disabled){background:#2E50A0;border-color:#2E50A0;}
+.drive-btn:disabled{opacity:.45;cursor:not-allowed;}
+.drive-btn svg{width:14px;height:14px;}
+.drive-status{font-size:.72rem;color:var(--gray);white-space:nowrap;max-width:260px;overflow:hidden;text-overflow:ellipsis;}
+.drive-status.ok{color:#1E2D63;font-weight:600;}
+.drive-status.err{color:#b3261e;font-weight:600;}
 </style>
+<!-- Google Drive integration (OAuth + Drive REST + Picker) -->
+<script src="https://apis.google.com/js/api.js"></script>
+<script src="https://accounts.google.com/gsi/client"></script>
 </head>
 <body>
 
@@ -526,6 +540,21 @@ body.pres-mode .app-header{display:none;}
     <div class="header-center">
       <label for="patientName">Patient</label>
       <input id="patientName" class="patient-input" type="text" placeholder="Enter patient name" autocomplete="off"/>
+    </div>
+    <div class="drive-bar">
+      <button type="button" class="drive-btn drive-btn--primary" id="driveConnect">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.71 3.5L1.15 15l3.43 6 6.56-11.5z"/><path d="M22.85 15L16.29 3.5h-6.86L16 15z"/><path d="M4.58 21h13.14l3.43-6H8.01z"/></svg>
+        Connect Drive
+      </button>
+      <button type="button" class="drive-btn" id="driveSave" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Save to Drive
+      </button>
+      <button type="button" class="drive-btn" id="driveLoad" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        Load Patient
+      </button>
+      <span class="drive-status" id="driveStatus">Not connected</span>
     </div>
     <div class="header-date" id="headerDate"></div>
   </div>
@@ -1522,6 +1551,251 @@ if(el('logPlanBtn')) {
     }, 3000);
   });
 }
+
+// ── GOOGLE DRIVE SAVE / LOAD ──────────────────────────────────────
+// Each patient is stored as one <Patient Name>.json file in a Drive
+// folder (use a Shared Drive folder so the whole practice can see them).
+(function(){
+
+  /* ============================================================
+     CONFIG — paste your three Google values here, then re-upload
+     this HTML to GitHub Pages. See setup steps in the chat.
+     ============================================================ */
+  var DRIVE_CONFIG = {
+    CLIENT_ID: '828412315373-e4g5gosll30qoovcpc9behiqcsnbj9pc.apps.googleusercontent.com',
+    API_KEY:   'AIzaSyB1YVcPJxBP_Ljk-JI8RZEjTgdsO6QTQzg',
+    FOLDER_ID: ''   // optional: paste your Shared Drive folder ID to skip the folder picker
+  };
+  /* ============================================================ */
+
+  var SCOPE = 'https://www.googleapis.com/auth/drive.file';
+
+  var tokenClient = null, accessToken = null, pickerReady = false, pendingAction = null;
+  var currentFileId = null, loadedName = '';
+  var folderId = localStorage.getItem('motusDriveFolderId') || DRIVE_CONFIG.FOLDER_ID || '';
+
+  var $connect = el('driveConnect'), $save = el('driveSave'), $load = el('driveLoad'), $status = el('driveStatus');
+
+  function setStatus(msg, cls){ if($status){ $status.textContent = msg; $status.className = 'drive-status' + (cls ? (' '+cls) : ''); } }
+  function configured(){ return DRIVE_CONFIG.CLIENT_ID.indexOf('PASTE_') !== 0 && DRIVE_CONFIG.API_KEY.indexOf('PASTE_') !== 0; }
+
+  // ---- Serialize the whole care plan to a plain object ----
+  function serialize(){
+    var items = {};
+    ITEMS.forEach(function(it){
+      var rec = { qty: it.qty || 0, price: it.price };
+      if('copay' in it) rec.copay = it.copay || 0;
+      items[it.id] = rec;
+    });
+    var sig = '';
+    var c = el('psSigCanvas'); if(c){ try { sig = c.toDataURL('image/png'); } catch(e){} }
+    return {
+      _type: 'motus-care-plan', _version: 1,
+      savedAt: new Date().toISOString(),
+      patientName: (el('patientName').value || ''),
+      items: items,
+      priceCats: Array.from(priceCats),
+      insurancePct: insurancePct,
+      phases: phases.map(function(p){ return { f: p.f||0, w: p.w||0 }; }),
+      selPlan: selPlan, psSelPlan: psSelPlan, selIns: selIns,
+      signature: sig
+    };
+  }
+
+  // ---- Restore the care plan from a loaded object ----
+  function hydrate(d){
+    if(!d || d._type !== 'motus-care-plan'){ throw new Error('not-a-care-plan'); }
+    el('patientName').value = d.patientName || '';
+    if(el('sigName')) el('sigName').textContent = (d.patientName || '').trim() || '—';
+    if(d.items){
+      ITEMS.forEach(function(it){
+        var s = d.items[it.id]; if(!s) return;
+        it.qty = s.qty || 0;
+        if(typeof s.price === 'number') it.price = s.price;
+        if('copay' in it && typeof s.copay === 'number') it.copay = s.copay;
+      });
+    }
+    if(Array.isArray(d.priceCats)){ priceCats.clear(); d.priceCats.forEach(function(x){ priceCats.add(x); }); }
+    if(typeof d.insurancePct === 'number') insurancePct = d.insurancePct;
+    if(Array.isArray(d.phases)){
+      phases = d.phases.slice(0,3).map(function(p){ return { f: p.f||0, w: p.w||0 }; });
+      while(phases.length < 3) phases.push({ f:0, w:0 });
+    }
+    for(var i=0;i<3;i++){
+      if(el('p'+i+'f')) el('p'+i+'f').value = phases[i].f || '';
+      if(el('p'+i+'w')) el('p'+i+'w').value = phases[i].w || '';
+    }
+    if(typeof d.selIns === 'string') selIns = d.selIns;
+    if(d.selPlan) selPlan = d.selPlan;
+    if(d.psSelPlan) psSelPlan = d.psSelPlan;
+    buildCats(); render();
+    if(el('insSel')) el('insSel').value = selIns;
+    if(el('iPctIn')) el('iPctIn').value = insurancePct;
+    restoreSignature(d.signature);
+  }
+
+  function restoreSignature(url){
+    var c = el('psSigCanvas'); if(!c) return;
+    var ctx = c.getContext('2d');
+    ctx.clearRect(0, 0, c.width, c.height);
+    if(!url) return;
+    var img = new Image();
+    img.onload = function(){ try { ctx.drawImage(img, 0, 0, c.width, c.height); } catch(e){} };
+    img.src = url;
+  }
+
+  // ---- OAuth (Google Identity Services) ----
+  function notConfigured(){
+    setStatus('Drive not set up', 'err');
+    alert('Google Drive is not configured yet.\n\nOpen this HTML file, find the DRIVE_CONFIG block near the bottom, and paste in your OAuth Client ID and API key, then re-upload to GitHub Pages.');
+  }
+  function withToken(action){
+    if(!configured()){ notConfigured(); return; }
+    if(!tokenClient){
+      tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: DRIVE_CONFIG.CLIENT_ID, scope: SCOPE,
+        callback: function(resp){
+          if(resp && resp.error){ setStatus('Sign-in failed', 'err'); pendingAction = null; return; }
+          accessToken = resp.access_token;
+          $save.disabled = false; $load.disabled = false;
+          setStatus('Connected to Google Drive', 'ok');
+          var a = pendingAction; pendingAction = null; if(a) a();
+        }
+      });
+    }
+    if(accessToken){ action && action(); }
+    else { pendingAction = action || null; tokenClient.requestAccessToken({ prompt: 'consent' }); }
+  }
+
+  function driveFetch(url, opts){
+    opts = opts || {}; opts.headers = opts.headers || {};
+    opts.headers['Authorization'] = 'Bearer ' + accessToken;
+    return fetch(url, opts).then(function(r){
+      if(r.status === 401){ accessToken = null; var e = new Error('expired'); e.code = 401; throw e; }
+      return r;
+    });
+  }
+
+  // ---- Google Picker (load + folder selection; works on Shared Drives) ----
+  function loadPicker(cb){
+    if(pickerReady){ cb(); return; }
+    gapi.load('picker', function(){ pickerReady = true; cb(); });
+  }
+
+  function ensureFolder(cb){
+    if(folderId){ cb(folderId); return; }
+    loadPicker(function(){
+      var view = new google.picker.DocsView(google.picker.ViewId.FOLDERS)
+        .setSelectFolderEnabled(true)
+        .setMimeTypes('application/vnd.google-apps.folder')
+        .setEnableDrives(true);
+      new google.picker.PickerBuilder()
+        .setOAuthToken(accessToken).setDeveloperKey(DRIVE_CONFIG.API_KEY)
+        .enableFeature(google.picker.Feature.SUPPORT_DRIVES)
+        .addView(view)
+        .setTitle('Choose the folder to store patient care plans')
+        .setCallback(function(data){
+          if(data.action === google.picker.Action.PICKED){
+            folderId = data.docs[0].id;
+            localStorage.setItem('motusDriveFolderId', folderId);
+            cb(folderId);
+          } else if(data.action === google.picker.Action.CANCEL){
+            setStatus('Folder selection cancelled');
+          }
+        }).build().setVisible(true);
+    });
+  }
+
+  // ---- Save ----
+  function saveToDrive(){
+    withToken(function(){
+      var name = (el('patientName').value || '').trim();
+      if(!name){ alert('Enter a patient name before saving.'); return; }
+      // If the name changed since the file we loaded, save as a NEW file
+      if(currentFileId && name !== loadedName) currentFileId = null;
+      setStatus('Saving…');
+      var data = serialize();
+      ensureFolder(function(fid){
+        var meta = { name: name + '.json', mimeType: 'application/json' };
+        if(!currentFileId) meta.parents = [fid];
+        var boundary = 'motus_' + Date.now() + '_' + Math.random().toString(16).slice(2);
+        var body =
+          '--' + boundary + '\r\n' +
+          'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+          JSON.stringify(meta) + '\r\n' +
+          '--' + boundary + '\r\n' +
+          'Content-Type: application/json\r\n\r\n' +
+          JSON.stringify(data) + '\r\n' +
+          '--' + boundary + '--';
+        var base = 'https://www.googleapis.com/upload/drive/v3/files';
+        var url = currentFileId
+          ? base + '/' + currentFileId + '?uploadType=multipart&supportsAllDrives=true&fields=id,name'
+          : base + '?uploadType=multipart&supportsAllDrives=true&fields=id,name';
+        driveFetch(url, {
+          method: currentFileId ? 'PATCH' : 'POST',
+          headers: { 'Content-Type': 'multipart/related; boundary=' + boundary },
+          body: body
+        }).then(function(r){ return r.json().then(function(j){ if(!r.ok) throw j; return j; }); })
+          .then(function(res){
+            currentFileId = res.id; loadedName = name;
+            setStatus('Saved “' + name + '”', 'ok');
+          })
+          .catch(function(err){
+            if(err && err.code === 401){ saveToDrive(); return; }
+            console.error('Drive save failed', err);
+            setStatus('Save failed', 'err');
+            alert('Save failed: ' + ((err && err.error && err.error.message) || 'see browser console for details'));
+          });
+      });
+    });
+  }
+
+  // ---- Load ----
+  function loadFromDrive(){
+    withToken(function(){
+      loadPicker(function(){
+        var view = new google.picker.DocsView(google.picker.ViewId.DOCS)
+          .setMimeTypes('application/json')
+          .setEnableDrives(true)
+          .setIncludeFolders(true);
+        if(folderId) view.setParent(folderId);
+        new google.picker.PickerBuilder()
+          .setOAuthToken(accessToken).setDeveloperKey(DRIVE_CONFIG.API_KEY)
+          .enableFeature(google.picker.Feature.SUPPORT_DRIVES)
+          .addView(view)
+          .setTitle('Select a patient care plan to load')
+          .setCallback(function(data){
+            if(data.action !== google.picker.Action.PICKED) return;
+            var doc = data.docs[0];
+            setStatus('Loading…');
+            driveFetch('https://www.googleapis.com/drive/v3/files/' + doc.id + '?alt=media&supportsAllDrives=true', {})
+              .then(function(r){ return r.json(); })
+              .then(function(j){
+                hydrate(j);
+                currentFileId = doc.id;
+                loadedName = (doc.name || '').replace(/\.json$/i, '');
+                setStatus('Loaded “' + loadedName + '”', 'ok');
+              })
+              .catch(function(err){
+                if(err && err.code === 401){ loadFromDrive(); return; }
+                console.error('Drive load failed', err);
+                setStatus('Load failed', 'err');
+                alert(err && err.message === 'not-a-care-plan'
+                  ? 'That file is not a Motus care plan.'
+                  : 'Could not load that file. See browser console for details.');
+              });
+          }).build().setVisible(true);
+      });
+    });
+  }
+
+  // ---- Wire up buttons ----
+  if($connect) $connect.addEventListener('click', function(){ withToken(function(){}); });
+  if($save) $save.addEventListener('click', saveToDrive);
+  if($load) $load.addEventListener('click', loadFromDrive);
+
+  setStatus(configured() ? 'Not connected' : 'Drive not set up — add API keys', configured() ? '' : 'err');
+})();
 
 </script>
 </body>
