@@ -835,24 +835,29 @@ const ITEMS = [
   {cat:'insurance', id:'manualtherapy',name:'Manual Therapy (97140)',          price:65,    unit:'per visit',     qty:0, copay:0},
   {cat:'insurance', id:'rehab',        name:'Rehab (97110)',                   price:65,    unit:'per visit',     qty:0, copay:0},
   {cat:'insurance', id:'reexam',       name:'Re-Exam (99213)',                 price:48.75, unit:'per visit',     qty:0, copay:0},
-  {cat:'therapy',   id:'wellnessadj',  name:'Wellness Adjustment',             price:75,    unit:'per visit',     qty:0},
+  {cat:'therapy',   id:'wellnessadj',  name:'Adjustment',                      price:75,    unit:'per visit',     qty:0},
   {cat:'therapy',   id:'pemf',         name:'PEMF',                            price:60,    unit:'per session',   qty:0},
   {cat:'therapy',   id:'coldlaser',    name:'Cold Laser',                      price:60,    unit:'per session',   qty:0},
   {cat:'therapy',   id:'class4',       name:'Class 4 Laser',                   price:60,    unit:'per session',   qty:0},
-  {cat:'therapy',   id:'contour',      name:'Contour Light',                   price:75,    unit:'per session',   qty:0},
+  {cat:'therapy',   id:'contour',      name:'Contour',                         price:75,    unit:'per session',   qty:0},
   {cat:'therapy',   id:'shockwave',    name:'Shockwave Therapy',               price:125,   unit:'per session',   qty:0},
   {cat:'therapy',   id:'stimpod',      name:'StimPod',                         price:60,    unit:'per session',   qty:0},
-  {cat:'therapy',   id:'acupuncture',  name:'Acupuncture',                     price:60,    unit:'per session',   qty:0},
+  {cat:'therapy',   id:'acupuncture',  name:'Dry Needling/Acupuncture',        price:60,    unit:'per session',   qty:0},
   {cat:'therapy',   id:'spinaldecomp', name:'Spinal Decompression',            price:60,    unit:'per session',   qty:0},
   {cat:'therapy',   id:'kneedecomp',   name:'Knee Decompression',              price:60,    unit:'per session',   qty:0},
   {cat:'therapy',   id:'neuromed',     name:'NeuroMed',                        price:60,    unit:'per session',   qty:0},
   {cat:'therapy',   id:'massage',      name:'Massage Therapy',                 price:60,    unit:'per session',   qty:0},
   {cat:'therapy',   id:'trigenics',    name:'Trigenics',                       price:75,    unit:'per session',   qty:0},
-  {cat:'therapy',   id:'injection',    name:'IV / IM Injection',               price:60,    unit:'per injection', qty:0},
+  {cat:'therapy',   id:'injection',    name:'Injectable Nutrients',            price:60,    unit:'per injection', qty:0},
   {cat:'therapy',   id:'casemgmt',     name:'Case Management',                 price:99,    unit:'one-time',      qty:0},
   {cat:'therapy',   id:'coaching',     name:'Coaching Session',                price:30,    unit:'per session',   qty:0},
-  {cat:'nutrition', id:'labs',         name:'Labs',                            price:0,     unit:'one-time',      qty:0},
-  {cat:'nutrition', id:'nutrition',    name:'Nutrition',                       price:0,     unit:'per month',     qty:0},
+  {cat:'therapy',   id:'neckorthotic', name:'Neck Orthotic',                   price:0,     unit:'one-time',      qty:0},
+  {cat:'therapy',   id:'footorthotic', name:'Foot Orthotic',                   price:0,     unit:'one-time',      qty:0},
+  {cat:'therapy',   id:'oxygen',       name:'Oxygen',                          price:0,     unit:'per session',   qty:0},
+  {cat:'therapy',   id:'nasalrelease', name:'Nasal Release',                   price:0,     unit:'per session',   qty:0},
+  {cat:'therapy',   id:'llxray',       name:'LLXray',                          price:0,     unit:'one-time',      qty:0},
+  {cat:'nutrition', id:'labs',         name:'Lab testing',                     price:0,     unit:'one-time',      qty:0},
+  {cat:'nutrition', id:'nutrition',    name:'Nutrition Supplements',           price:0,     unit:'per month',     qty:0},
   {cat:'equipment', id:'anodyne',      name:'Anodyne Pro System',              price:1250,  unit:'one-time',      qty:0},
   {cat:'equipment', id:'rebuilder',    name:'Rebuilder Unit',                  price:1300,  unit:'one-time',      qty:0},
 ];
@@ -1184,19 +1189,26 @@ function renderPres() {
   }).join('') + '</div>';
   el('psInsTotalAmt').textContent = fmt(c.insP);
   el('psInsTotal').classList.toggle('visible', psInsShow && insAct.length>0);
-// Services
-  var svcAllItems = ITEMS.filter(function(i){return i.cat!=='insurance';});
-  var spAct = svcAllItems.filter(function(i){return i.qty>0;});
+// Services \u2014 Patient View therapy stack (explicit order; the 2-col grid pairs them left/right)
+  var PS_STACK = ['wellnessadj','ist','manualtherapy','trigenics','rehab','acupuncture',
+                  'spinaldecomp','kneedecomp','neckorthotic','footorthotic','shockwave','pemf',
+                  'coldlaser','class4','stimpod','neuromed','contour','oxygen',
+                  'nasalrelease','injection','reexam','llxray','labs','nutrition'];
+  // Display-name overrides for items kept under their billing name elsewhere (insurance section unchanged)
+  var PS_NAME = {ist:'IST', manualtherapy:'Manual Therapy', rehab:'Corrective Exercise', reexam:'ReExams'};
+  var svcItems = PS_STACK.map(function(id){ return ITEMS.find(function(x){return x.id===id;}); }).filter(Boolean);
+  var spAct = svcItems.filter(function(i){return i.qty>0;});
   el('psSvcCount').textContent = spAct.length;
-  var catLabel = {therapy:'Therapy',nutrition:'Nutrition',equipment:'Equipment'};
+  var catLabel = {therapy:'Therapy',nutrition:'Nutrition',equipment:'Equipment',insurance:'Therapy'};
   var svcTotal = spAct.reduce(function(s,i){return s+i.price*i.qty;},0);
-  el('psSvcBody').innerHTML = '<div class="ps-item-grid">' + svcAllItems.map(function(i) {
+  el('psSvcBody').innerHTML = '<div class="ps-item-grid">' + svcItems.map(function(i) {
     var sel = i.qty>0;
+    var dispName = PS_NAME[i.id] || i.name;
     var amtHtml = (sel && psSvcShow) ? '<div class="ps-item-card__amt">'+fmt(i.price*i.qty)+'</div>' : '';
     return '<div class="ps-item-card'+(sel?' selected':'')+(psSvcShow?' show-amt':'')+'">' +
-      '<div class="ps-item-card__name">'+i.name+'</div>' +
+      '<div class="ps-item-card__name">'+dispName+'</div>' +
       '<div class="ps-item-card__bottom">' +
-        '<span class="ps-item-card__code">'+(catLabel[i.cat]||i.cat)+'</span>' +
+        '<span class="ps-item-card__code">'+(catLabel[i.cat]||'')+'</span>' +
         '<span class="ps-item-card__qty">'+(sel?'\u00d7'+i.qty:'\u2014')+'</span>' +
       '</div>' + amtHtml + '</div>';
   }).join('') + '</div>';
