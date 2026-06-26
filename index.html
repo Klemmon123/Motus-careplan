@@ -368,24 +368,24 @@ input[type=number]{-moz-appearance:textfield;}
 @media(max-width:640px){.ps-item-grid{grid-template-columns:repeat(2,1fr);}}
 .ps-item-card{
   position:relative;border-radius:10px;padding:9px 12px;min-height:50px;
-  border:1.5px solid var(--line);background:var(--surface);
+  border:1.5px solid #EEF0F4;background:var(--surface);
   display:flex;flex-direction:column;justify-content:center;gap:4px;
   transition:background .15s,border-color .15s,box-shadow .15s,transform .12s;
 }
-.ps-item-card.selected{background:var(--navy);border-color:var(--navy);box-shadow:0 6px 16px -8px rgba(27,43,94,.5);}
-.ps-item-card__name{font-size:.8rem;font-weight:600;color:var(--charcoal);line-height:1.25;}
-.ps-item-card.selected .ps-item-card__name{color:#fff;}
+.ps-item-card.selected{background:#EEF1F9;border-color:var(--navy);box-shadow:0 4px 14px -8px rgba(27,43,94,.30);}
+.ps-item-card__name{font-size:.8rem;font-weight:600;color:#9AA0AC;line-height:1.25;padding-right:22px;}
+.ps-item-card.selected .ps-item-card__name{color:var(--navy);}
 .ps-item-card__bottom{display:flex;align-items:center;justify-content:flex-end;gap:6px;}
 .ps-item-card__code{display:none;}
-.ps-item-card__qty{font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:700;color:#C2C7D2;line-height:1;}
-.ps-item-card.selected .ps-item-card__qty{color:#fff;}
-.ps-item-card__copay{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 5px;border-radius:4px;background:rgba(255,255,255,.2);color:rgba(255,255,255,.85);}
-.ps-item-card__amt{font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:600;color:rgba(255,255,255,.72);display:none;text-align:right;}
+.ps-item-card__qty{font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:700;color:#D2D6DE;line-height:1;}
+.ps-item-card.selected .ps-item-card__qty{color:var(--navy);}
+.ps-item-card__copay{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 5px;border-radius:4px;background:rgba(27,43,94,.1);color:var(--navy);}
+.ps-item-card__amt{font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:600;color:var(--navy);display:none;text-align:right;}
 .ps-item-card.selected.show-amt .ps-item-card__amt{display:block;}
-.ps-item-card__chk{position:absolute;top:7px;right:9px;font-size:.72rem;font-weight:800;color:#fff;display:none;}
-.ps-item-card.selected .ps-item-card__chk{display:block;}
+.ps-item-card__chk{position:absolute;top:6px;right:7px;width:16px;height:16px;border-radius:50%;background:var(--gold);color:var(--navy);font-size:.62rem;font-weight:800;display:none;align-items:center;justify-content:center;line-height:1;}
+.ps-item-card.selected .ps-item-card__chk{display:flex;}
 .ps-ins-card{justify-content:center;}
-.ps-ins-card .ps-item-card__name{padding-right:14px;}
+.ps-ins-card .ps-item-card__name{padding-right:22px;}
 
 
 /* Patient view dedicated header */
@@ -1309,6 +1309,7 @@ function renderPres() {
     var dispName = PS_NAME[i.id] || i.name;
     if(i.id==='nutrition' && nutritionType) dispName += ' — ' + nutritionType;
     return '<div class="ps-item-card'+(sel?' selected':'')+'">' +
+      '<span class="ps-item-card__chk">\u2713</span>' +
       '<div class="ps-item-card__name">'+dispName+'</div>' +
       '<div class="ps-item-card__bottom">' +
         '<span class="ps-item-card__qty">'+(sel?'\u00d7'+q:'\u2014')+'</span>' +
