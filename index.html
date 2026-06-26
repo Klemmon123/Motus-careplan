@@ -1290,7 +1290,7 @@ function renderPres() {
   // Combined visit counts: some rows show the SUM of related admin items (insurance + therapy). Pricing untouched.
   var PS_AGG = {
     wellnessadj: ['cpt98941','cpt98940','wellnessadj'], // Adjustments = 98941 + 98940 + Wellness (98943 excluded; shows only as insurance coverage)
-    ist:         ['ist','istcash','cpt98941','cpt98940','wellnessadj'], // IST = insurance IST + cash IST + the Adjustment count
+    ist:         ['ist','istcash','wellnessadj'], // IST = insurance IST + cash IST + the Adjustment item in Services (not the insurance CMT codes)
     manualtherapy: ['manualtherapy','massage'],                     // Manual Therapy includes Massage Therapy (admin)
     acupuncture: ['ins_acu','acupuncture']                          // Acupuncture (97810) + Dry Needling/Acupuncture
   };
