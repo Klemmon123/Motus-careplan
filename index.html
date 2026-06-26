@@ -1271,7 +1271,7 @@ function renderPres() {
                '<span class="pres-cov-row__val">' + (insurancePct>=100 ? 'After deductible is met' : 'Covered at '+coveredPct+'%') + '</span></div>';
     if(deductible>0) {
       var nowMet = Math.min(deductible, deductibleMet + (c.preDed||0));   // includes this plan's charges applied at 100%
-      var remaining = Math.max(0, deductible - nowMet);
+      var remaining = Math.max(0, deductible - deductibleMet);   // deductible − already-met only (ignores this plan; the "now … met" part shows the plan's effect)
       var pctMet = Math.max(0, Math.min(100, Math.round((nowMet/deductible)*100)));
       covHtml += '<div class="pres-cov-ded">' +
         '<div class="pres-ded-headline">Remaining deductible '+fmt(remaining)+' · now '+fmt(nowMet)+' of '+fmt(deductible)+' met</div>' +
