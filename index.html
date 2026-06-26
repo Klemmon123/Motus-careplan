@@ -369,6 +369,9 @@ input[type=number]{-moz-appearance:textfield;}
 .pres-print-btn{width:100%;margin-top:18px;display:flex;align-items:center;justify-content:center;gap:10px;padding:15px;background:var(--navy);color:#fff;border:none;border-radius:10px;cursor:pointer;font-family:'Playfair Display',Georgia,serif;font-size:.92rem;font-weight:600;letter-spacing:.06em;transition:background .15s;}
 .pres-print-btn:hover{background:var(--navy-light);}
 .pres-print-btn:active{transform:scale(.98);}
+.pres-policy-btn{width:100%;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:10px;padding:15px;background:#fff;color:var(--navy);border:2px solid var(--navy);border-radius:10px;cursor:pointer;font-family:'Playfair Display',Georgia,serif;font-size:.92rem;font-weight:600;letter-spacing:.06em;transition:background .15s,transform .1s;}
+.pres-policy-btn:hover{background:var(--navy-tint);}
+.pres-policy-btn:active{transform:scale(.98);}
 
 /* Patient view — unified item cards for insurance + therapy */
 .ps-item-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:13px 15px;}
@@ -832,6 +835,10 @@ body.pres-mode .app-header{display:none;}
       <button class="pres-print-btn" id="psPrintBtn">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
         Save &amp; Print Care Plan
+      </button>
+      <button class="pres-policy-btn" id="psPolicyBtn">
+        Continue to Patient Policies
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </button>
     </div>
   </div>
@@ -1499,6 +1506,19 @@ el('psPrintBtn').addEventListener('click', function() {
   if(sigUrl){ var sigImg=new Image(); sigImg.onload=function(){ setTimeout(finishPrint,60); }; sigImg.onerror=finishPrint; sigImg.src=sigUrl; }
   else { finishPrint(); }
 });;;
+
+// Continue to Patient Policies — hand off patient name + total + payment method
+if(el('psPolicyBtn')) {
+  el('psPolicyBtn').addEventListener('click', function() {
+    var c = compute();
+    var name = (el('patientName').value || '').trim();
+    var payMap = { pif:'Pay in Full', weekly:'Monthly Payments', '3month':'Monthly Payments', '12month':'Monthly Payments', '18month':'3rd Party Financing', '48month':'3rd Party Financing', '60mo':'3rd Party Financing' };
+    var pay = payMap[psSelPlan] || '';
+    var total = (psSelPlan === 'pif') ? c.pif : c.base;
+    var q = 'patient=' + encodeURIComponent(name) + '&total=' + encodeURIComponent(total.toFixed(2)) + (pay ? ('&pay=' + encodeURIComponent(pay)) : '');
+    window.location.href = 'policies.html?' + q;
+  });
+}
 
 // Admin back button
 if(el('presAdminBtn')) {
