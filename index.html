@@ -116,6 +116,7 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
 .pres-ded-bar{height:7px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:7px;}
 .pres-ded-fill{height:100%;background:linear-gradient(90deg,#1E2D63,#2E50A0);transition:width .3s;}
 .pres-ded-note{font-size:.72rem;color:var(--gray);margin-top:5px;}
+.pres-ded-headline{font-size:.92rem;font-weight:700;color:var(--navy);margin-bottom:2px;}
 .copay-hint{font-size:.68rem;color:var(--gray);font-style:italic;}
 .insurance-note{font-size:.74rem;color:var(--gray);font-style:italic;margin-top:6px;padding-bottom:4px;}
 
@@ -288,9 +289,9 @@ input[type=number]{-moz-appearance:textfield;}
 .pres-pif-sel-badge{display:none;background:rgba(255,255,255,.15);color:#fff;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:4px 12px;border-radius:99px;align-items:center;gap:5px;}
 .pres-pif-hero.selected .pres-pif-sel-badge{display:flex;}
 .pres-pif-hero.selected .pres-pif-badge{display:none;}
-.pres-pif-eyebrow{font-size:.7rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.18em;margin-bottom:4px;}
+.pres-pif-eyebrow{font-size:.84rem;font-weight:700;color:rgba(255,255,255,.92);text-transform:uppercase;letter-spacing:.16em;margin-bottom:4px;}
 .pres-pif-amount{font-family:'IBM Plex Mono',monospace;font-size:3.2rem;font-weight:700;color:#fff;line-height:1;letter-spacing:-.02em;}
-.pres-pif-savings{font-size:.82rem;color:var(--gold);font-weight:600;margin-top:8px;}
+.pres-pif-savings{display:inline-block;font-size:.82rem;color:#1B2B5E;background:var(--gold);font-weight:800;margin-top:11px;padding:5px 12px;border-radius:99px;box-shadow:0 2px 8px -2px rgba(238,175,33,.6);}
 .pres-pif-foot{padding:12px 26px;background:rgba(0,0,0,.15);display:flex;align-items:center;justify-content:space-between;}
 .pres-pif-foot-label{font-size:.74rem;color:rgba(255,255,255,.5);}
 .pres-pif-sel-btn{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.7);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:99px;padding:5px 14px;cursor:pointer;transition:all .15s;}
@@ -302,6 +303,8 @@ input[type=number]{-moz-appearance:textfield;}
 .pres-std-card{background:var(--surface);border-radius:12px;border:2px solid var(--line);cursor:pointer;transition:border-color .2s,box-shadow .15s,transform .15s;margin-bottom:16px;overflow:hidden;}
 .pres-std-card:hover{border-color:var(--navy-light);transform:translateY(-1px);}
 .pres-std-card.selected{border-color:var(--navy);box-shadow:0 0 0 2px rgba(30,45,99,.12);}
+.pres-std-card--static{cursor:default;}
+.pres-std-card--static:hover{transform:none;border-color:var(--line);}
 .pres-std-inner{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
 .pres-std-body{padding:24px 26px 18px;}
 .pres-std-foot{padding:12px 26px;background:var(--navy-tint);display:flex;align-items:center;justify-content:space-between;gap:12px;}
@@ -343,7 +346,12 @@ input[type=number]{-moz-appearance:textfield;}
 .pres-sig-head{padding:15px 22px;border-bottom:1px solid var(--line);}
 .pres-sig-title{font-family:'Playfair Display',Georgia,serif;font-size:.84rem;font-weight:600;text-transform:uppercase;letter-spacing:.16em;color:var(--navy);}
 .pres-sig-body{padding:20px 22px;}
-.pres-sig-stmt{font-size:.78rem;color:var(--charcoal);line-height:1.6;background:var(--navy-tint);padding:12px 14px;border-radius:8px;margin-bottom:16px;}
+.pres-sig-stmt{font-size:.78rem;color:var(--charcoal);line-height:1.6;background:var(--navy-tint);padding:12px 14px;border-radius:8px;margin:10px 0 0;}
+.pres-sig-terms{margin-bottom:16px;}
+.pres-sig-terms>summary{cursor:pointer;font-size:.74rem;font-weight:600;color:var(--navy);list-style:none;display:inline-flex;align-items:center;gap:6px;user-select:none;}
+.pres-sig-terms>summary::-webkit-details-marker{display:none;}
+.pres-sig-terms>summary::before{content:'▸';font-size:.66rem;}
+.pres-sig-terms[open]>summary::before{content:'▾';}
 .pres-sig-lbl{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--navy);margin-bottom:6px;}
 .pres-sig-canvas{width:100%;height:130px;border:2px solid var(--line);border-radius:10px;background:#fff;display:block;cursor:crosshair;touch-action:none;}
 .pres-sig-clr-row{display:flex;justify-content:flex-end;margin-top:5px;}
@@ -739,15 +747,11 @@ body.pres-mode .app-header{display:none;}
   </div>
 
   <!-- 4. FINANCIALS -->
-  <div class="pres-std-card" id="psStdCard">
+  <div class="pres-std-card pres-std-card--static" id="psStdCard">
     <div class="pres-std-body">
       <div class="pres-std-label">Total Care Plan Cost</div>
       <div class="pres-std-amount" id="psStdAmt">$0.00</div>
-      <div class="pres-std-sub">Choose a payment plan below</div>
-    </div>
-    <div class="pres-std-foot">
-      <span class="pres-std-foot-label">Includes everything in this plan</span>
-      <button class="pres-std-sel-btn" id="psStdBtn">Select</button>
+      <div class="pres-std-sub">Includes everything in this plan · choose a payment option below</div>
     </div>
   </div>
 
@@ -806,7 +810,10 @@ body.pres-mode .app-header{display:none;}
   <div class="pres-sig-card">
     <div class="pres-sig-head"><div class="pres-sig-title">Patient Agreement</div></div>
     <div class="pres-sig-body">
-      <div class="pres-sig-stmt">By signing below, I confirm that I have reviewed and agree to the care plan and payment terms outlined above. I understand my financial responsibility and authorize Motus Health to proceed with the recommended treatment plan.</div>
+      <details class="pres-sig-terms">
+        <summary>View agreement terms</summary>
+        <div class="pres-sig-stmt">I fully understand the care plan outlined above and agree to pay the entirety of all costs associated with any and all services and/or products received at Motus Health in accordance with the payment arrangement selected above. I understand that I am personally financially responsible to remit all payments to Motus Health. Additionally, I authorize Motus Health to charge my card and/or bank account for the agreed-upon purchases. I understand my information will be saved on file for future transactions on my account.</div>
+      </details>
       <div class="pres-sig-lbl">Signature</div>
       <canvas id="psSigCanvas" class="pres-sig-canvas"></canvas>
       <div class="pres-sig-clr-row"><button id="psSigClr">Clear</button></div>
@@ -1230,10 +1237,11 @@ function renderPres() {
   var insAllItems = ITEMS.filter(function(i){return i.cat==='insurance' && i.id!=='cpt98940';}); // CMT (1-2) hidden here; still counts toward visits/adjustments
   var insAct = insAllItems.filter(function(i){return i.qty>0;});
   el('psInsSection').style.display = 'block';
+  var INS_DISP = {cpt98941:'Spinal Adjustments', cpt98943:'Extremity Adjustments', ins_acu:'Dry Needling/Acupuncture'};
   el('psInsBody').innerHTML = '<div class="ps-item-grid">' + insAllItems.map(function(i) {
     var sel = i.qty>0;
-    // Strip CPT codes from the name; show no visit counts \u2014 just highlight what's being used
-    var cleanName = i.name.replace(/^\d{5}[^a-zA-Z]+/,'').replace(/\s*\(\d+\)\s*$/,'').trim();
+    // Patient-facing label (CPT codes stripped); show no visit counts \u2014 just highlight what's being used
+    var cleanName = INS_DISP[i.id] || i.name.replace(/^\d{5}[^a-zA-Z]+/,'').replace(/\s*\(\d+\)\s*$/,'').trim();
     return '<div class="ps-item-card ps-ins-card'+(sel?' selected':'')+'">' +
       '<span class="ps-item-card__chk">\u2713</span>' +
       '<div class="ps-item-card__name">'+cleanName+'</div>' +
@@ -1260,18 +1268,12 @@ function renderPres() {
     covHtml += '<div class="pres-cov-row"><span class="pres-cov-row__label">CoInsurance</span>' +
                '<span class="pres-cov-row__val">' + (insurancePct>=100 ? 'After deductible is met' : 'Covered at '+coveredPct+'%') + '</span></div>';
     if(deductible>0) {
-      var prevMet = deductibleMet;
-      var nowMet = Math.min(deductible, deductibleMet + (c.preDed||0));  // includes this plan's charges applied at 100%
+      var nowMet = Math.min(deductible, deductibleMet + (c.preDed||0));   // includes this plan's charges applied at 100%
       var remaining = Math.max(0, deductible - nowMet);
-      var hit = nowMet >= deductible;
       var pctMet = Math.max(0, Math.min(100, Math.round((nowMet/deductible)*100)));
       covHtml += '<div class="pres-cov-ded">' +
-        '<div class="pres-cov-row" style="border-bottom:none;padding-bottom:2px;">' +
-          '<span class="pres-cov-row__label">Deductible ('+fmt(deductible)+')</span>' +
-          '<span class="pres-cov-row__val'+(hit?' met':'')+'">' + (hit ? 'Met ✓' : fmt(remaining)+' to go') + '</span>' +
-        '</div>' +
+        '<div class="pres-ded-headline">Remaining deductible '+fmt(remaining)+' · now '+fmt(nowMet)+' of '+fmt(deductible)+' met</div>' +
         '<div class="pres-ded-bar"><div class="pres-ded-fill" style="width:'+pctMet+'%"></div></div>' +
-        '<div class="pres-ded-note">Previously met '+fmt(prevMet)+' · now '+fmt(nowMet)+' of '+fmt(deductible)+' met</div>' +
       '</div>';
     }
     el('psInsCoverage').innerHTML = covHtml;
@@ -1280,12 +1282,13 @@ function renderPres() {
   var PS_STACK = ['wellnessadj','ist','manualtherapy','trigenics','rehab','acupuncture',
                   'spinaldecomp','kneedecomp','neckorthotic','footorthotic','shockwave','pemf',
                   'coldlaser','class4','stimpod','neuromed','contour','oxygen',
-                  'nasalrelease','injection','reexam','llxray','labs','nutrition'];
+                  'nasalrelease','llxray','reexam','injection','labs','nutrition'];
   // Display-name overrides for items kept under their billing name elsewhere (insurance section unchanged)
   var PS_NAME = {ist:'IST', manualtherapy:'Manual Therapy', rehab:'Corrective Exercise', reexam:'ReExams'};
   // Combined visit counts: some rows show the SUM of related admin items (insurance + therapy). Pricing untouched.
   var PS_AGG = {
     wellnessadj: ['cpt98941','cpt98940','wellnessadj'], // Adjustments = 98941 + 98940 + Wellness (98943 excluded; shows only as insurance coverage)
+    ist:         ['ist','cpt98941','cpt98940','wellnessadj'], // IST count includes the adjustments (IST is done each adjustment visit)
     acupuncture: ['ins_acu','acupuncture']                          // Acupuncture (97810) + Dry Needling/Acupuncture
   };
   function aggQty(id){
@@ -1302,13 +1305,11 @@ function renderPres() {
     var sel = q>0;
     var dispName = PS_NAME[i.id] || i.name;
     if(i.id==='nutrition' && nutritionType) dispName += ' — ' + nutritionType;
-    var amtHtml = (sel && psSvcShow) ? '<div class="ps-item-card__amt">'+fmt(i.price*i.qty)+'</div>' : '';
-    return '<div class="ps-item-card'+(sel?' selected':'')+(psSvcShow?' show-amt':'')+'">' +
+    return '<div class="ps-item-card'+(sel?' selected':'')+'">' +
       '<div class="ps-item-card__name">'+dispName+'</div>' +
       '<div class="ps-item-card__bottom">' +
-        '<span class="ps-item-card__code">'+(catLabel[i.cat]||'')+'</span>' +
         '<span class="ps-item-card__qty">'+(sel?'\u00d7'+q:'\u2014')+'</span>' +
-      '</div>' + amtHtml + '</div>';
+      '</div></div>';
   }).join('') + '</div>';
   if(el('psSvcTotal')) el('psSvcTotal').classList.toggle('visible', psSvcShow && spAct.length>0);
   if(el('psSvcTotalAmt')) el('psSvcTotalAmt').textContent = fmt(svcTotal);
@@ -1325,10 +1326,7 @@ function renderPres() {
   if(el('ps60SelBtn')) el('ps60SelBtn').textContent = psSelPlan==='60mo' ? '\u2713 Selected' : 'Select';
 
   // Selection states
-  el('psStdCard').classList.toggle('selected', psSelPlan==='standard'||isFinPlan(psSelPlan));
   el('psPifCard').classList.toggle('selected', psSelPlan==='pif');
-  // 60mo now in main grid
-  el('psStdBtn').textContent = (psSelPlan==='standard'||isFinPlan(psSelPlan)) ? '✓ Selected' : 'Select';
   el('psPifBtn').textContent = psSelPlan==='pif' ? '✓ Selected' : 'Select';
   // ps60Btn removed from DOM
 
@@ -1377,8 +1375,6 @@ document.querySelectorAll('.total-card').forEach(function(card) {
 });
 
 // Patient view selection
-el('psStdCard').addEventListener('click', function() { psSelPlan='standard'; renderPres(); });
-el('psStdBtn').addEventListener('click', function(e) { e.stopPropagation(); psSelPlan='standard'; renderPres(); });
 el('psPifCard').addEventListener('click', function() { psSelPlan='pif'; renderPres(); });
 el('psPifBtn').addEventListener('click', function(e) { e.stopPropagation(); psSelPlan='pif'; renderPres(); });
 // ps60Card + ps60Btn removed from DOM — 60mo is in main grid
