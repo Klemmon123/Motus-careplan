@@ -696,8 +696,6 @@ body.pres-mode .app-header{display:none;}
 
 <div class="pres-content">
 
-  <div class="plan-bar plan-bar--pres" id="planBarPres"></div>
-
   <!-- 1. VISIT SCHEDULE -->
   <div class="pres-sched-card">
     <div class="pres-sched-head">
@@ -1835,7 +1833,7 @@ if(el('logPlanBtn')) {
       }
     }
   }
-  function buildPlanBar(){ var a = el('planBar'); if(a) fillBar(a, true); var b = el('planBarPres'); if(b) fillBar(b, false); }
+  function buildPlanBar(){ var a = el('planBar'); if(a) fillBar(a, true); }
   function initPlans(){ plans = [{ name:'Full Plan', state: serialize() }]; currentPlan = 0; buildPlanBar(); }
   function buildSavePayload(){
     snapshotCurrent();
