@@ -165,6 +165,7 @@ input[type=number]{-moz-appearance:textfield;}
 .plan-line{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:3px 0;font-size:.84rem;color:var(--charcoal);}
 .plan-line__name{flex:1;}
 .plan-line__qty{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:.78rem;color:var(--navy-light);white-space:nowrap;}
+.plan-line__amt{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:.78rem;color:var(--navy);white-space:nowrap;min-width:64px;text-align:right;}
 .plan-empty{font-size:.8rem;color:var(--gray);font-style:italic;padding:3px 0;}
 .receipt-divider{border-top:1px solid var(--line);margin:12px 0;}
 .summary-row{display:flex;justify-content:space-between;align-items:baseline;font-size:.88rem;padding:3px 0;}
@@ -635,7 +636,6 @@ body.pres-mode .app-header{display:none;}
       <div id="rcptItems"></div>
 
       <div class="summary-row"><span class="lbl">Self-pay subtotal</span><span class="amt mono" id="rSub">$0.00</span></div>
-      <div class="summary-row"><span class="lbl">Full price</span><span class="amt mono strike" id="rFull">$0.00</span></div>
       <div style="margin-bottom:4px;"><span class="savings-pill" id="rSavings">Save $0.00 with self-pay pricing</span></div>
 
       <div class="total-stack">
@@ -859,6 +859,7 @@ const ITEMS = [
   {cat:'insurance', id:'manualtherapy',name:'Manual Therapy (97140)',          price:65,    unit:'per visit',     qty:0, copay:0},
   {cat:'insurance', id:'rehab',        name:'Rehab (97110)',                   price:65,    unit:'per visit',     qty:0, copay:0},
   {cat:'insurance', id:'reexam',       name:'Re-Exam (99213)',                 price:48.75, unit:'per visit',     qty:0, copay:0},
+  {cat:'therapy',   id:'istcash',      name:'IST',                             price:7,     unit:'per session',   qty:0},
   {cat:'therapy',   id:'wellnessadj',  name:'Adjustment',                      price:75,    unit:'per visit',     qty:0},
   {cat:'therapy',   id:'pemf',         name:'PEMF',                            price:60,    unit:'per session',   qty:0},
   {cat:'therapy',   id:'coldlaser',    name:'Cold Laser',                      price:60,    unit:'per session',   qty:0},
@@ -1166,21 +1167,22 @@ function render() {
   // Receipt items
   var insAct = ITEMS.filter(function(i){return i.cat==='insurance'&&i.qty>0;});
   var spAct  = ITEMS.filter(function(i){return i.cat!=='insurance'&&i.qty>0;});
-  var pline  = function(name,qty) {
-    return '<div class="plan-line"><span class="plan-line__name">'+name+'</span><span class="plan-line__qty">'+(qty>1?'x'+qty:'1')+'</span></div>';
+  var pline  = function(it) {
+    var qty = it.qty;
+    return '<div class="plan-line"><span class="plan-line__name">'+it.name+'</span><span class="plan-line__qty">'+(qty>1?'x'+qty:'1')+'</span><span class="plan-line__amt">'+fmt(it.price*qty)+'</span></div>';
   };
   var rcpt = '<div class="plan-section">' +
     '<div class="plan-section__title">Insurance Benefits</div>' +
-    (insAct.length>0 ? insAct.map(function(i){return pline(i.name,i.qty);}).join('') : '<div class="plan-empty">None selected</div>') +
+    (insAct.length>0 ? insAct.map(function(i){return pline(i);}).join('') : '<div class="plan-empty">None selected</div>') +
     '</div><div class="receipt-divider"></div>' +
     '<div class="plan-section">' +
     '<div class="plan-section__title">Services &amp; Therapies</div>' +
-    (spAct.length>0 ? spAct.map(function(i){return pline(i.name,i.qty);}).join('') : '<div class="plan-empty">No therapies added yet</div>') +
+    (spAct.length>0 ? spAct.map(function(i){return pline(i);}).join('') : '<div class="plan-empty">No therapies added yet</div>') +
     '</div><div class="receipt-divider"></div>';
   el('rcptItems').innerHTML = rcpt;
   // Summary numbers
   el('rSub').textContent    = fmt(c.cash);
-  el('rFull').textContent   = fmt(c.full);
+  if(el('rFull')) el('rFull').textContent = fmt(c.full);
   el('rSavings').textContent = 'Save ' + fmt(c.full-c.base) + ' with self-pay pricing';
   el('rGrand').textContent  = fmt(c.base);
   el('rPif').textContent    = fmt(c.pif);
@@ -1288,7 +1290,8 @@ function renderPres() {
   // Combined visit counts: some rows show the SUM of related admin items (insurance + therapy). Pricing untouched.
   var PS_AGG = {
     wellnessadj: ['cpt98941','cpt98940','wellnessadj'], // Adjustments = 98941 + 98940 + Wellness (98943 excluded; shows only as insurance coverage)
-    ist:         ['ist','cpt98941','cpt98940','wellnessadj'], // IST count includes the adjustments (IST is done each adjustment visit)
+    ist:         ['ist','istcash','cpt98941','cpt98940','wellnessadj'], // IST = insurance IST + cash IST + the Adjustment count
+    manualtherapy: ['manualtherapy','massage'],                     // Manual Therapy includes Massage Therapy (admin)
     acupuncture: ['ins_acu','acupuncture']                          // Acupuncture (97810) + Dry Needling/Acupuncture
   };
   function aggQty(id){
@@ -1482,8 +1485,10 @@ el('psPrintBtn').addEventListener('click', function() {
   ov.id='__cpOverlay';
   ov.innerHTML=hdrH+schedH+insH+svcH+finH+sigH;
   document.body.appendChild(ov);
-  window.print();
-  setTimeout(function(){var x=document.getElementById('__cpOverlay');if(x)document.body.removeChild(x);},2000);
+  var finishPrint = function(){ window.print(); setTimeout(function(){var x=document.getElementById('__cpOverlay');if(x)document.body.removeChild(x);},2000); };
+  // Wait for the signature image to decode before printing, otherwise it prints blank
+  if(sigUrl){ var sigImg=new Image(); sigImg.onload=function(){ setTimeout(finishPrint,60); }; sigImg.onerror=finishPrint; sigImg.src=sigUrl; }
+  else { finishPrint(); }
 });;;
 
 // Admin back button
