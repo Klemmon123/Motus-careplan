@@ -108,7 +108,7 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
 .nutr-type-input{font-family:'Inter',sans-serif;font-size:.9rem;color:var(--charcoal);border:1.5px solid var(--line);border-radius:8px;padding:8px 12px;background:var(--paper);}
 .nutr-type-input:focus{outline:none;border-color:var(--navy-light);}
 .pres-ins-coverage{padding:2px 20px 0;}
-.pres-cov-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:.88rem;}
+.pres-cov-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:.86rem;}
 .pres-cov-row__label{font-weight:600;color:var(--navy);}
 .pres-cov-row__val{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--charcoal);}
 .pres-cov-row__val.met{color:#2e7d32;}
@@ -219,17 +219,17 @@ input[type=number]{-moz-appearance:textfield;}
    PATIENT VIEW
 ══════════════════════════════════════════ */
 .pres-page{background:#F0F2F8;min-height:100vh;}
-.pres-content{max-width:860px;margin:0 auto;padding:28px 40px;}
-@media(max-width:900px){.pres-content{padding:18px;}}
+.pres-content{max-width:940px;margin:0 auto;padding:18px 26px;}
+@media(max-width:900px){.pres-content{padding:14px;}}
 
 /* Modern schedule card */
-.pres-sched-card{background:var(--surface);border-radius:16px;overflow:hidden;box-shadow:0 4px 24px -8px rgba(30,45,99,.15);margin-bottom:20px;}
-.pres-sched-head{padding:18px 24px;background:linear-gradient(135deg,#1E2D63,#2E50A0);display:flex;align-items:center;justify-content:space-between;}
+.pres-sched-card{background:var(--surface);border-radius:16px;overflow:hidden;box-shadow:0 4px 24px -8px rgba(30,45,99,.15);margin-bottom:14px;}
+.pres-sched-head{padding:14px 20px;background:linear-gradient(135deg,#1E2D63,#2E50A0);display:flex;align-items:center;justify-content:space-between;}
 .pres-sched-head__title{font-family:'Playfair Display',Georgia,serif;font-size:.88rem;font-weight:600;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255,.7);}
 .pres-sched-head__total{display:flex;align-items:baseline;gap:6px;}
 .pres-sched-total-num{font-family:'IBM Plex Mono',monospace;font-size:2rem;font-weight:700;color:#fff;line-height:1;}
 .pres-sched-total-unit{font-size:.8rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.12em;}
-.pres-sched-body{padding:18px 24px;}
+.pres-sched-body{padding:14px 18px;}
 .pres-phases-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
 .pres-phase-card{background:var(--paper);border-radius:12px;padding:16px 14px;border-top:3px solid var(--line);text-align:center;opacity:.3;transition:opacity .2s;}
 .pres-phase-card.active{opacity:1;border-top-color:var(--navy);box-shadow:0 2px 12px -4px rgba(30,45,99,.2);}
@@ -245,8 +245,8 @@ input[type=number]{-moz-appearance:textfield;}
 .pres-no-schedule{text-align:center;padding:28px;color:var(--gray);font-size:.88rem;font-style:italic;}
 
 /* Section card */
-.pres-section{background:var(--surface);border-radius:16px;overflow:hidden;box-shadow:0 4px 24px -8px rgba(30,45,99,.15);margin-bottom:20px;}
-.pres-section__head{padding:15px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);}
+.pres-section{background:var(--surface);border-radius:16px;overflow:hidden;box-shadow:0 4px 24px -8px rgba(30,45,99,.15);margin-bottom:14px;}
+.pres-section__head{padding:12px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);}
 .pres-section__title{font-family:'Playfair Display',Georgia,serif;font-size:.84rem;font-weight:600;text-transform:uppercase;letter-spacing:.16em;color:var(--navy);display:flex;align-items:center;gap:8px;}
 .pres-section__icon{width:28px;height:28px;border-radius:8px;background:var(--navy-tint);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .pres-section__actions{display:flex;align-items:center;gap:10px;}
@@ -355,40 +355,28 @@ input[type=number]{-moz-appearance:textfield;}
 .pres-print-btn:active{transform:scale(.98);}
 
 /* Patient view — unified item cards for insurance + therapy */
-.ps-item-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:16px 20px;}
+.ps-item-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:13px 15px;}
+@media(max-width:640px){.ps-item-grid{grid-template-columns:repeat(2,1fr);}}
 .ps-item-card{
-  border-radius:10px;padding:12px 14px;
-  border:2px solid var(--line);background:var(--paper);
-  transition:all .15s;
+  position:relative;border-radius:10px;padding:9px 12px;min-height:50px;
+  border:1.5px solid var(--line);background:var(--surface);
+  display:flex;flex-direction:column;justify-content:center;gap:4px;
+  transition:background .15s,border-color .15s,box-shadow .15s,transform .12s;
 }
-.ps-item-card.selected{
-  background:var(--navy);border-color:var(--navy);
-}
-.ps-item-card__name{
-  font-size:.82rem;font-weight:500;color:var(--charcoal);line-height:1.3;margin-bottom:6px;
-}
-.ps-item-card.selected .ps-item-card__name{color:rgba(255,255,255,.75);}
-.ps-item-card__bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.ps-item-card__code{
-  font-family:'IBM Plex Mono',monospace;font-size:.65rem;font-weight:700;
-  color:var(--gray);background:var(--line);padding:2px 6px;border-radius:4px;
-  text-transform:uppercase;letter-spacing:.05em;
-}
-.ps-item-card.selected .ps-item-card__code{background:rgba(255,255,255,.15);color:rgba(255,255,255,.6);}
-.ps-item-card__qty{
-  font-family:'IBM Plex Mono',monospace;font-size:1.4rem;font-weight:700;
-  color:var(--line);line-height:1;
-}
+.ps-item-card.selected{background:var(--navy);border-color:var(--navy);box-shadow:0 6px 16px -8px rgba(27,43,94,.5);}
+.ps-item-card__name{font-size:.8rem;font-weight:600;color:var(--charcoal);line-height:1.25;}
+.ps-item-card.selected .ps-item-card__name{color:#fff;}
+.ps-item-card__bottom{display:flex;align-items:center;justify-content:flex-end;gap:6px;}
+.ps-item-card__code{display:none;}
+.ps-item-card__qty{font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:700;color:#C2C7D2;line-height:1;}
 .ps-item-card.selected .ps-item-card__qty{color:#fff;}
-.ps-item-card__copay{
-  font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
-  padding:2px 5px;border-radius:4px;background:rgba(255,255,255,.2);color:rgba(255,255,255,.8);
-}
-.ps-item-card__amt{
-  font-family:'IBM Plex Mono',monospace;font-size:.8rem;font-weight:600;
-  color:rgba(255,255,255,.6);display:none;margin-top:3px;
-}
+.ps-item-card__copay{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 5px;border-radius:4px;background:rgba(255,255,255,.2);color:rgba(255,255,255,.85);}
+.ps-item-card__amt{font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:600;color:rgba(255,255,255,.72);display:none;text-align:right;}
 .ps-item-card.selected.show-amt .ps-item-card__amt{display:block;}
+.ps-item-card__chk{position:absolute;top:7px;right:9px;font-size:.72rem;font-weight:800;color:#fff;display:none;}
+.ps-item-card.selected .ps-item-card__chk{display:block;}
+.ps-ins-card{justify-content:center;}
+.ps-ins-card .ps-item-card__name{padding-right:14px;}
 
 
 /* Patient view dedicated header */
@@ -1239,16 +1227,16 @@ function renderPres() {
   }
 
   // Insurance
-  var insAllItems = ITEMS.filter(function(i){return i.cat==='insurance';});
+  var insAllItems = ITEMS.filter(function(i){return i.cat==='insurance' && i.id!=='cpt98940';}); // CMT (1-2) hidden here; still counts toward visits/adjustments
   var insAct = insAllItems.filter(function(i){return i.qty>0;});
   el('psInsSection').style.display = 'block';
   el('psInsBody').innerHTML = '<div class="ps-item-grid">' + insAllItems.map(function(i) {
     var sel = i.qty>0;
     // Strip CPT codes from the name; show no visit counts \u2014 just highlight what's being used
     var cleanName = i.name.replace(/^\d{5}[^a-zA-Z]+/,'').replace(/\s*\(\d+\)\s*$/,'').trim();
-    return '<div class="ps-item-card'+(sel?' selected':'')+'">' +
+    return '<div class="ps-item-card ps-ins-card'+(sel?' selected':'')+'">' +
+      '<span class="ps-item-card__chk">\u2713</span>' +
       '<div class="ps-item-card__name">'+cleanName+'</div>' +
-      (sel ? '<div class="ps-item-card__bottom"><span class="ps-item-card__qty">\u2713 Included</span></div>' : '') +
       '</div>';
   }).join('') + '</div>';
   el('psInsTotalAmt').textContent = fmt(c.insP);
