@@ -181,41 +181,41 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
 }
 #printRoot{display:none;}
-/* ── PREMIUM POLICY DOCUMENT — one policy locked to exactly one Letter page ── */
+/* ── POLICY DOCUMENT — mirrors the Care Plan PDF: light, white header, navy-tint accents; one policy per page ── */
 .pp{
   page-break-after:always;break-after:page;page-break-inside:avoid;
   box-sizing:border-box;width:8.5in;height:10.92in;overflow:hidden;
-  margin:0 auto;background:#fff;color:#23262E;
+  margin:0 auto;background:#fff;color:#2A2F39;
   font-family:'Inter',system-ui,sans-serif;
   display:flex;flex-direction:column;position:relative;
+  padding:0.5in 0.62in 0.42in;
 }
 .pp:last-child{page-break-after:auto;}
-.pp__band{background:#1B2B5E;color:#fff;padding:0.5in 0.7in 0.32in;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex:0 0 auto;}
-.pp__brand{display:flex;align-items:center;gap:13px;}
-.pp__brand img{height:34px;filter:brightness(0) invert(1);}
-.pp__co{font-family:'Playfair Display',serif;font-size:.82rem;letter-spacing:.24em;color:rgba(255,255,255,.82);font-weight:600;}
+.pp__band{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;border-bottom:2px solid #1E2D63;padding-bottom:11px;flex:0 0 auto;}
+.pp__brand{display:flex;flex-direction:column;align-items:flex-start;gap:5px;}
+.pp__brand img{height:30px;}
+.pp__kicker{font-size:.56rem;letter-spacing:.22em;text-transform:uppercase;color:#3D5FA0;font-weight:700;}
 .pp__docmeta{text-align:right;}
-.pp__kicker{font-size:.56rem;letter-spacing:.22em;text-transform:uppercase;color:#EEAF21;font-weight:700;margin-bottom:4px;}
-.pp__title{font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:600;color:#fff;line-height:1.04;}
-.pp__rule{height:3px;background:#EEAF21;flex:0 0 auto;}
-.pp__meta{display:flex;gap:46px;padding:20px 0.7in 0;flex:0 0 auto;}
+.pp__title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:600;color:#1E2D63;line-height:1.05;}
+.pp__rule{height:1.5px;background:#EEAF21;margin:0 0 12px;flex:0 0 auto;}
+.pp__meta{display:flex;gap:46px;padding:14px 0 0;flex:0 0 auto;}
 .pp__meta>div{display:flex;flex-direction:column;gap:3px;}
 .pp__ml{font-size:.54rem;letter-spacing:.16em;text-transform:uppercase;color:#9098A6;font-weight:700;}
-.pp__mv{font-size:.92rem;color:#1B2B5E;font-weight:600;}
-.pp__body{flex:1 1 auto;min-height:0;overflow:hidden;padding:18px 0.7in 0;}
+.pp__mv{font-size:.92rem;color:#1E2D63;font-weight:600;}
+.pp__body{flex:1 1 auto;min-height:0;overflow:hidden;padding:16px 0 0;}
 .pp__body p{font-size:.8rem;line-height:1.6;margin:0 0 10px;color:#3A3F49;}
-.pp .ln{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:7px 0;border-bottom:1px solid #ECEEF4;font-size:.79rem;line-height:1.5;color:#3A3F49;}
-.pp .ln:first-of-type{border-top:1px solid #ECEEF4;}
-.pp .ln .ini{font-family:'Caveat',cursive;font-size:1.18rem;font-weight:700;color:#1B2B5E;white-space:nowrap;}
-.pp .sub{font-family:'Playfair Display',serif;font-size:.92rem;color:#1B2B5E;margin:15px 0 6px;font-weight:600;}
-.pp__sign{display:flex;gap:48px;padding:0 0.7in;margin-top:14px;flex:0 0 auto;}
+.pp .ln{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:7px 0;border-bottom:1px solid #E8EBF2;font-size:.79rem;line-height:1.5;color:#3A3F49;}
+.pp .ln:first-of-type{border-top:1px solid #E8EBF2;}
+.pp .ln .ini{font-family:'Caveat',cursive;font-size:1.18rem;font-weight:700;color:#1E2D63;white-space:nowrap;}
+.pp .sub{font-family:'Playfair Display',serif;font-size:.92rem;color:#1E2D63;margin:15px 0 6px;font-weight:600;}
+.pp__sign{display:flex;gap:48px;margin-top:16px;flex:0 0 auto;}
 .pp__sigcol{flex:1;min-width:0;}
 .pp__sigcol--date{flex:0 0 2.4in;}
-.pp__sigimg{height:58px;border-bottom:1.5px solid #1B2B5E;display:flex;align-items:flex-end;}
-.pp__sigimg img{max-height:56px;max-width:100%;object-fit:contain;display:block;}
-.pp__sigline{height:58px;border-bottom:1.5px solid #1B2B5E;display:flex;align-items:flex-end;padding-bottom:7px;font-size:.94rem;color:#1B2B5E;font-weight:600;}
+.pp__sigimg{height:56px;border-bottom:1.5px solid #1E2D63;display:flex;align-items:flex-end;}
+.pp__sigimg img{max-height:54px;max-width:100%;object-fit:contain;display:block;}
+.pp__sigline{height:56px;border-bottom:1.5px solid #1E2D63;display:flex;align-items:flex-end;padding-bottom:7px;font-size:.94rem;color:#1E2D63;font-weight:600;}
 .pp__sigcap{font-size:.56rem;letter-spacing:.13em;text-transform:uppercase;color:#9098A6;font-weight:700;margin-top:7px;}
-.pp__foot{margin-top:auto;padding:13px 0.7in;border-top:1px solid #ECEEF4;display:flex;justify-content:space-between;align-items:center;font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;color:#9098A6;font-weight:600;flex:0 0 auto;}
+.pp__foot{margin-top:auto;padding:11px 0 0;border-top:1px solid #E8EBF2;display:flex;justify-content:space-between;align-items:center;font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;color:#9098A6;font-weight:600;flex:0 0 auto;}
 </style>
 </head>
 <body>
@@ -770,8 +770,8 @@ function buildPolicyPrint(key){
   }
   return `<div class="pp">
     <div class="pp__band">
-      <div class="pp__brand"><img src="${LOGO}" alt="Motus Health"><span class="pp__co">MOTUS HEALTH</span></div>
-      <div class="pp__docmeta"><div class="pp__kicker">Patient Policy</div><div class="pp__title">${PRINT_TITLES[key]}</div></div>
+      <div class="pp__brand"><img src="${LOGO}" alt="Motus Health"><span class="pp__kicker">Patient Policy</span></div>
+      <div class="pp__docmeta"><div class="pp__title">${PRINT_TITLES[key]}</div></div>
     </div>
     <div class="pp__rule"></div>
     <div class="pp__meta">
