@@ -549,11 +549,12 @@ body.pres-mode .app-header{display:none;}
 .cic-code{font-size:6pt;font-family:monospace;background:#EFF0F4;color:#9098A6;padding:1px 5px;border-radius:4px;white-space:nowrap;display:block;margin-bottom:2px;}
 .csel .cic-code{background:rgba(27,43,94,.1);color:#3D5FA0;}
 .cic-q{font-family:monospace;font-size:9pt;font-weight:700;color:#C9CDD5;white-space:nowrap;flex-shrink:0;}.csel .cic-q{color:#1E2D63;}
-.cfin-r{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:8px;}
+.cfin-r{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;}
+.cfin-mo{background:#EEF1F9;border:1.5px solid #CDD8EF;border-radius:10px;padding:10px 13px;}
 .cfin-std{background:#fff;border:1.5px solid #E8EBF2;border-radius:10px;padding:10px 13px;}
 .cfin-pif{background:#FFFCF4;border:1.5px solid #EEAF21;border-radius:10px;padding:10px 13px;}
 .cfin-l{font-size:6.5pt;text-transform:uppercase;letter-spacing:.12em;font-weight:700;color:#83838A;}
-.cfin-a{font-family:monospace;font-size:18pt;font-weight:700;line-height:1;margin:3px 0;color:#1E2D63;}
+.cfin-a{font-family:monospace;font-size:14pt;font-weight:700;line-height:1;margin:3px 0;color:#1E2D63;}
 .cfin-s{font-size:7pt;color:#83838A;}.cfin-pif .cfin-s{color:#B07F08;font-weight:700;}
 .csel-b{background:#EEF1F9;color:#1E2D63;border:1px solid #CDD8EF;border-radius:9px;padding:8px 13px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
 .csel-l{font-size:6.5pt;text-transform:uppercase;letter-spacing:.1em;color:#7C84A6;margin-bottom:1px;}
@@ -952,6 +953,7 @@ let deductible = 0;       // patient's plan deductible (admin-entered)
 let deductibleMet = 0;    // how much of the deductible already met (admin-entered)
 let nutritionType = '';   // free-text nutrition description (admin-entered)
 var sigResize = null;     // set by the signature pad; called when Patient View becomes visible
+var psSigned = false;     // true once the patient actually draws on the care-plan signature pad
 let phases = [{f:0,w:0},{f:0,w:0},{f:0,w:0}];
 let selPlan = 'standard';
 let psSelPlan = 'standard';
@@ -1465,20 +1467,21 @@ el('psSvcBtn').addEventListener('click', function() {
   sigResize = resize;   // let the tab switch size the canvas once Patient View is visible
   function pos(e) { var r=canvas.getBoundingClientRect(), s=e.touches?e.touches[0]:e; return {x:s.clientX-r.left,y:s.clientY-r.top}; }
   canvas.addEventListener('mousedown', function(e){e.preventDefault();drawing=true;var p=pos(e);lx=p.x;ly=p.y;});
-  canvas.addEventListener('mousemove', function(e){e.preventDefault();if(!drawing)return;var p=pos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;});
+  canvas.addEventListener('mousemove', function(e){e.preventDefault();if(!drawing)return;var p=pos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;psSigned=true;});
   canvas.addEventListener('mouseup', function(){drawing=false;});
   canvas.addEventListener('mouseleave', function(){drawing=false;});
   canvas.addEventListener('touchstart', function(e){e.preventDefault();drawing=true;var p=pos(e);lx=p.x;ly=p.y;},{passive:false});
-  canvas.addEventListener('touchmove', function(e){e.preventDefault();if(!drawing)return;var p=pos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;},{passive:false});
+  canvas.addEventListener('touchmove', function(e){e.preventDefault();if(!drawing)return;var p=pos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;psSigned=true;},{passive:false});
   canvas.addEventListener('touchend', function(){drawing=false;});
-  el('psSigClr').addEventListener('click', function(){ctx.clearRect(0,0,canvas.width,canvas.height);});
+  el('psSigClr').addEventListener('click', function(){ctx.clearRect(0,0,canvas.width,canvas.height);psSigned=false;});
   requestAnimationFrame(resize);
 })();
 
 // ── PRINT ────────────────────────────────────────────────────────
-el('psPrintBtn').addEventListener('click', function() {
+function buildCarePlanOverlayHTML() {
   var canvas = el('psSigCanvas');
   var sigUrl = canvas ? canvas.toDataURL('image/png') : '';
+  var signed = psSigned;   // only true once the patient has actually drawn a signature
   var name = el('patientName').value.trim() || '___________________________';
   var now = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
   var c = compute();
@@ -1546,27 +1549,34 @@ el('psPrintBtn').addEventListener('click', function() {
     return '<div class="cic'+(sel?' csel':'')+'"><div class="cic-n">'+nm+'</div><span class="cic-q">'+(sel?'\u00d7'+q:'\u2014')+'</span></div>';
   }).join('');
   var svcH='<div class="csec"><div class="csec-t">Services &amp; Therapies</div><div class="citm-g">'+sCds+'</div></div>';
-  var finH='<div class="csec"><div class="csec-t">Financial Summary</div><div class="cfin-r"><div class="cfin-std"><div class="cfin-l">Total Care Plan Cost</div><div class="cfin-a">'+fmt(c.base)+'</div><div class="cfin-s">Includes everything in this plan</div></div><div class="cfin-pif"><div class="cfin-l">Pay in Full</div><div class="cfin-a">'+fmt(c.pif)+'</div><div class="cfin-s">Save '+fmt(c.base*0.1)+' \u2014 10% discount</div></div></div>'+(sigUrl?'<div class="csel-b"><div><div class="csel-l">Selected Payment Option</div><div class="csel-v">'+planLabel+'</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22783C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>':'')+'</div>';
+  var mfLow=maxFin(c.base); var lowMo=amort(c.base,mfLow.apr,mfLow.m);
+  var finH='<div class="csec"><div class="csec-t">Financial Summary</div><div class="cfin-r"><div class="cfin-std"><div class="cfin-l">Total Care Plan Cost</div><div class="cfin-a">'+fmt(c.base)+'</div><div class="cfin-s">Includes everything in this plan</div></div><div class="cfin-mo"><div class="cfin-l">Lowest Monthly</div><div class="cfin-a">'+fmt(lowMo)+'</div><div class="cfin-s">/mo · '+mfLow.m+'-month term</div></div><div class="cfin-pif"><div class="cfin-l">Pay in Full</div><div class="cfin-a">'+fmt(c.pif)+'</div><div class="cfin-s">Save '+fmt(c.base*0.1)+' \u2014 10% discount</div></div></div>'+(signed?'<div class="csel-b"><div><div class="csel-l">Selected Payment Option</div><div class="csel-v">'+planLabel+'</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22783C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>':'')+'</div>';
   var agreeStmt='I fully understand the care plan outlined above and agree to pay the entirety of all costs associated with any and all services and/or products received at Motus Health in accordance with the payment arrangement selected above. I understand that I am personally financially responsible to remit all payments to Motus Health. Additionally, I authorize Motus Health to charge my card and/or bank account for the agreed-upon purchases. I understand my information will be saved on file for future transactions on my account.';
-  var stmtH = sigUrl ? '<div class="csig-stmt">'+agreeStmt+'</div>' : '';
-  var sigH='<div class="csec"><div class="csec-t">Patient Agreement</div>'+stmtH+'<div class="csig-r"><div><div class="csig-l">Signature</div>'+(sigUrl?'<img class="csig-img" src="'+sigUrl+'">':'<div class="csig-blank"></div>')+'</div><div><div class="csig-l">Date</div><div class="csig-v">'+now+'</div></div></div><div style="margin-top:7px;"><div class="csig-l">Patient Name</div><div class="csig-v">'+name+'</div></div></div>';
+  var stmtH = signed ? '<div class="csig-stmt">'+agreeStmt+'</div>' : '';
+  var sigH='<div class="csec"><div class="csec-t">Patient Agreement</div>'+stmtH+'<div class="csig-r"><div><div class="csig-l">Signature</div>'+(signed?'<img class="csig-img" src="'+sigUrl+'">':'<div class="csig-blank"></div>')+'</div><div><div class="csig-l">Date</div><div class="csig-v">'+now+'</div></div></div><div style="margin-top:7px;"><div class="csig-l">Patient Name</div><div class="csig-v">'+name+'</div></div></div>';
   var hdrH='<div class="chdr"><div class="chdr-l">'+(logoSrc?'<img src="'+logoSrc+'">':'<span style="font-size:14pt;font-weight:700;color:#1E2D63;font-family:Georgia,serif;">Motus Health</span>')+'<div class="ckicker">Personalized Care Plan</div></div><div style="text-align:right;"><div style="font-size:6.5pt;color:#9098A6;text-transform:uppercase;letter-spacing:.1em;">Prepared for</div><div style="font-size:13pt;font-weight:700;color:#1E2D63;font-family:Georgia,serif;">'+name+'</div><div style="font-size:6.5pt;color:#9098A6;">'+now+'</div></div></div>';
   var ruleH='';
   var ftH='<div class="cfoot"><span>Motus Health · Confidential Patient Care Plan</span><span>Prepared '+now+'</span></div>';
 
-  // Remove old overlay if present
+  return hdrH+ruleH+schedH+svcH+insH+finH+sigH+ftH;
+}
+
+// Print the Care Plan: build → overlay → print
+el('psPrintBtn').addEventListener('click', function() {
+  var html = buildCarePlanOverlayHTML();
+  var canvas = el('psSigCanvas');
+  var sigUrl = canvas ? canvas.toDataURL('image/png') : '';
   var old=document.getElementById('__cpOverlay');
   if(old) document.body.removeChild(old);
-
   var ov=document.createElement('div');
   ov.id='__cpOverlay';
-  ov.innerHTML=hdrH+ruleH+schedH+svcH+insH+finH+sigH+ftH;
+  ov.innerHTML=html;
   document.body.appendChild(ov);
   var finishPrint = function(){ window.print(); setTimeout(function(){var x=document.getElementById('__cpOverlay');if(x)document.body.removeChild(x);},2000); };
   // Wait for the signature image to decode before printing, otherwise it prints blank
   if(sigUrl){ var sigImg=new Image(); sigImg.onload=function(){ setTimeout(finishPrint,60); }; sigImg.onerror=finishPrint; sigImg.src=sigUrl; }
   else { finishPrint(); }
-});;;
+});
 
 // Continue to Patient Policies — hand off patient name + total + payment method
 if(el('psPolicyBtn')) {
@@ -1575,6 +1585,8 @@ if(el('psPolicyBtn')) {
     var name = (el('patientName').value || '').trim();
     var payMap = { pif:'Pay in Full', weekly:'Monthly Payments', '3month':'Monthly Payments', '12month':'Monthly Payments', '18month':'3rd Party Financing', '48month':'3rd Party Financing', '60mo':'3rd Party Financing' };
     var pay = payMap[psSelPlan] || '';
+    // Carry the built care plan over so the policies packet can include it after the disclosure page
+    try { sessionStorage.setItem('motusCarePlanHTML', buildCarePlanOverlayHTML()); } catch(e){}
     // Always hand off the FULL plan price plus the discounted pay-in-full price, so the
     // Financial Policy can show the original total and quote the PIF number separately.
     var q = 'patient=' + encodeURIComponent(name)
