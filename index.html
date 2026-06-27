@@ -529,12 +529,20 @@ body.pres-mode .app-header{display:none;}
 .cph-off{background:#FAFBFC;border-top-color:#E8EBF2;opacity:.3;}
 .cph-lbl{font-size:6pt;text-transform:uppercase;letter-spacing:.12em;color:#3D5FA0;font-weight:700;margin-bottom:3px;}
 .cph-freq{font-size:16pt;font-weight:700;color:#1E2D63;line-height:1;}.cph-unit{font-size:6.5pt;color:#3D5FA0;}
-.cph-dur{font-size:7.5pt;color:#4A4A4A;margin-top:3px;}.cph-vis{font-size:6.5pt;color:#83838A;margin-top:4px;padding-top:4px;border-top:1px solid #E8EBF2;}
+.cph-dur{font-size:7.5pt;color:#4A4A4A;margin-top:3px;}.cph-vis{font-size:6.5pt;color:#83838A;margin-top:5px;padding-top:5px;border-top:1px solid #E8EBF2;}
+.cph-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #E8EBF2;}
+.cph-total-num{font-family:'IBM Plex Mono',monospace;font-size:14pt;font-weight:700;color:#1E2D63;}
+.cph-total-unit{font-family:'IBM Plex Mono',monospace;font-size:6.5pt;color:#9098A6;text-transform:uppercase;letter-spacing:.12em;}
+.cph-freqline{font-size:9.5pt;font-weight:700;color:#1E2D63;line-height:1.2;margin:4px 0;}
+.cph-na{color:#C9CDD5;font-weight:600;font-size:8.5pt;}
+.cph-tl{height:5px;background:#E8EBF2;border-radius:99px;overflow:hidden;margin-top:8px;}
+.cph-tl-fill{height:100%;background:#1E2D63;border-radius:99px;}
+.cph-tl-labels{display:flex;justify-content:space-between;font-size:6.5pt;color:#9098A6;margin-top:4px;}
 .ctotals{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
 .cbadge{background:#EEF1F9;color:#1E2D63;font-family:monospace;font-size:10pt;font-weight:700;padding:4px 13px;border-radius:99px;}
 .cbsub{font-size:7pt;color:#83838A;}
-.citm-g{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;}
-.cic{background:transparent;border:1px solid #EEF0F5;border-radius:8px;padding:6px 8px;display:flex;align-items:center;justify-content:space-between;gap:5px;opacity:.5;}
+.citm-g{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;}
+.cic{background:transparent;border:1px solid #EEF0F5;border-radius:7px;padding:4px 8px;display:flex;align-items:center;justify-content:space-between;gap:5px;opacity:.45;}
 .csel{background:#EEF1F9;border-color:#1E2D63;opacity:1;}
 .cic-n{font-size:7.5pt;color:#7B808B;flex:1;line-height:1.2;}.csel .cic-n{color:#1E2D63;font-weight:600;}
 .cic-code{font-size:6pt;font-family:monospace;background:#EFF0F4;color:#9098A6;padding:1px 5px;border-radius:4px;white-space:nowrap;display:block;margin-bottom:2px;}
@@ -1491,21 +1499,24 @@ el('psPrintBtn').addEventListener('click', function() {
     '48-Month: '+fmt(amort(c.base,0.12,48))+'/mo';
 
   // Build print sections
+  // Visit schedule \u2014 mirrors the Patient View: per-phase "N\u00d7/wk for W weeks" + total visits + timeline
   var phCards = phases.map(function(p,ix) {
     var v = p.f*p.w;
-    if(v>0){return '<div class="cph-card"><div class="cph-lbl">Phase '+(ix+1)+'</div><div class="cph-freq">'+p.f+'<span class="cph-unit">\u00d7/wk</span></div><div class="cph-dur">for '+p.w+' wk'+(p.w===1?'':'s')+'</div><div class="cph-vis">'+v+' visit'+(v===1?'':'s')+'</div></div>';}
-    return '<div class="cph-card cph-off"><div class="cph-lbl">Phase '+(ix+1)+'</div><div class="cph-freq" style="color:#ccc">\u2014</div></div>';
+    if(v>0){return '<div class="cph-card"><div class="cph-lbl">Phase '+(ix+1)+'</div><div class="cph-freqline">'+p.f+'\u00d7/wk for '+p.w+' week'+(p.w===1?'':'s')+'</div><div class="cph-vis">'+v+' visit'+(v===1?'':'s')+' total</div></div>';}
+    return '<div class="cph-card cph-off"><div class="cph-lbl">Phase '+(ix+1)+'</div><div class="cph-freqline cph-na">Not used</div></div>';
   }).join('');
-  var schedH = hasSched?('<div class="csec"><div class="csec-t">Your Visit Schedule</div><div class="cph-grid">'+phCards+'</div><div class="ctotals"><span class="cbadge">'+sv+' visits</span><span class="cbsub">'+totalW+' weeks total</span></div></div>'):'';
+  var schedH = hasSched?('<div class="csec"><div class="cph-head"><span class="csec-t" style="border:0;margin:0;padding:0;">Visit Frequency &amp; Duration</span><span><span class="cph-total-num">'+sv+'</span> <span class="cph-total-unit">visits total</span></span></div><div class="cph-grid">'+phCards+'</div><div class="cph-tl"><div class="cph-tl-fill" style="width:100%"></div></div><div class="cph-tl-labels"><span>Week 1</span><span>Week '+totalW+'</span></div></div>'):'';
 
   // Insurance Coverage \u2014 mirrors the Patient View: friendly names, NO visit counts, plus a coverage summary
   var insH='';
   var insDisp = insAll.filter(function(i2){return i2.id!=='cpt98940';}); // hide CMT (1-2) like the Patient View
   var insUsed = insDisp.filter(function(i2){return i2.qty>0;});
   if(insUsed.length>0){
-    var pills = insUsed.map(function(it){
+    // All covered services shown; unselected ones dimmed (no visit counts — mirrors the Patient View)
+    var insCards = insDisp.map(function(it){
+      var sel = it.qty>0;
       var nm = INS_DISP[it.id] || it.name.replace(/^\d{5}[^a-zA-Z]+/,'').replace(/\s*\(\d+\)\s*$/,'').trim();
-      return '<span class="cins-pill">'+nm+'</span>';
+      return '<div class="cic'+(sel?' csel':'')+'"><div class="cic-n">'+nm+'</div></div>';
     }).join('');
     var cov='';
     var copayVals = insAll.filter(function(i2){return i2.qty>0&&i2.copay>0;}).map(function(i2){return i2.copay;});
@@ -1522,21 +1533,18 @@ el('psPrintBtn').addEventListener('click', function() {
       cov+='<div class="ccov-row"><span class="ccov-l">Remaining deductible</span><span class="ccov-v">'+fmt(remaining)+'</span></div>';
       cov+='<div class="cded"><div class="cded-head">'+fmt(nowMet)+' of '+fmt(deductible)+' met</div><div class="cded-bar"><div class="cded-fill" style="width:'+pctMet+'%"></div></div></div>';
     }
-    insH='<div class="csec"><div class="csec-t">Insurance Coverage</div><div class="cins-pills">'+pills+'</div><div class="ccov">'+cov+'</div></div>';
+    insH='<div class="csec"><div class="csec-t">Insurance Coverage</div><div class="citm-g">'+insCards+'</div><div class="ccov">'+cov+'</div></div>';
   }
-  // Services & Therapies \u2014 mirrors the Patient View stack: friendly names + aggregated counts; only what's in the plan
+  // Services & Therapies \u2014 mirrors the Patient View stack: friendly names + aggregated counts.
+  // All options are shown; unselected ones are dimmed (discreet) rather than hidden.
   var svcStack = PS_STACK.map(function(id){return ITEMS.find(function(x){return x.id===id;});}).filter(Boolean);
-  var svcSel = svcStack.filter(function(it){return aggQty(it.id)>0;});
-  var svcH='';
-  if(svcSel.length>0){
-    var sCds=svcSel.map(function(it){
-      var q=aggQty(it.id);
-      var nm=PS_NAME[it.id]||it.name;
-      if(it.id==='nutrition' && nutritionType) nm += ' \u2014 ' + nutritionType;
-      return '<div class="cic csel"><div class="cic-n">'+nm+'</div><span class="cic-q">\u00d7'+q+'</span></div>';
-    }).join('');
-    svcH='<div class="csec"><div class="csec-t">Services &amp; Therapies</div><div class="citm-g">'+sCds+'</div></div>';
-  }
+  var sCds=svcStack.map(function(it){
+    var q=aggQty(it.id), sel=q>0;
+    var nm=PS_NAME[it.id]||it.name;
+    if(it.id==='nutrition' && nutritionType) nm += ' \u2014 ' + nutritionType;
+    return '<div class="cic'+(sel?' csel':'')+'"><div class="cic-n">'+nm+'</div><span class="cic-q">'+(sel?'\u00d7'+q:'\u2014')+'</span></div>';
+  }).join('');
+  var svcH='<div class="csec"><div class="csec-t">Services &amp; Therapies</div><div class="citm-g">'+sCds+'</div></div>';
   var finH='<div class="csec"><div class="csec-t">Financial Summary</div><div class="cfin-r"><div class="cfin-std"><div class="cfin-l">Total Care Plan Cost</div><div class="cfin-a">'+fmt(c.base)+'</div><div class="cfin-s">Includes everything in this plan</div></div><div class="cfin-pif"><div class="cfin-l">Pay in Full</div><div class="cfin-a">'+fmt(c.pif)+'</div><div class="cfin-s">Save '+fmt(c.base*0.1)+' \u2014 10% discount</div></div></div><div class="csel-b"><div><div class="csel-l">Selected Payment Option</div><div class="csel-v">'+planLabel+'</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22783C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>';
   var agreeStmt='I fully understand the care plan outlined above and agree to pay the entirety of all costs associated with any and all services and/or products received at Motus Health in accordance with the payment arrangement selected above. I understand that I am personally financially responsible to remit all payments to Motus Health. Additionally, I authorize Motus Health to charge my card and/or bank account for the agreed-upon purchases. I understand my information will be saved on file for future transactions on my account.';
   var stmtH = sigUrl ? '<div class="csig-stmt">'+agreeStmt+'</div>' : '';
