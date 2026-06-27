@@ -513,8 +513,9 @@ body.pres-mode .app-header{display:none;}
 /* ── CARE PLAN PRINT OVERLAY ──────────────────────── */
 #__cpOverlay{display:none;position:fixed;inset:0;background:#fff;z-index:99999;padding:24px;font-family:Helvetica,Arial,sans-serif;font-size:9pt;color:#2A2A2A;overflow:auto;}
 @media print{
-  body>*:not(#__cpOverlay){display:none!important;}
+  body>*:not(#__cpOverlay):not(#__adminOverlay){display:none!important;}
   #__cpOverlay{display:flex!important;flex-direction:column!important;position:static!important;padding:0!important;height:10.55in!important;overflow:hidden!important;}
+  #__adminOverlay{display:block!important;position:static!important;padding:0.12in 0.18in!important;overflow:visible!important;}
   @page{size:letter;margin:.22in;}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
 }
@@ -577,6 +578,37 @@ body.pres-mode .app-header{display:none;}
 .cded-bar{height:5px;border-radius:99px;background:#E8EBF2;overflow:hidden;}
 .cded-fill{height:100%;background:#1E2D63;border-radius:99px;}
 .cfoot{margin-top:auto;padding-top:9px;border-top:1px solid #E8EBF2;display:flex;justify-content:space-between;align-items:center;font-size:6pt;letter-spacing:.08em;text-transform:uppercase;color:#9098A6;font-weight:600;}
+
+/* ── ADMIN CARE PLAN SUMMARY (internal print) ── */
+#__adminOverlay{display:none;position:fixed;inset:0;background:#fff;z-index:99999;padding:24px;overflow:auto;}
+.as-doc{font-family:'Inter',system-ui,sans-serif;color:#23262E;}
+.as-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;border-top:3px solid #EEAF21;border-bottom:1.5px solid #1E2D63;padding:11px 2px;}
+.as-brand{display:flex;align-items:center;gap:12px;}
+.as-brand img{height:30px;}
+.as-kicker{font-size:8pt;letter-spacing:.18em;text-transform:uppercase;color:#3D5FA0;font-weight:700;}
+.as-meta{text-align:right;}
+.as-meta-l{font-size:6.5pt;letter-spacing:.14em;text-transform:uppercase;color:#9098A6;font-weight:700;}
+.as-meta-v{font-family:'Playfair Display',Georgia,serif;font-size:13pt;font-weight:600;color:#1E2D63;}
+.as-meta-d{font-size:7pt;color:#9098A6;}
+.as-sec{margin-top:16px;}
+.as-sec-t{font-family:'Playfair Display',Georgia,serif;font-size:10.5pt;font-weight:600;color:#1E2D63;text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px;display:flex;align-items:center;gap:8px;}
+.as-sec-t::before{content:'';width:14px;height:2.5px;background:#EEAF21;border-radius:2px;flex:0 0 auto;}
+.as-tbl{width:100%;border-collapse:collapse;font-size:9.5pt;}
+.as-tbl th{text-align:left;font-size:7pt;text-transform:uppercase;letter-spacing:.08em;color:#83838A;font-weight:700;padding:6px 10px;border-bottom:1.5px solid #1E2D63;}
+.as-tbl td{padding:6px 10px;border-bottom:1px solid #ECEEF4;color:#3A3F49;}
+.as-tbl .c{text-align:center;}.as-tbl .r{text-align:right;font-family:'IBM Plex Mono',monospace;}
+.as-tbl th.c{text-align:center;}.as-tbl th.r{text-align:right;}
+.as-tbl tbody tr:nth-child(even){background:#F7F8FB;}
+.as-tbl tfoot td{border-top:1.5px solid #1E2D63;border-bottom:none;font-weight:700;color:#1E2D63;padding-top:8px;}
+.as-totals{margin-top:18px;border:1.5px solid #CDD8EF;border-radius:10px;overflow:hidden;}
+.as-total-row{display:flex;justify-content:space-between;align-items:center;padding:9px 16px;font-size:10pt;color:#3A3F49;border-bottom:1px solid #E8EBF2;}
+.as-total-row span:last-child{font-family:'IBM Plex Mono',monospace;font-weight:700;color:#1E2D63;}
+.as-total-row--grand{background:#EEF1F9;color:#1E2D63;border-bottom:none;font-size:11.5pt;font-weight:700;}
+.as-foot{margin-top:18px;padding-top:9px;border-top:1px solid #E8EBF2;font-size:6.5pt;letter-spacing:.08em;text-transform:uppercase;color:#9098A6;font-weight:600;text-align:center;}
+/* Print Summary button (admin receipt) */
+.as-print-btn{width:100%;margin-top:14px;font-family:'Inter',sans-serif;font-size:.84rem;font-weight:600;padding:11px 16px;border-radius:10px;border:1.5px solid var(--navy);background:var(--navy-tint);color:var(--navy);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:background .15s,border-color .15s;}
+.as-print-btn:hover{background:var(--navy);color:#fff;}
+.as-print-btn svg{width:16px;height:16px;}
 /* GOOGLE DRIVE BAR */
 .drive-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .drive-btn{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;padding:8px 14px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--charcoal);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:border-color .15s,background .15s,opacity .15s;}
@@ -704,6 +736,7 @@ body.pres-mode .app-header{display:none;}
         </div>
       </div>
       <div class="disclaimer">Pay-in-Full applies 10% off. 60-month estimate is approximate — confirm APR and terms with provider.</div>
+      <button class="as-print-btn" id="adminPrintBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print Care Plan Summary</button>
     </div>
   </aside>
 </div>
@@ -1593,6 +1626,64 @@ el('psPrintBtn').addEventListener('click', function() {
   if(sigUrl){ var sigImg=new Image(); sigImg.onload=function(){ setTimeout(finishPrint,60); }; sigImg.onerror=finishPrint; sigImg.src=sigUrl; }
   else { finishPrint(); }
 });
+
+// ── ADMIN: Print the internal Care Plan Summary (therapies, qty, costs, visit frequency) ──
+function buildAdminSummaryHTML(){
+  var c = compute();
+  var name = (el('patientName') && el('patientName').value.trim()) || '—';
+  var now = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  var logoImg = document.querySelector('img[alt="Motus Health"]');
+  var logoSrc = logoImg ? logoImg.src : '';
+  var totalW = phases.reduce(function(s,p){return s+p.w;},0);
+
+  var phRows = phases.map(function(p,i){
+    var v = p.f*p.w;
+    if(v<=0) return '';
+    return '<tr><td>Phase '+(i+1)+'</td><td>'+p.f+'×/week</td><td>'+p.w+' week'+(p.w===1?'':'s')+'</td><td class="r">'+v+'</td></tr>';
+  }).filter(Boolean).join('');
+  if(!phRows) phRows = '<tr><td colspan="4" style="color:#9098A6;text-align:center;">No visit schedule entered yet</td></tr>';
+
+  var therapies = ITEMS.filter(function(i){return i.cat!=='insurance' && i.qty>0;});
+  var thRows = therapies.map(function(it){
+    return '<tr><td>'+it.name+'</td><td class="c">'+it.qty+'</td><td class="r">'+fmt(it.price)+'</td><td class="r">'+fmt(it.price*it.qty)+'</td></tr>';
+  }).join('');
+  if(!thRows) thRows = '<tr><td colspan="4" style="color:#9098A6;text-align:center;">No therapies added yet</td></tr>';
+
+  var insItems = ITEMS.filter(function(i){return i.cat==='insurance' && i.qty>0;});
+  var insSec = '';
+  if(insItems.length){
+    var insRows = insItems.map(function(it){
+      return '<tr><td>'+it.name+'</td><td class="c">'+it.qty+'</td><td class="r">'+fmt(it.price)+'</td><td class="r">'+fmt(it.price*it.qty)+'</td></tr>';
+    }).join('');
+    insSec = '<div class="as-sec"><div class="as-sec-t">Insurance Benefits (billed to insurance)</div><table class="as-tbl"><thead><tr><th>Code / Service</th><th class="c">Visits</th><th class="r">Allowed</th><th class="r">Billed</th></tr></thead><tbody>'+insRows+'</tbody><tfoot><tr><td colspan="3">Estimated patient portion</td><td class="r">'+fmt(c.insP)+'</td></tr></tfoot></table></div>';
+  }
+
+  return '<div class="as-doc">'+
+    '<div class="as-head"><div class="as-brand">'+(logoSrc?'<img src="'+logoSrc+'">':'<span style="font-size:14pt;font-weight:700;color:#1E2D63;font-family:Georgia,serif;">Motus Health</span>')+'<div class="as-kicker">Care Plan Summary · Internal</div></div>'+
+      '<div class="as-meta"><div class="as-meta-l">Patient</div><div class="as-meta-v">'+name+'</div><div class="as-meta-d">'+now+'</div></div></div>'+
+    '<div class="as-sec"><div class="as-sec-t">Visit Frequency &amp; Duration</div><table class="as-tbl"><thead><tr><th>Phase</th><th>Frequency</th><th>Duration</th><th class="r">Visits</th></tr></thead><tbody>'+phRows+'</tbody><tfoot><tr><td colspan="3">Total visits over '+totalW+' week'+(totalW===1?'':'s')+'</td><td class="r">'+c.sv+'</td></tr></tfoot></table></div>'+
+    '<div class="as-sec"><div class="as-sec-t">Services &amp; Therapies</div><table class="as-tbl"><thead><tr><th>Therapy</th><th class="c">Qty</th><th class="r">Per Unit</th><th class="r">Line Total</th></tr></thead><tbody>'+thRows+'</tbody><tfoot><tr><td colspan="3">Total Therapy Cost</td><td class="r">'+fmt(c.cash)+'</td></tr></tfoot></table></div>'+
+    insSec+
+    '<div class="as-totals">'+
+      '<div class="as-total-row"><span>Total Therapy Cost (self-pay)</span><span>'+fmt(c.cash)+'</span></div>'+
+      (insItems.length?'<div class="as-total-row"><span>Insurance Patient Portion</span><span>'+fmt(c.insP)+'</span></div>':'')+
+      '<div class="as-total-row as-total-row--grand"><span>Total Cost of Care Plan</span><span>'+fmt(c.base)+'</span></div>'+
+    '</div>'+
+    '<div class="as-foot">Motus Health · Internal Care Plan Summary · '+now+'</div>'+
+  '</div>';
+}
+if(el('adminPrintBtn')) {
+  el('adminPrintBtn').addEventListener('click', function() {
+    var html = buildAdminSummaryHTML();
+    var logoImg = document.querySelector('img[alt="Motus Health"]');
+    var logoSrc = logoImg ? logoImg.src : '';
+    var old=document.getElementById('__adminOverlay'); if(old) document.body.removeChild(old);
+    var ov=document.createElement('div'); ov.id='__adminOverlay'; ov.innerHTML=html; document.body.appendChild(ov);
+    var fin=function(){ window.print(); setTimeout(function(){var x=document.getElementById('__adminOverlay'); if(x) document.body.removeChild(x);},2000); };
+    if(logoSrc){ var im=new Image(); im.onload=function(){ setTimeout(fin,60); }; im.onerror=fin; im.src=logoSrc; }
+    else { fin(); }
+  });
+}
 
 // Continue to Patient Policies — hand off patient name + total + payment method
 if(el('psPolicyBtn')) {
