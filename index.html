@@ -555,6 +555,15 @@ body.pres-mode .app-header{display:none;}
 .csig-blank{height:52px;border-bottom:1.5px solid #1E2D63;}
 .csig-v{font-size:9pt;font-weight:700;color:#1E2D63;border-bottom:1.5px solid #1E2D63;padding-bottom:3px;min-height:18px;margin-top:3px;}
 .csig-stmt{font-size:6.5pt;line-height:1.5;color:#3A3F49;background:#EEF1F9;border:1px solid #E1E7F4;border-radius:7px;padding:7px 9px;margin-bottom:8px;}
+.cins-pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
+.cins-pill{font-size:7.5pt;font-weight:600;color:#1E2D63;background:#EEF1F9;border:1px solid #CDD8EF;border-radius:99px;padding:3px 11px;}
+.ccov{display:flex;flex-direction:column;}
+.ccov-row{display:flex;justify-content:space-between;align-items:center;gap:14px;font-size:7.5pt;padding:5px 0;border-bottom:1px solid #EEF0F5;}
+.ccov-l{color:#6A6F7A;}.ccov-v{color:#1E2D63;font-weight:700;font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
+.cded{margin-top:7px;}
+.cded-head{font-size:7pt;color:#1E2D63;font-weight:600;margin-bottom:4px;}
+.cded-bar{height:5px;border-radius:99px;background:#E8EBF2;overflow:hidden;}
+.cded-fill{height:100%;background:#1E2D63;border-radius:99px;}
 .cfoot{margin-top:auto;padding-top:9px;border-top:1px solid #E8EBF2;display:flex;justify-content:space-between;align-items:center;font-size:6pt;letter-spacing:.08em;text-transform:uppercase;color:#9098A6;font-weight:600;}
 /* GOOGLE DRIVE BAR */
 .drive-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
@@ -910,6 +919,23 @@ const ITEMS = [
   {cat:'equipment', id:'rebuilder',    name:'Rebuilder Unit',                  price:1300,  unit:'one-time',      qty:0},
 ];
 const WEEKLY = 13;
+// Shared display maps — used by BOTH the Patient View render() and the print/PDF builder so they stay in sync
+const INS_DISP = {cpt98941:'Spinal Adjustments', cpt98943:'Extremity Adjustments', ins_acu:'Dry Needling/Acupuncture'};
+const PS_STACK = ['wellnessadj','ist','manualtherapy','trigenics','rehab','acupuncture',
+                  'spinaldecomp','kneedecomp','neckorthotic','footorthotic','shockwave','pemf',
+                  'coldlaser','class4','stimpod','neuromed','contour','oxygen',
+                  'nasalrelease','llxray','reexam','injection','labs','nutrition'];
+const PS_NAME = {ist:'IST', manualtherapy:'Manual Therapy', rehab:'Corrective Exercise', reexam:'ReExams'};
+const PS_AGG = {
+  wellnessadj: ['cpt98941','cpt98940','wellnessadj'],
+  ist:         ['ist','istcash','wellnessadj'],
+  manualtherapy: ['manualtherapy','massage'],
+  acupuncture: ['ins_acu','acupuncture']
+};
+function aggQty(id){
+  if(PS_AGG[id]) return PS_AGG[id].reduce(function(s,k){ var it=ITEMS.find(function(x){return x.id===k;}); return s+(it?(it.qty||0):0); },0);
+  var self=ITEMS.find(function(x){return x.id===id;}); return self?(self.qty||0):0;
+}
 const syncSet = new Set();
 const priceCats = new Set(['insurance','therapy','equipment','nutrition']);
 let insurancePct = 100;
@@ -1262,7 +1288,6 @@ function renderPres() {
   var insAllItems = ITEMS.filter(function(i){return i.cat==='insurance' && i.id!=='cpt98940';}); // CMT (1-2) hidden here; still counts toward visits/adjustments
   var insAct = insAllItems.filter(function(i){return i.qty>0;});
   el('psInsSection').style.display = 'block';
-  var INS_DISP = {cpt98941:'Spinal Adjustments', cpt98943:'Extremity Adjustments', ins_acu:'Dry Needling/Acupuncture'};
   el('psInsBody').innerHTML = '<div class="ps-item-grid">' + insAllItems.map(function(i) {
     var sel = i.qty>0;
     // Patient-facing label (CPT codes stripped); show no visit counts \u2014 just highlight what's being used
@@ -1303,24 +1328,7 @@ function renderPres() {
     }
     el('psInsCoverage').innerHTML = covHtml;
   }
-// Services \u2014 Patient View therapy stack (explicit order; the 2-col grid pairs them left/right)
-  var PS_STACK = ['wellnessadj','ist','manualtherapy','trigenics','rehab','acupuncture',
-                  'spinaldecomp','kneedecomp','neckorthotic','footorthotic','shockwave','pemf',
-                  'coldlaser','class4','stimpod','neuromed','contour','oxygen',
-                  'nasalrelease','llxray','reexam','injection','labs','nutrition'];
-  // Display-name overrides for items kept under their billing name elsewhere (insurance section unchanged)
-  var PS_NAME = {ist:'IST', manualtherapy:'Manual Therapy', rehab:'Corrective Exercise', reexam:'ReExams'};
-  // Combined visit counts: some rows show the SUM of related admin items (insurance + therapy). Pricing untouched.
-  var PS_AGG = {
-    wellnessadj: ['cpt98941','cpt98940','wellnessadj'], // Adjustments = 98941 + 98940 + Wellness (98943 excluded; shows only as insurance coverage)
-    ist:         ['ist','istcash','wellnessadj'], // IST = insurance IST + cash IST + the Adjustment item in Services (not the insurance CMT codes)
-    manualtherapy: ['manualtherapy','massage'],                     // Manual Therapy includes Massage Therapy (admin)
-    acupuncture: ['ins_acu','acupuncture']                          // Acupuncture (97810) + Dry Needling/Acupuncture
-  };
-  function aggQty(id){
-    if(PS_AGG[id]) return PS_AGG[id].reduce(function(s,k){ var it=ITEMS.find(function(x){return x.id===k;}); return s+(it?(it.qty||0):0); },0);
-    var self=ITEMS.find(function(x){return x.id===id;}); return self?(self.qty||0):0;
-  }
+  // Services \u2014 Patient View therapy stack; naming/aggregation use the shared module-scope maps (PS_STACK/PS_NAME/PS_AGG/aggQty)
   var svcItems = PS_STACK.map(function(id){ return ITEMS.find(function(x){return x.id===id;}); }).filter(Boolean);
   var spAct = svcItems.filter(function(i){return aggQty(i.id)>0;});
   el('psSvcCount').textContent = spAct.length;
@@ -1474,7 +1482,7 @@ el('psPrintBtn').addEventListener('click', function() {
   var insAll = ITEMS.filter(function(i2){return i2.cat==='insurance';});
   var insSelected = insAll.filter(function(i2){return i2.qty>0;});
   var planLabel = psSelPlan==='pif' ? 'Pay in Full: '+fmt(c.pif) :
-    psSelPlan==='standard' ? 'Today\u2019s Investment: '+fmt(c.base) :
+    psSelPlan==='standard' ? 'Total Care Plan Cost: '+fmt(c.base) :
     psSelPlan==='60mo' ? (function(){var mf=maxFin(c.base);return mf.m+'-Month Plan: '+fmt(amort(c.base,mf.apr,mf.m))+'/mo';})() :
     psSelPlan==='weekly' ? 'Weekly: '+fmt(amort(c.base,0,WEEKLY))+'/wk' :
     psSelPlan==='3month' ? '3-Month: '+fmt(amort(c.base,0,3))+'/mo' :
@@ -1490,14 +1498,46 @@ el('psPrintBtn').addEventListener('click', function() {
   }).join('');
   var schedH = hasSched?('<div class="csec"><div class="csec-t">Your Visit Schedule</div><div class="cph-grid">'+phCards+'</div><div class="ctotals"><span class="cbadge">'+sv+' visits</span><span class="cbsub">'+totalW+' weeks total</span></div></div>'):'';
 
+  // Insurance Coverage \u2014 mirrors the Patient View: friendly names, NO visit counts, plus a coverage summary
   var insH='';
-  if(insSelected.length>0){
-    var iCds=insAll.map(function(it){var s=it.qty>0;var cm=it.name.match(/\d{5}/);var code=cm?cm[0]:'';var cln=it.name.replace(/^\d{5}[^a-zA-Z]+/,'').replace(/\(\d+\)$/,'').trim();return '<div class="cic'+(s?' csel':'')+'"><div><span class="cic-code">'+code+'</span><div class="cic-n">'+cln+'</div></div><span class="cic-q">'+(s?'\u00d7'+it.qty:'\u2014')+'</span></div>';}).join('');
-    insH='<div class="csec"><div class="csec-t">Insurance Benefits</div><div class="citm-g">'+iCds+'</div></div>';
+  var insDisp = insAll.filter(function(i2){return i2.id!=='cpt98940';}); // hide CMT (1-2) like the Patient View
+  var insUsed = insDisp.filter(function(i2){return i2.qty>0;});
+  if(insUsed.length>0){
+    var pills = insUsed.map(function(it){
+      var nm = INS_DISP[it.id] || it.name.replace(/^\d{5}[^a-zA-Z]+/,'').replace(/\s*\(\d+\)\s*$/,'').trim();
+      return '<span class="cins-pill">'+nm+'</span>';
+    }).join('');
+    var cov='';
+    var copayVals = insAll.filter(function(i2){return i2.qty>0&&i2.copay>0;}).map(function(i2){return i2.copay;});
+    if(copayVals.length){ cov+='<div class="ccov-row"><span class="ccov-l">CoPay</span><span class="ccov-v">'+fmt(Math.max.apply(null,copayVals))+' / visit</span></div>'; }
+    var cv1=ITEMS.find(function(x){return x.id==='cpt98941';}), cv2=ITEMS.find(function(x){return x.id==='cpt98940';});
+    var coveredVisits=(cv1?cv1.qty:0)+(cv2?cv2.qty:0);
+    cov+='<div class="ccov-row"><span class="ccov-l">Visits covered by insurance</span><span class="ccov-v">'+coveredVisits+'</span></div>';
+    var coveredPct=Math.max(0,100-insurancePct);
+    cov+='<div class="ccov-row"><span class="ccov-l">CoInsurance</span><span class="ccov-v">'+(insurancePct>=100?'After deductible is met':'Covered at '+coveredPct+'%')+'</span></div>';
+    if(deductible>0){
+      var nowMet=Math.min(deductible,deductibleMet+(c.preDed||0));
+      var remaining=Math.max(0,deductible-deductibleMet);
+      var pctMet=Math.max(0,Math.min(100,Math.round((nowMet/deductible)*100)));
+      cov+='<div class="ccov-row"><span class="ccov-l">Remaining deductible</span><span class="ccov-v">'+fmt(remaining)+'</span></div>';
+      cov+='<div class="cded"><div class="cded-head">'+fmt(nowMet)+' of '+fmt(deductible)+' met</div><div class="cded-bar"><div class="cded-fill" style="width:'+pctMet+'%"></div></div></div>';
+    }
+    insH='<div class="csec"><div class="csec-t">Insurance Coverage</div><div class="cins-pills">'+pills+'</div><div class="ccov">'+cov+'</div></div>';
   }
-  var sCds=svcAll.map(function(it){var s=it.qty>0;return '<div class="cic'+(s?' csel':'')+'"><div class="cic-n">'+it.name+'</div><span class="cic-q">'+(s?'\u00d7'+it.qty:'\u2014')+'</span></div>';}).join('');
-  var svcH='<div class="csec"><div class="csec-t">Services &amp; Therapies</div><div class="citm-g">'+sCds+'</div></div>';
-  var finH='<div class="csec"><div class="csec-t">Financial Summary</div><div class="cfin-r"><div class="cfin-std"><div class="cfin-l">Today\u2019s Investment</div><div class="cfin-a">'+fmt(c.base)+'</div><div class="cfin-s">Financing available</div></div><div class="cfin-pif"><div class="cfin-l">Pay in Full</div><div class="cfin-a">'+fmt(c.pif)+'</div><div class="cfin-s">Save '+fmt(c.base*0.1)+' \u00b7 10% off</div></div></div><div class="csel-b"><div><div class="csel-l">Patient Selection</div><div class="csel-v">'+planLabel+'</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22783C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>';
+  // Services & Therapies \u2014 mirrors the Patient View stack: friendly names + aggregated counts; only what's in the plan
+  var svcStack = PS_STACK.map(function(id){return ITEMS.find(function(x){return x.id===id;});}).filter(Boolean);
+  var svcSel = svcStack.filter(function(it){return aggQty(it.id)>0;});
+  var svcH='';
+  if(svcSel.length>0){
+    var sCds=svcSel.map(function(it){
+      var q=aggQty(it.id);
+      var nm=PS_NAME[it.id]||it.name;
+      if(it.id==='nutrition' && nutritionType) nm += ' \u2014 ' + nutritionType;
+      return '<div class="cic csel"><div class="cic-n">'+nm+'</div><span class="cic-q">\u00d7'+q+'</span></div>';
+    }).join('');
+    svcH='<div class="csec"><div class="csec-t">Services &amp; Therapies</div><div class="citm-g">'+sCds+'</div></div>';
+  }
+  var finH='<div class="csec"><div class="csec-t">Financial Summary</div><div class="cfin-r"><div class="cfin-std"><div class="cfin-l">Total Care Plan Cost</div><div class="cfin-a">'+fmt(c.base)+'</div><div class="cfin-s">Includes everything in this plan</div></div><div class="cfin-pif"><div class="cfin-l">Pay in Full</div><div class="cfin-a">'+fmt(c.pif)+'</div><div class="cfin-s">Save '+fmt(c.base*0.1)+' \u2014 10% discount</div></div></div><div class="csel-b"><div><div class="csel-l">Selected Payment Option</div><div class="csel-v">'+planLabel+'</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22783C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>';
   var agreeStmt='I fully understand the care plan outlined above and agree to pay the entirety of all costs associated with any and all services and/or products received at Motus Health in accordance with the payment arrangement selected above. I understand that I am personally financially responsible to remit all payments to Motus Health. Additionally, I authorize Motus Health to charge my card and/or bank account for the agreed-upon purchases. I understand my information will be saved on file for future transactions on my account.';
   var stmtH = sigUrl ? '<div class="csig-stmt">'+agreeStmt+'</div>' : '';
   var sigH='<div class="csec"><div class="csec-t">Patient Agreement</div>'+stmtH+'<div class="csig-r"><div><div class="csig-l">Signature</div>'+(sigUrl?'<img class="csig-img" src="'+sigUrl+'">':'<div class="csig-blank"></div>')+'</div><div><div class="csig-l">Date</div><div class="csig-v">'+now+'</div></div></div><div style="margin-top:7px;"><div class="csig-l">Patient Name</div><div class="csig-v">'+name+'</div></div></div>';
@@ -1511,7 +1551,7 @@ el('psPrintBtn').addEventListener('click', function() {
 
   var ov=document.createElement('div');
   ov.id='__cpOverlay';
-  ov.innerHTML=hdrH+ruleH+schedH+insH+svcH+finH+sigH+ftH;
+  ov.innerHTML=hdrH+ruleH+schedH+svcH+insH+finH+sigH+ftH;
   document.body.appendChild(ov);
   var finishPrint = function(){ window.print(); setTimeout(function(){var x=document.getElementById('__cpOverlay');if(x)document.body.removeChild(x);},2000); };
   // Wait for the signature image to decode before printing, otherwise it prints blank
