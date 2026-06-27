@@ -512,18 +512,19 @@ body.pres-mode .app-header{display:none;}
 #__cpOverlay{display:none;position:fixed;inset:0;background:#fff;z-index:99999;padding:24px;font-family:Helvetica,Arial,sans-serif;font-size:9pt;color:#2A2A2A;overflow:auto;}
 @media print{
   body>*:not(#__cpOverlay){display:none!important;}
-  #__cpOverlay{display:flex!important;flex-direction:column!important;position:static!important;padding:0!important;height:10.4in!important;overflow:hidden!important;}
-  @page{size:letter;margin:.3in;}
+  #__cpOverlay{display:flex!important;flex-direction:column!important;position:static!important;padding:0!important;height:10.55in!important;overflow:hidden!important;}
+  @page{size:letter;margin:.22in;}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
 }
 /* Light, form-matching aesthetic: white cards, navy-tint accents, navy text — no heavy navy blocks */
-.chdr{background:#fff;padding:0 2px 11px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:2px solid #1E2D63;}
+.chdr{background:#fff;border-top:3px solid #EEAF21;border-bottom:1.5px solid #1E2D63;padding:10px 2px 10px;display:flex;align-items:flex-end;justify-content:space-between;}
 .chdr-l{display:flex;flex-direction:column;gap:5px;align-items:flex-start;}
 .chdr-l img{height:30px;}
 .ckicker{font-size:6pt;letter-spacing:.22em;text-transform:uppercase;color:#3D5FA0;font-weight:700;}
 .crule{height:1.5px;background:#EEAF21;margin:0 0 11px;}
-.csec{margin-bottom:10px;}
-.csec-t{font-family:'Playfair Display',Georgia,serif;font-size:8.5pt;font-weight:600;text-transform:uppercase;letter-spacing:.13em;color:#1E2D63;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #E8EBF2;}
+.csec{margin-bottom:8px;}
+.csec-t{font-family:'Playfair Display',Georgia,serif;font-size:8.5pt;font-weight:600;text-transform:uppercase;letter-spacing:.13em;color:#1E2D63;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #E8EBF2;display:flex;align-items:center;gap:7px;}
+.csec-t::before{content:'';width:13px;height:2.5px;background:#EEAF21;border-radius:2px;flex:0 0 auto;}
 .cph-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:7px;}
 .cph-card{background:#F4F6FA;border-radius:10px;padding:9px 10px;text-align:center;border-top:3px solid #1E2D63;}
 .cph-off{background:#FAFBFC;border-top-color:#E8EBF2;opacity:.3;}
@@ -559,10 +560,10 @@ body.pres-mode .app-header{display:none;}
 .csel-v{font-size:10pt;font-weight:700;color:#1E2D63;}
 .csig-r{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-top:6px;}
 .csig-l{font-size:6.5pt;text-transform:uppercase;letter-spacing:.1em;color:#1E2D63;font-weight:700;margin-bottom:3px;}
-.csig-img{width:100%;height:52px;border:none;border-bottom:1.5px solid #1E2D63;object-fit:contain;display:block;}
-.csig-blank{height:52px;border-bottom:1.5px solid #1E2D63;}
+.csig-img{width:100%;height:46px;border:none;border-bottom:1.5px solid #1E2D63;object-fit:contain;display:block;}
+.csig-blank{height:46px;border-bottom:1.5px solid #1E2D63;}
 .csig-v{font-size:9pt;font-weight:700;color:#1E2D63;border-bottom:1.5px solid #1E2D63;padding-bottom:3px;min-height:18px;margin-top:3px;}
-.csig-stmt{font-size:6.5pt;line-height:1.5;color:#3A3F49;background:#EEF1F9;border:1px solid #E1E7F4;border-radius:7px;padding:7px 9px;margin-bottom:8px;}
+.csig-stmt{font-size:6.5pt;line-height:1.45;color:#3A3F49;background:#EEF1F9;border:1px solid #E1E7F4;border-radius:7px;padding:6px 9px;margin-bottom:6px;}
 .cins-pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
 .cins-pill{font-size:7.5pt;font-weight:600;color:#1E2D63;background:#EEF1F9;border:1px solid #CDD8EF;border-radius:99px;padding:3px 11px;}
 .ccov{display:flex;flex-direction:column;}
@@ -1330,7 +1331,7 @@ function renderPres() {
       var remaining = Math.max(0, deductible - deductibleMet);   // deductible − already-met only (ignores this plan; the "now … met" part shows the plan's effect)
       var pctMet = Math.max(0, Math.min(100, Math.round((nowMet/deductible)*100)));
       covHtml += '<div class="pres-cov-ded">' +
-        '<div class="pres-ded-headline">Remaining deductible '+fmt(remaining)+' · now '+fmt(nowMet)+' of '+fmt(deductible)+' met</div>' +
+        '<div class="pres-ded-headline">Remaining deductible '+fmt(remaining)+' · After care plan '+fmt(nowMet)+' of '+fmt(deductible)+' met</div>' +
         '<div class="pres-ded-bar"><div class="pres-ded-fill" style="width:'+pctMet+'%"></div></div>' +
       '</div>';
     }
@@ -1531,7 +1532,7 @@ el('psPrintBtn').addEventListener('click', function() {
       var remaining=Math.max(0,deductible-deductibleMet);
       var pctMet=Math.max(0,Math.min(100,Math.round((nowMet/deductible)*100)));
       cov+='<div class="ccov-row"><span class="ccov-l">Remaining deductible</span><span class="ccov-v">'+fmt(remaining)+'</span></div>';
-      cov+='<div class="cded"><div class="cded-head">'+fmt(nowMet)+' of '+fmt(deductible)+' met</div><div class="cded-bar"><div class="cded-fill" style="width:'+pctMet+'%"></div></div></div>';
+      cov+='<div class="cded"><div class="cded-head">After care plan: '+fmt(nowMet)+' of '+fmt(deductible)+' met</div><div class="cded-bar"><div class="cded-fill" style="width:'+pctMet+'%"></div></div></div>';
     }
     insH='<div class="csec"><div class="csec-t">Insurance Coverage</div><div class="citm-g">'+insCards+'</div><div class="ccov">'+cov+'</div></div>';
   }
@@ -1545,12 +1546,12 @@ el('psPrintBtn').addEventListener('click', function() {
     return '<div class="cic'+(sel?' csel':'')+'"><div class="cic-n">'+nm+'</div><span class="cic-q">'+(sel?'\u00d7'+q:'\u2014')+'</span></div>';
   }).join('');
   var svcH='<div class="csec"><div class="csec-t">Services &amp; Therapies</div><div class="citm-g">'+sCds+'</div></div>';
-  var finH='<div class="csec"><div class="csec-t">Financial Summary</div><div class="cfin-r"><div class="cfin-std"><div class="cfin-l">Total Care Plan Cost</div><div class="cfin-a">'+fmt(c.base)+'</div><div class="cfin-s">Includes everything in this plan</div></div><div class="cfin-pif"><div class="cfin-l">Pay in Full</div><div class="cfin-a">'+fmt(c.pif)+'</div><div class="cfin-s">Save '+fmt(c.base*0.1)+' \u2014 10% discount</div></div></div><div class="csel-b"><div><div class="csel-l">Selected Payment Option</div><div class="csel-v">'+planLabel+'</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22783C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>';
+  var finH='<div class="csec"><div class="csec-t">Financial Summary</div><div class="cfin-r"><div class="cfin-std"><div class="cfin-l">Total Care Plan Cost</div><div class="cfin-a">'+fmt(c.base)+'</div><div class="cfin-s">Includes everything in this plan</div></div><div class="cfin-pif"><div class="cfin-l">Pay in Full</div><div class="cfin-a">'+fmt(c.pif)+'</div><div class="cfin-s">Save '+fmt(c.base*0.1)+' \u2014 10% discount</div></div></div>'+(sigUrl?'<div class="csel-b"><div><div class="csel-l">Selected Payment Option</div><div class="csel-v">'+planLabel+'</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22783C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>':'')+'</div>';
   var agreeStmt='I fully understand the care plan outlined above and agree to pay the entirety of all costs associated with any and all services and/or products received at Motus Health in accordance with the payment arrangement selected above. I understand that I am personally financially responsible to remit all payments to Motus Health. Additionally, I authorize Motus Health to charge my card and/or bank account for the agreed-upon purchases. I understand my information will be saved on file for future transactions on my account.';
   var stmtH = sigUrl ? '<div class="csig-stmt">'+agreeStmt+'</div>' : '';
   var sigH='<div class="csec"><div class="csec-t">Patient Agreement</div>'+stmtH+'<div class="csig-r"><div><div class="csig-l">Signature</div>'+(sigUrl?'<img class="csig-img" src="'+sigUrl+'">':'<div class="csig-blank"></div>')+'</div><div><div class="csig-l">Date</div><div class="csig-v">'+now+'</div></div></div><div style="margin-top:7px;"><div class="csig-l">Patient Name</div><div class="csig-v">'+name+'</div></div></div>';
   var hdrH='<div class="chdr"><div class="chdr-l">'+(logoSrc?'<img src="'+logoSrc+'">':'<span style="font-size:14pt;font-weight:700;color:#1E2D63;font-family:Georgia,serif;">Motus Health</span>')+'<div class="ckicker">Personalized Care Plan</div></div><div style="text-align:right;"><div style="font-size:6.5pt;color:#9098A6;text-transform:uppercase;letter-spacing:.1em;">Prepared for</div><div style="font-size:13pt;font-weight:700;color:#1E2D63;font-family:Georgia,serif;">'+name+'</div><div style="font-size:6.5pt;color:#9098A6;">'+now+'</div></div></div>';
-  var ruleH='<div class="crule"></div>';
+  var ruleH='';
   var ftH='<div class="cfoot"><span>Motus Health · Confidential Patient Care Plan</span><span>Prepared '+now+'</span></div>';
 
   // Remove old overlay if present
@@ -1574,8 +1575,13 @@ if(el('psPolicyBtn')) {
     var name = (el('patientName').value || '').trim();
     var payMap = { pif:'Pay in Full', weekly:'Monthly Payments', '3month':'Monthly Payments', '12month':'Monthly Payments', '18month':'3rd Party Financing', '48month':'3rd Party Financing', '60mo':'3rd Party Financing' };
     var pay = payMap[psSelPlan] || '';
-    var total = (psSelPlan === 'pif') ? c.pif : c.base;
-    var q = 'patient=' + encodeURIComponent(name) + '&total=' + encodeURIComponent(total.toFixed(2)) + (pay ? ('&pay=' + encodeURIComponent(pay)) : '');
+    // Always hand off the FULL plan price plus the discounted pay-in-full price, so the
+    // Financial Policy can show the original total and quote the PIF number separately.
+    var q = 'patient=' + encodeURIComponent(name)
+          + '&total=' + encodeURIComponent(c.base.toFixed(2))
+          + '&full=' + encodeURIComponent(c.base.toFixed(2))
+          + '&pif=' + encodeURIComponent(c.pif.toFixed(2))
+          + (pay ? ('&pay=' + encodeURIComponent(pay)) : '');
     window.location.href = 'policies.html?' + q;
   });
 }
