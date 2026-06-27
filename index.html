@@ -380,9 +380,11 @@ input[type=number]{-moz-appearance:textfield;}
   position:relative;border-radius:10px;padding:9px 12px;min-height:50px;
   border:1px solid #F0F1F5;background:transparent;
   display:flex;flex-direction:column;justify-content:center;gap:4px;
-  opacity:.55;
+  opacity:.55;cursor:pointer;
   transition:background .15s,border-color .15s,box-shadow .15s,transform .12s,opacity .15s;
 }
+.ps-item-card:hover{opacity:.85;border-color:var(--navy-light);}
+.ps-item-card.selected:hover{opacity:1;}
 .ps-item-card.selected{background:#EEF1F9;border:1.5px solid var(--navy);box-shadow:0 4px 14px -8px rgba(27,43,94,.30);opacity:1;}
 .ps-item-card__name{font-size:.8rem;font-weight:600;color:#9AA0AC;line-height:1.25;padding-right:22px;}
 .ps-item-card.selected .ps-item-card__name{color:var(--navy);}
@@ -1303,7 +1305,7 @@ function renderPres() {
     var sel = i.qty>0;
     // Patient-facing label (CPT codes stripped); show no visit counts \u2014 just highlight what's being used
     var cleanName = INS_DISP[i.id] || i.name.replace(/^\d{5}[^a-zA-Z]+/,'').replace(/\s*\(\d+\)\s*$/,'').trim();
-    return '<div class="ps-item-card ps-ins-card'+(sel?' selected':'')+'">' +
+    return '<div class="ps-item-card ps-ins-card'+(sel?' selected':'')+'" data-tid="'+i.id+'">' +
       '<span class="ps-item-card__chk">\u2713</span>' +
       '<div class="ps-item-card__name">'+cleanName+'</div>' +
       '</div>';
@@ -1350,7 +1352,7 @@ function renderPres() {
     var sel = q>0;
     var dispName = PS_NAME[i.id] || i.name;
     if(i.id==='nutrition' && nutritionType) dispName += ' — ' + nutritionType;
-    return '<div class="ps-item-card'+(sel?' selected':'')+'">' +
+    return '<div class="ps-item-card'+(sel?' selected':'')+'" data-tid="'+i.id+'">' +
       '<span class="ps-item-card__chk">\u2713</span>' +
       '<div class="ps-item-card__name">'+dispName+'</div>' +
       '<div class="ps-item-card__bottom">' +
@@ -1448,6 +1450,20 @@ el('psSvcBtn').addEventListener('click', function() {
   psSvcShow = !psSvcShow;
   el('psSvcBtn').classList.toggle('active', psSvcShow);
   renderPres();
+});
+// Tap an item card on the Care Plan to check/uncheck it (toggles only that item's own qty)
+function togglePresItem(stackId){
+  var it=ITEMS.find(function(x){return x.id===stackId;});
+  if(!it) return;
+  it.qty = it.qty>0 ? 0 : 1;
+  render();
+}
+['psInsBody','psSvcBody'].forEach(function(bodyId){
+  var body=el(bodyId);
+  if(body) body.addEventListener('click', function(e){
+    var card = e.target.closest && e.target.closest('.ps-item-card');
+    if(card && card.dataset.tid) togglePresItem(card.dataset.tid);
+  });
 });
 
 // ── SIGNATURE PAD ────────────────────────────────────────────────

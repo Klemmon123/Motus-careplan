@@ -119,7 +119,8 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
 .ct-toggle__track::after{content:'';position:absolute;top:2.5px;left:2.5px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .15s;}
 .ct-toggle input:checked + .ct-toggle__track{background:var(--navy);}
 .ct-toggle input:checked + .ct-toggle__track::after{transform:translateX(17px);}
-.ct-toggle__lbl{font-size:.8rem;font-weight:600;color:var(--navy);}
+.terms-text{font-size:.86rem;line-height:1.6;color:var(--charcoal);margin:0 0 11px;}
+.ct-head{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--navy);margin:6px 0 7px;}
 .ct-fields{display:none;flex-wrap:wrap;align-items:center;gap:7px;font-size:.86rem;color:var(--charcoal);background:var(--navy-tint);border:1px solid rgba(27,43,94,.12);border-radius:10px;padding:13px 15px;margin:0 0 6px;line-height:2.1;}
 .ct-fields.show{display:flex;}
 .ct-input{width:92px;font-family:'IBM Plex Mono',monospace;font-size:.9rem;border:1.5px solid var(--line);border-radius:7px;padding:5px 8px;background:#fff;color:var(--charcoal);}
@@ -242,6 +243,9 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
 .pp-pifbox{display:flex;justify-content:space-between;align-items:center;gap:14px;background:#FBF5E6;border:1px solid #E6D29A;border-radius:8px;padding:8px 13px;margin-bottom:9px;font-size:.74rem;color:#7A6320;font-weight:600;}
 .pp-pifbox strong{font-family:'IBM Plex Mono',monospace;font-size:1.05rem;color:#1E2D63;}
 .pp-pifbox--plain{background:#EEF1F9;border-color:#CDD8EF;color:#5A6170;}
+.pp-custom{background:#EEF1F9;border:1px solid #CDD8EF;border-left:3px solid #1E2D63;border-radius:8px;padding:9px 13px;margin-top:9px;}
+.pp-custom__t{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#1E2D63;margin-bottom:4px;}
+.pp-custom p{font-size:.78rem;line-height:1.5;color:#2A2F39;margin:0;}
 .pp-termsig{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:9px;padding-top:8px;border-top:1px solid #ECEFF6;font-size:.68rem;color:#6A6F7A;}
 .pp-termsig img{height:30px;}
 .pp-callout{background:#EEF1F9;border:1px solid #D6DEF0;border-left:3px solid #1E2D63;border-radius:8px;padding:11px 14px;font-size:.75rem;line-height:1.55;color:#3A3F49;margin-top:11px;}
@@ -419,7 +423,10 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
             <div class="terms-panel__tag">Applies to your selection</div>
             <div class="terms-panel__title">Pay-in-Full Discount — Terms &amp; Conditions</div>
             <div class="amt-line">Pay-in-Full price <strong id="pifAmtLine">$—</strong></div>
-            <label class="ct-toggle"><input type="checkbox" id="pifCustomToggle"><span class="ct-toggle__track"></span><span class="ct-toggle__lbl">Custom payment terms — down payment + installments to honor the discount</span></label>
+            <p class="terms-text">I understand that a Pay-in-Full discount is based on an agreement to pay for my entire treatment plan in one installment prior to services/products being rendered and/or delivered. If a one time payment is made at the onset of care equating to the total cost of my treatment plan, this will qualify for a Pay-in-Full discount of 10% off of the total cost of my treatment plan.</p>
+            <p class="terms-text">I hereby understand that this discount applies to the entire treatment plan as a whole, and that if I discontinue care prior to finishing the treatment plan, then this discount is no longer in effect — even for the products/services that have already been received at that time. If I choose to discontinue treatment prior to completing my treatment plan in full, I hereby realize that I will be forfeiting this 10% Pay-in-Full discount, and that all services will be processed at the standard rate.</p>
+            <div class="ct-head">Custom payment terms</div>
+            <label class="ct-toggle"><input type="checkbox" id="pifCustomToggle"><span class="ct-toggle__track"></span></label>
             <div class="ct-fields" id="pifCustomFields"><span>Down payment of $</span><input class="ct-input" id="pifDown" inputmode="decimal" placeholder="0.00"><span>today, then</span><input class="ct-input ct-input--num" id="pifCount" inputmode="numeric" placeholder="0"><span>payment(s) of $</span><input class="ct-input" id="pifEach" inputmode="decimal" placeholder="0.00"><span>to honor the Pay-in-Full discount.</span></div>
             <div class="sig-block sig-block--terms">
               <div class="sig-lbl">Sign to accept the Pay-in-Full terms</div>
@@ -434,7 +441,10 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
             <div class="terms-panel__tag">Applies to your selection</div>
             <div class="terms-panel__title">Installment Payment Plans — Terms &amp; Conditions</div>
             <div class="amt-line">Plan total <strong id="instAmtLine">$—</strong></div>
-            <label class="ct-toggle"><input type="checkbox" id="instCustomToggle"><span class="ct-toggle__track"></span><span class="ct-toggle__lbl">Custom payment terms — down payment + installment schedule</span></label>
+            <p class="terms-text">I understand that any installment payment plan, whether made directly to Motus Health or via a third party financing institution, is an agreement to pay for any and all services / products that I receive from Motus Health. Furthermore, I understand that my treatment cost will be higher initially than the amount paid on a monthly installment plan, and I will therefore, in most instances, still owe a balance once treatment is completed. The same holds true for if I choose to discontinue care early.</p>
+            <p class="terms-text">I understand that my installment payment plan will continue to be in effect until I have paid off the balance for all services / products that I receive from Motus Health — inclusive of any interest fees associated with a third party financing institution.</p>
+            <div class="ct-head">Custom payment terms</div>
+            <label class="ct-toggle"><input type="checkbox" id="instCustomToggle"><span class="ct-toggle__track"></span></label>
             <div class="ct-fields" id="instCustomFields"><span>Down payment of $</span><input class="ct-input" id="instDown" inputmode="decimal" placeholder="0.00"><span>today, then</span><input class="ct-input ct-input--num" id="instCount" inputmode="numeric" placeholder="0"><span>payment(s) of $</span><input class="ct-input" id="instEach" inputmode="decimal" placeholder="0.00"><span>per the agreed schedule.</span></div>
             <div class="sig-block sig-block--terms">
               <div class="sig-lbl">Sign to accept the installment terms</div>
@@ -888,11 +898,11 @@ function buildPolicyPrint(key){
     const customLine=function(prefix,suffix){var down=val('#'+prefix+'Down'),cnt=val('#'+prefix+'Count'),each=val('#'+prefix+'Each');return 'A down payment of $'+(down||'______')+' is made today, followed by '+(cnt||'__')+' payment(s) of $'+(each||'______')+', '+suffix;};
     const isOn=function(id){var e=document.getElementById(id);return e&&e.checked;};
     if(pm==='Pay in Full'){
-      const pifBody = isOn('pifCustomToggle') ? `<p>${customLine('pif','to honor the Pay-in-Full 10% discount on the plan total.')}</p>` : `<p>${PIF_P1}</p><p>${PIF_P2}</p>`;
-      inner+=`<div class="pp-panel pp-panel--gold"><div class="pp-panel__t">Pay-in-Full Discount — Terms &amp; Conditions</div><div class="pp-pifbox"><span>Pay-in-Full price &middot; 10% off $${fullStr}</span><strong>${pifStr}</strong></div>${pifBody}${termsSig('pifTerms')}</div>`;
+      const pifCustom = isOn('pifCustomToggle') ? `<div class="pp-custom"><div class="pp-custom__t">✓ Custom Payment Arrangement</div><p>${customLine('pif','to honor the Pay-in-Full 10% discount on the plan total.')}</p></div>` : '';
+      inner+=`<div class="pp-panel pp-panel--gold"><div class="pp-panel__t">Pay-in-Full Discount — Terms &amp; Conditions</div><div class="pp-pifbox"><span>Pay-in-Full price &middot; 10% off $${fullStr}</span><strong>${pifStr}</strong></div><p>${PIF_P1}</p><p>${PIF_P2}</p>${pifCustom}${termsSig('pifTerms')}</div>`;
     }else if(pm==='Monthly Payments'||pm==='3rd Party Financing'){
-      const instBody = isOn('instCustomToggle') ? `<p>${customLine('inst','per the agreed payment schedule.')}</p>` : `<p>${INST_P1}</p><p>${INST_P2}</p>`;
-      inner+=`<div class="pp-panel"><div class="pp-panel__t">Installment Payment Plans — Terms &amp; Conditions</div><div class="pp-pifbox pp-pifbox--plain"><span>Plan total</span><strong>$${fullStr}</strong></div>${instBody}${termsSig('installTerms')}</div>`;
+      const instCustom = isOn('instCustomToggle') ? `<div class="pp-custom"><div class="pp-custom__t">✓ Custom Payment Arrangement</div><p>${customLine('inst','per the agreed payment schedule.')}</p></div>` : '';
+      inner+=`<div class="pp-panel"><div class="pp-panel__t">Installment Payment Plans — Terms &amp; Conditions</div><div class="pp-pifbox pp-pifbox--plain"><span>Plan total</span><strong>$${fullStr}</strong></div><p>${INST_P1}</p><p>${INST_P2}</p>${instCustom}${termsSig('installTerms')}</div>`;
     }
   }else if(key==='scheduling'){
     inner=`<div class="pp-panel"><div class="pp-panel__t">Regular Treatment Hours</div><p>Monday–Thursday · 9:00am–6:00pm &nbsp;&nbsp;|&nbsp;&nbsp; Friday · 9:00am–2:00pm</p></div>`;
