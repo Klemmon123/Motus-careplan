@@ -548,6 +548,10 @@ body.pres-mode .app-header{display:none;}
 .csig-img{width:100%;height:52px;border:none;border-bottom:1.5px solid #1E2D63;object-fit:contain;display:block;}
 .csig-blank{height:52px;border-bottom:1.5px solid #1E2D63;}
 .csig-v{font-size:9pt;font-weight:700;color:#1E2D63;border-bottom:1.5px solid #1E2D63;padding-bottom:3px;min-height:18px;margin-top:3px;}
+.chdr-l{display:flex;flex-direction:column;gap:5px;align-items:flex-start;}
+.ckicker{font-size:6pt;letter-spacing:.2em;text-transform:uppercase;color:#EEAF21;font-weight:700;}
+.crule{height:2.5px;background:#EEAF21;border-radius:99px;margin:-2px 0 9px;}
+.cfoot{margin-top:10px;padding-top:8px;border-top:1px solid #E1E3E9;display:flex;justify-content:space-between;align-items:center;font-size:6pt;letter-spacing:.08em;text-transform:uppercase;color:#9098A6;font-weight:600;}
 /* GOOGLE DRIVE BAR */
 .drive-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .drive-btn{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;padding:8px 14px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--charcoal);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:border-color .15s,background .15s,opacity .15s;}
@@ -1491,7 +1495,9 @@ el('psPrintBtn').addEventListener('click', function() {
   var svcH='<div class="csec"><div class="csec-t">Services &amp; Therapies</div><div class="citm-g">'+sCds+'</div></div>';
   var finH='<div class="csec"><div class="csec-t">Financial Summary</div><div class="cfin-r"><div class="cfin-std"><div class="cfin-l">Today\u2019s Investment</div><div class="cfin-a">'+fmt(c.base)+'</div><div class="cfin-s">Financing available</div></div><div class="cfin-pif"><div class="cfin-l">Pay in Full</div><div class="cfin-a">'+fmt(c.pif)+'</div><div class="cfin-s">Save '+fmt(c.base*0.1)+' \u00b7 10% off</div></div></div><div class="csel-b"><div><div class="csel-l">Patient Selection</div><div class="csel-v">'+planLabel+'</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>';
   var sigH='<div class="csec"><div class="csec-t">Patient Agreement</div><div class="csig-r"><div><div class="csig-l">Signature</div>'+(sigUrl?'<img class="csig-img" src="'+sigUrl+'">':'<div class="csig-blank"></div>')+'</div><div><div class="csig-l">Date</div><div class="csig-v">'+now+'</div></div></div><div style="margin-top:7px;"><div class="csig-l">Patient Name</div><div class="csig-v">'+name+'</div></div></div>';
-  var hdrH='<div class="chdr">'+(logoSrc?'<img src="'+logoSrc+'" style="height:30px;filter:brightness(0) invert(1);">':'<span style="font-size:13pt;font-weight:700;color:#fff;">Motus Health</span>')+'<div style="text-align:right;"><div style="font-size:6.5pt;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.1em;">Prepared for</div><div style="font-size:13pt;font-weight:700;color:#fff;font-family:Georgia,serif;">'+name+'</div><div style="font-size:6.5pt;color:rgba(255,255,255,.4);">'+now+'</div></div></div>';
+  var hdrH='<div class="chdr"><div class="chdr-l">'+(logoSrc?'<img src="'+logoSrc+'" style="height:28px;filter:brightness(0) invert(1);">':'<span style="font-size:13pt;font-weight:700;color:#fff;">Motus Health</span>')+'<div class="ckicker">Personalized Care Plan</div></div><div style="text-align:right;"><div style="font-size:6.5pt;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.1em;">Prepared for</div><div style="font-size:13pt;font-weight:700;color:#fff;font-family:Georgia,serif;">'+name+'</div><div style="font-size:6.5pt;color:rgba(255,255,255,.4);">'+now+'</div></div></div>';
+  var ruleH='<div class="crule"></div>';
+  var ftH='<div class="cfoot"><span>Motus Health · Confidential Patient Care Plan</span><span>Prepared '+now+'</span></div>';
 
   // Remove old overlay if present
   var old=document.getElementById('__cpOverlay');
@@ -1499,7 +1505,7 @@ el('psPrintBtn').addEventListener('click', function() {
 
   var ov=document.createElement('div');
   ov.id='__cpOverlay';
-  ov.innerHTML=hdrH+schedH+insH+svcH+finH+sigH;
+  ov.innerHTML=hdrH+ruleH+schedH+insH+svcH+finH+sigH+ftH;
   document.body.appendChild(ov);
   var finishPrint = function(){ window.print(); setTimeout(function(){var x=document.getElementById('__cpOverlay');if(x)document.body.removeChild(x);},2000); };
   // Wait for the signature image to decode before printing, otherwise it prints blank
