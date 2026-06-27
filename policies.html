@@ -103,6 +103,9 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
 .terms-reveal.open{max-height:1400px;opacity:1;margin-top:18px;}
 .terms-panel{display:none;border:1px solid rgba(27,43,94,.18);border-left:4px solid var(--gold);border-radius:12px;background:#FFFBF1;padding:18px 20px 8px;}
 .terms-panel.show{display:block;}
+.terms-panel[data-terms="install"]{border-left-color:var(--navy-light);background:#EEF2FB;}
+.terms-panel[data-terms="install"] .terms-panel__tag{color:var(--navy-light);}
+.sig-block--terms{margin-top:14px;}
 .terms-panel__title{font-family:'Playfair Display',serif;font-size:.92rem;font-weight:600;color:var(--navy);margin:0 0 4px;}
 .terms-panel__tag{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin-bottom:12px;}
 .terms-panel .init-item{border-color:rgba(27,43,94,.1);}
@@ -123,13 +126,17 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
 .sched-slot label{display:block;font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gray);font-weight:600;margin:0 0 4px;}
 .sched-slot select,.sched-slot input{width:100%;font-family:'Inter',sans-serif;font-size:.88rem;padding:8px 10px;border:1.5px solid rgba(27,43,94,.2);border-radius:8px;background:#fff;color:var(--navy);font-weight:500;margin-bottom:10px;}
 .sched-slot select:focus,.sched-slot input:focus{outline:none;border-color:var(--navy);}
+.sched-range{display:flex;align-items:center;gap:8px;}
+.sched-range select{margin-bottom:0;flex:1;min-width:0;}
+.sched-range__to{font-size:.78rem;color:var(--gray);flex-shrink:0;}
+.sched-slot select:disabled{opacity:.5;cursor:not-allowed;}
 .note{font-size:.8rem;color:var(--navy-light);font-style:italic;line-height:1.55;margin:14px 0 0;padding-left:14px;border-left:3px solid var(--gold);}
 
 /* SIGNATURE — tap or draw */
 .sig-block{margin-top:30px;padding-top:24px;border-top:2px solid var(--navy-tint);}
 .sig-stmt{font-size:.82rem;color:var(--charcoal);line-height:1.6;background:var(--navy-tint);padding:14px 16px;border-radius:10px;margin:0 0 18px;}
 .sig-lbl{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--navy);margin-bottom:6px;}
-.sig-canvas{width:100%;height:140px;border:2px solid var(--line);border-radius:10px;background:#fff;display:block;cursor:crosshair;touch-action:none;}
+.sig-canvas{width:100%;height:140px;border:2px solid var(--line);border-radius:10px;background:#fff;display:block;cursor:pointer;touch-action:manipulation;}
 .sig-canvas.signed{border-color:var(--green);}
 .sig-tools{display:flex;justify-content:space-between;align-items:center;margin-top:7px;}
 .tap-sign-btn{display:inline-flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;font-size:.74rem;font-weight:600;color:var(--navy);background:var(--navy-tint);border:1.5px solid var(--navy);border-radius:99px;padding:7px 16px;cursor:pointer;transition:all .15s;}
@@ -210,25 +217,8 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
       </div>
       <div class="policy-card__body">
         <div class="disc-block">
-          <p>Thank you for choosing Motus Health. Before beginning care, we ask that you review and acknowledge the policies in this packet. These documents explain how we handle payment, scheduling, and your shared responsibilities as a patient on your healing journey.</p>
-
-          <h3>This packet contains:</h3>
-          <ul class="disc-list">
-            <li><strong>Financial Policy</strong> — payment options, no-contract and no-refund terms, your total care plan cost, and the terms &amp; conditions for your selected payment method.</li>
-            <li><strong>Scheduling Policy</strong> — treatment hours, your preferred appointment times, and our timing and late-arrival guidelines.</li>
-            <li><strong>Patient Agreements</strong> — the commitments you make to get the best possible results from your care.</li>
-          </ul>
-
-          <h3>Electronic signature consent</h3>
-          <p>You will be asked to initial and sign each policy electronically. By signing on this device, you agree that your electronic signature and initials are the legal equivalent of your handwritten signature and are binding. You may use the <strong>"Tap to Sign"</strong> buttons to apply your signature and initials, or draw your signature directly in the signature box.</p>
-
-          <h3>Your acknowledgment</h3>
-          <p>Please read each policy carefully. If you have any questions at any point, our doctors and staff are happy to explain anything before you sign.</p>
-        </div>
-
-        <div class="ack-row" id="ackRow">
-          <input type="checkbox" id="ackBox">
-          <label for="ackBox">I have read and understand this disclosure, and I consent to reviewing and signing my Motus Health patient policies electronically.</label>
+          <p>You may request paper copies of any of these forms at any time. By continuing, you confirm that you are comfortable reviewing and signing your Motus Health patient policies electronically using <strong>"Tap to Sign."</strong></p>
+          <p>You agree that your electronic, tap-to-sign signature is the legal equivalent of your handwritten signature and is fully binding. If you have any questions at any point, our doctors and staff are happy to explain anything before you sign.</p>
         </div>
 
         <div class="sig-block">
@@ -238,7 +228,7 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
             <button class="tap-sign-btn" data-tap="disclosure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>Tap to Sign</button>
             <button class="sig-clr" data-clear="disclosure">Clear</button>
           </div>
-          <div class="sig-hint">Tap the button to auto-sign with the patient name, or sign with your finger / mouse.</div>
+          <div class="sig-hint">Tap the signature box (or the "Tap to Sign" button) to sign with the patient's name.</div>
           <div class="sig-meta">
             <div><div class="sig-lbl">Patient Name</div><div class="sig-val" data-name>—</div></div>
             <div><div class="sig-lbl">Date</div><div class="sig-val" data-date>—</div></div>
@@ -297,25 +287,29 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
           <div class="terms-panel" data-terms="pif">
             <div class="terms-panel__tag">Applies to your selection</div>
             <div class="terms-panel__title">Pay-in-Full Discount — Terms &amp; Conditions</div>
-            <div class="init-item">
-              <p class="init-item__text">I understand that a Pay-in-Full discount is based on an agreement to pay for my entire treatment plan in one installment prior to services/products being rendered and/or delivered. If a one time payment is made at the onset of care equating to the total cost of my treatment plan, this will qualify for a Pay-in-Full discount of 10% off of the total cost of my treatment plan.</p>
-              <div class="init-item__sig"><label>Initial</label><input class="init-input" maxlength="5" placeholder="tap" data-init="pif1"></div>
-            </div>
-            <div class="init-item">
-              <p class="init-item__text">I hereby understand that this discount applies to the entire treatment plan as a whole, and that if I discontinue care prior to finishing the treatment plan, then this discount is no longer in effect — even for the products/services that have already been received at that time. If I choose to discontinue treatment prior to completing my treatment plan in full, I hereby realize that I will be forfeiting this 10% Pay-in-Full discount, and that all services will be processed at the standard rate.</p>
-              <div class="init-item__sig"><label>Initial</label><input class="init-input" maxlength="5" placeholder="tap" data-init="pif2"></div>
+            <p class="init-item__text" style="padding:6px 0;">I understand that a Pay-in-Full discount is based on an agreement to pay for my entire treatment plan in one installment prior to services/products being rendered and/or delivered. If a one time payment is made at the onset of care equating to the total cost of my treatment plan, this will qualify for a Pay-in-Full discount of 10% off of the total cost of my treatment plan.</p>
+            <p class="init-item__text" style="padding:6px 0;">I hereby understand that this discount applies to the entire treatment plan as a whole, and that if I discontinue care prior to finishing the treatment plan, then this discount is no longer in effect — even for the products/services that have already been received at that time. If I choose to discontinue treatment prior to completing my treatment plan in full, I hereby realize that I will be forfeiting this 10% Pay-in-Full discount, and that all services will be processed at the standard rate.</p>
+            <div class="sig-block sig-block--terms">
+              <div class="sig-lbl">Sign to accept the Pay-in-Full terms</div>
+              <canvas class="sig-canvas" data-sig="pifTerms"></canvas>
+              <div class="sig-tools">
+                <button class="tap-sign-btn" data-tap="pifTerms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>Tap to Sign</button>
+                <button class="sig-clr" data-clear="pifTerms">Clear</button>
+              </div>
             </div>
           </div>
           <div class="terms-panel" data-terms="install">
             <div class="terms-panel__tag">Applies to your selection</div>
             <div class="terms-panel__title">Installment Payment Plans — Terms &amp; Conditions</div>
-            <div class="init-item">
-              <p class="init-item__text">I understand that any installment payment plan, whether made directly to Motus Health or via a third party financing institution, is an agreement to pay for any and all services / products that I receive from Motus Health. Furthermore, I understand that my treatment cost will be higher initially than the amount paid on a monthly installment plan, and I will therefore, in most instances, still owe a balance once treatment is completed. The same holds true for if I choose to discontinue care early.</p>
-              <div class="init-item__sig"><label>Initial</label><input class="init-input" maxlength="5" placeholder="tap" data-init="ins1"></div>
-            </div>
-            <div class="init-item">
-              <p class="init-item__text">I understand that my installment payment plan will continue to be in effect until I have paid off the balance for all services / products that I receive from Motus Health — inclusive of any interest fees associated with a third party financing institution.</p>
-              <div class="init-item__sig"><label>Initial</label><input class="init-input" maxlength="5" placeholder="tap" data-init="ins2"></div>
+            <p class="init-item__text" style="padding:6px 0;">I understand that any installment payment plan, whether made directly to Motus Health or via a third party financing institution, is an agreement to pay for any and all services / products that I receive from Motus Health. Furthermore, I understand that my treatment cost will be higher initially than the amount paid on a monthly installment plan, and I will therefore, in most instances, still owe a balance once treatment is completed. The same holds true for if I choose to discontinue care early.</p>
+            <p class="init-item__text" style="padding:6px 0;">I understand that my installment payment plan will continue to be in effect until I have paid off the balance for all services / products that I receive from Motus Health — inclusive of any interest fees associated with a third party financing institution.</p>
+            <div class="sig-block sig-block--terms">
+              <div class="sig-lbl">Sign to accept the installment terms</div>
+              <canvas class="sig-canvas" data-sig="installTerms"></canvas>
+              <div class="sig-tools">
+                <button class="tap-sign-btn" data-tap="installTerms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>Tap to Sign</button>
+                <button class="sig-clr" data-clear="installTerms">Clear</button>
+              </div>
             </div>
           </div>
         </div>
@@ -361,14 +355,8 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
         <div class="sched-grid" id="schedGrid"></div>
 
         <div class="section-label">Timing</div>
-        <div class="init-item">
-          <p class="init-item__text">If I am going to be more than 10 minutes early or late for my appointment, I will text or call to let the office know so that they can plan accordingly.</p>
-          <div class="init-item__sig"><label>Initial</label><input class="init-input" maxlength="5" placeholder="tap" data-init="sch1"></div>
-        </div>
-        <div class="init-item">
-          <p class="init-item__text">I understand the office will give me a call if I am more than 15 minutes late. This is done in an effort to check in on me and make sure I am doing ok, as well as to keep me on track.</p>
-          <div class="init-item__sig"><label>Initial</label><input class="init-input" maxlength="5" placeholder="tap" data-init="sch2"></div>
-        </div>
+        <div class="init-item"><p class="init-item__text">If I am going to be more than 10 minutes early or late for my appointment, I will text or call to let the office know so that they can plan accordingly.</p></div>
+        <div class="init-item"><p class="init-item__text">I understand the office will give me a call if I am more than 15 minutes late. This is done in an effort to check in on me and make sure I am doing ok, as well as to keep me on track.</p></div>
 
         <div class="sig-block">
           <div class="sig-lbl">Patient or Authorized Person's Signature</div>
@@ -393,48 +381,39 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
       <div class="policy-card__head">
         <div class="policy-card__eyebrow">Designed for More</div>
         <h2>Patient Agreements</h2>
-        <p>I realize that my health is in my own hands and I agree to do my part in this healing journey. Furthermore, I understand that there is no "magic bullet" in health care, and true healing takes time and commitment. Please initial each commitment below.</p>
+        <p>I realize that my health is in my own hands and I agree to do my part in this healing journey. Furthermore, I understand that there is no "magic bullet" in health care, and true healing takes time and commitment. Please review each commitment below, then sign at the bottom.</p>
       </div>
       <div class="policy-card__body">
 
         <div class="section-label">With that said, I agree to:</div>
         <div class="init-item">
           <p class="init-item__text">Take all nutritional supplementation as prescribed for my specific case.</p>
-          <div class="init-item__sig"><label>Initial</label><input class="init-input" maxlength="5" placeholder="tap" data-init="pa1"></div>
         </div>
         <div class="init-item">
           <p class="init-item__text">Follow all dietary recommendations to the best of my ability.</p>
-          <div class="init-item__sig"><label>Initial</label><input class="init-input" maxlength="5" placeholder="tap" data-init="pa2"></div>
         </div>
         <div class="init-item">
           <p class="init-item__text">Perform all of my at-home rehab exercises to the best of my ability.</p>
-          <div class="init-item__sig"><label>Initial</label><input class="init-input" maxlength="5" placeholder="tap" data-init="pa3"></div>
         </div>
         <div class="init-item">
           <p class="init-item__text">Use my home equipment and therapies as prescribed for my specific case.</p>
-          <div class="init-item__sig"><label>Initial</label><input class="init-input" maxlength="5" placeholder="tap" data-init="pa4"></div>
         </div>
         <div class="init-item">
           <p class="init-item__text">Strive to make all of my scheduled appointments at the prescribed frequency.</p>
-          <div class="init-item__sig"><label>Initial</label><input class="init-input" maxlength="5" placeholder="tap" data-init="pa5"></div>
         </div>
 
         <div class="section-label">I further understand &amp; agree that:</div>
         <div class="init-item">
           <p class="init-item__text">Proper usage of all home treatments — including therapy equipment, nutritional supplementation, dietary recommendations, and home exercises — has been conveyed to me fully. This includes the timing, frequency, and parameters of therapy treatments and exercises, daily dosages of nutritional supplementation, dietary guidelines, and best practices for the safe utilization of any and all home treatment protocols. I hereby state that I understand these aspects fully.</p>
-          <div class="init-item__sig"><label>Initial</label><input class="init-input" maxlength="5" placeholder="tap" data-init="pa6"></div>
         </div>
         <div class="init-item">
           <p class="init-item__text">If I have any issues with any part of the process at any time (scheduling, frequency of visits, home therapies/equipment, nutrition/diet, supplements, rehab, etc.), I will make these issues known to the doctors and staff as soon as possible so that we can find an appropriate solution, and I can still get the help and results I need.</p>
-          <div class="init-item__sig"><label>Initial</label><input class="init-input" maxlength="5" placeholder="tap" data-init="pa7"></div>
         </div>
         <div class="init-item">
           <p class="init-item__text">I am solely responsible for the financial burden of any and all services/products that I receive from this office, and I agree to make payments accordingly as agreed upon in my financial policy.</p>
-          <div class="init-item__sig"><label>Initial</label><input class="init-input" maxlength="5" placeholder="tap" data-init="pa8"></div>
         </div>
         <div class="init-item">
           <p class="init-item__text">I understand that if I break these commitments and do not do my part, my results of care may be jeopardized and I may not get the improvement that I am hoping for.</p>
-          <div class="init-item__sig"><label>Initial</label><input class="init-input" maxlength="5" placeholder="tap" data-init="pa9"></div>
         </div>
 
         <div class="sig-block">
@@ -516,15 +495,48 @@ STEPS.forEach((s,i)=>{
 
 // ── SCHEDULE PICKER ──
 const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday'];
+// Bookable windows per day, in minutes from midnight (9:00am=540). 15-min increments.
+const DAY_WINDOWS={
+  Monday:   [[540,765],[870,1050]],   // 9:00–12:45, 2:30pm–5:30pm  (no 1:00–2:30)
+  Tuesday:  [[540,765],[870,1050]],
+  Thursday: [[540,765],[870,1050]],
+  Wednesday:[[540,750],[885,1050]],   // 9:00–12:30, 2:45pm–5:30pm  (no 12:45–2:45)
+  Friday:   [[540,825]]               // 9:00am–1:45pm
+};
+function fmtMin(m){var h=Math.floor(m/60),mm=m%60,ap=h<12?'am':'pm',hr=((h+11)%12)+1;return hr+':'+(mm<10?'0':'')+mm+ap;}
+function daySlots(day){var out=[];(DAY_WINDOWS[day]||[]).forEach(function(w){for(var t=w[0];t<=w[1];t+=15)out.push(t);});return out;}
+function timeOpts(slots,ph){return '<option value="">'+ph+'</option>'+slots.map(function(t){return '<option value="'+t+'">'+fmtMin(t)+'</option>';}).join('');}
 const schedGrid=$('#schedGrid');
 [1,2,3].forEach(n=>{
   const slot=document.createElement('div');
   slot.className='sched-slot';
-  let opts='<option value="">Select day…</option>'+DAYS.map(d=>`<option>${d}</option>`).join('');
+  let dayOpts='<option value="">Select day…</option>'+DAYS.map(d=>`<option>${d}</option>`).join('');
   slot.innerHTML=`<div class="sched-slot__title">Choice ${n}</div>
-    <label>Day of week</label><select data-sched="day${n}">${opts}</select>
-    <label>Time of day</label><input type="time" data-sched="time${n}">`;
+    <label>Day of week</label><select data-sched="day${n}">${dayOpts}</select>
+    <label>Preferred time range</label>
+    <div class="sched-range">
+      <select data-sched="start${n}" disabled><option value="">From…</option></select>
+      <span class="sched-range__to">to</span>
+      <select data-sched="end${n}" disabled><option value="">To…</option></select>
+    </div>`;
   schedGrid.appendChild(slot);
+});
+schedGrid.addEventListener('change',function(e){
+  var t=e.target,key=t.dataset.sched; if(!key) return;
+  var n=key.replace(/\D/g,'');
+  var startSel=schedGrid.querySelector('[data-sched="start'+n+'"]');
+  var endSel=schedGrid.querySelector('[data-sched="end'+n+'"]');
+  if(key.indexOf('day')===0){
+    var slots=daySlots(t.value);
+    startSel.innerHTML=timeOpts(slots,'From…'); endSel.innerHTML=timeOpts(slots,'To…');
+    startSel.disabled=!t.value; endSel.disabled=!t.value;
+  } else if(key.indexOf('start')===0){
+    var day=schedGrid.querySelector('[data-sched="day'+n+'"]').value;
+    var sv=parseInt(t.value,10);
+    var keep=endSel.value;
+    endSel.innerHTML=timeOpts(daySlots(day).filter(function(x){return isNaN(sv)||x>=sv;}),'To…');
+    if(keep && parseInt(keep,10)>=sv) endSel.value=keep;
+  }
 });
 
 // ── PATIENT NAME / DATE SYNC ──
@@ -571,15 +583,7 @@ function initPad(canvas){
   canvas._resize=resize;
   function commit(){signatures[key].drawn=true;signatures[key].dataURL=canvas.toDataURL('image/png');canvas.classList.add('signed');$('#navWarn').classList.remove('show');}
   canvas._commit=commit;
-  function pos(e){const r=canvas.getBoundingClientRect(),s=e.touches?e.touches[0]:e;return{x:s.clientX-r.left,y:s.clientY-r.top};}
-  function start(e){e.preventDefault();drawing=true;const p=pos(e);lx=p.x;ly=p.y;}
-  function move(e){if(!drawing)return;e.preventDefault();const p=pos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;commit();}
-  function end(){drawing=false;}
-  canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);
-  canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);
-  canvas.addEventListener('touchstart',start,{passive:false});
-  canvas.addEventListener('touchmove',move,{passive:false});
-  canvas.addEventListener('touchend',end);
+  canvas.addEventListener('click',function(){ tapSign(key); });   // strictly tap-to-sign
   requestAnimationFrame(resize);
 }
 $$('.sig-canvas').forEach(initPad);
@@ -620,6 +624,7 @@ $$('input[name="payMethod"]').forEach(r=>{
     else{ins.classList.add('show');pif.classList.remove('show');}
     finTerms.classList.add('open');
     $('#navWarn').classList.remove('show');
+    setTimeout(()=>{ $$('#finTerms .terms-panel.show canvas.sig-canvas').forEach(c=>{ if(c._resize)c._resize(); }); }, 30);
   });
 });
 
@@ -631,13 +636,15 @@ function flashCanvas(){const c=document.querySelector('.screen.active canvas.sig
 function validate(i){
   const key=STEPS[i]?STEPS[i].key:null;
   if(key==='disclosure'){
-    if(!$('#ackBox').checked){flashWarn('Please check the acknowledgment box to continue.');return false;}
-    if(!signatures.disclosure.drawn){flashWarn('Please add the patient signature (tap or draw) before continuing.');flashCanvas();return false;}
+    if(!signatures.disclosure.drawn){flashWarn('Please tap the box to sign before continuing.');flashCanvas();return false;}
   }else if(key==='financial'){
-    if(!selectedPay()){flashWarn('Please select a payment method to view and accept its terms.');return false;}
-    if(!signatures.financial.drawn){flashWarn('Please add the patient signature (tap or draw) before continuing.');flashCanvas();return false;}
+    const pm=selectedPay();
+    if(!pm){flashWarn('Please select a payment method to view and accept its terms.');return false;}
+    const tk = pm==='Pay in Full' ? 'pifTerms' : 'installTerms';
+    if(signatures[tk] && !signatures[tk].drawn){flashWarn('Please tap to sign the terms for your selected payment method.');flashCanvas();return false;}
+    if(!signatures.financial.drawn){flashWarn('Please tap the box to sign before continuing.');flashCanvas();return false;}
   }else if(key==='scheduling'||key==='agreements'){
-    if(!signatures[key].drawn){flashWarn('Please add the patient signature (tap or draw) before continuing.');flashCanvas();return false;}
+    if(!signatures[key].drawn){flashWarn('Please tap the box to sign before continuing.');flashCanvas();return false;}
   }
   return true;
 }
@@ -683,8 +690,7 @@ function buildPolicyPrint(key){
   const sigImg=sig?`<img src="${sig}">`:'<div style="width:240px;border-bottom:1px solid #333;height:40px"></div>';
   let inner='';
   if(key==='disclosure'){
-    inner=`<p>This packet contains the patient's <strong>Financial Policy</strong>, <strong>Scheduling Policy</strong>, and <strong>Patient Agreements</strong>. The patient has acknowledged this disclosure and consented to signing electronically; electronic signatures and initials are the legal equivalent of handwritten ones.</p>
-    <p><strong>Acknowledgment:</strong> ${$('#ackBox').checked?'☑ Patient has read and understands this disclosure and consents to electronic signing.':'☐ Not acknowledged'}</p>`;
+    inner=`<p>This packet contains the patient's <strong>Financial Policy</strong>, <strong>Scheduling Policy</strong>, and <strong>Patient Agreements</strong>. The patient may request paper copies at any time and has consented to reviewing and signing these policies electronically; the electronic, tap-to-sign signature is the legal equivalent of a handwritten signature.</p>`;
   }else if(key==='financial'){
     const items=[
       ['fin1','No-contract agreement — only responsible for products/services already rendered.'],
@@ -697,24 +703,26 @@ function buildPolicyPrint(key){
     inner+=`<p style="margin-top:16px"><strong>Total cost of care plan:</strong> $${val('#finTotal')||'__________'}</p>`;
     const pm=selectedPay()||'____________';
     inner+=`<p><strong>Selected payment method:</strong> ${pm}</p>`;
+    var termsSig=function(k){var d=signatures[k]&&signatures[k].dataURL;return d?`<div class="ln" style="align-items:center"><span>Terms accepted — patient signature</span><img src="${d}" style="height:34px"></div>`:'';};
     if(pm==='Pay in Full'){
       inner+=`<div class="sub">Pay-in-Full Discount — Terms &amp; Conditions</div>`;
-      inner+=`<div class="ln"><span>Pay-in-Full discount of 10% applies when the full plan is paid in one installment at onset of care.</span><span class="ini">${ini('pif1')}</span></div>`;
-      inner+=`<div class="ln"><span>Discount applies to the plan as a whole; forfeited if care is discontinued early; services then processed at standard rate.</span><span class="ini">${ini('pif2')}</span></div>`;
+      inner+=`<p>Pay-in-Full discount of 10% applies when the full plan is paid in one installment at onset of care. It applies to the plan as a whole and is forfeited if care is discontinued early, with services then processed at the standard rate.</p>`;
+      inner+=termsSig('pifTerms');
     }else if(pm==='Monthly Payments'||pm==='3rd Party Financing'){
       inner+=`<div class="sub">Installment Payment Plans — Terms &amp; Conditions</div>`;
-      inner+=`<div class="ln"><span>Installment plans (direct or 3rd-party) are an agreement to pay for all services/products; a balance may remain after treatment.</span><span class="ini">${ini('ins1')}</span></div>`;
-      inner+=`<div class="ln"><span>Installment plan remains in effect until full balance is paid, inclusive of any 3rd-party interest fees.</span><span class="ini">${ini('ins2')}</span></div>`;
+      inner+=`<p>Installment plans (direct or 3rd-party) are an agreement to pay for all services/products received; a balance may remain after treatment, and the plan stays in effect until paid in full, inclusive of any 3rd-party interest fees.</p>`;
+      inner+=termsSig('installTerms');
     }
   }else if(key==='scheduling'){
     inner=`<p><strong>Regular Treatment Hours:</strong> Monday–Thursday 9:00am–6:00pm · Friday 9:00am–2:00pm</p>`;
     inner+='<p><strong>Top 3 weekly appointment times:</strong></p>';
     [1,2,3].forEach(n=>{
       const d=val(`[data-sched="day${n}"]`)||'____________';
-      inner+=`<div class="ln"><span>Choice ${n}</span><span class="ini">${d} &nbsp; ${fmtTime(val(`[data-sched="time${n}"]`))}</span></div>`;
+      const s=val(`[data-sched="start${n}"]`), e=val(`[data-sched="end${n}"]`);
+      const rng=(s&&e)?(fmtMin(+s)+' – '+fmtMin(+e)):(s?fmtMin(+s):'________');
+      inner+=`<div class="ln"><span>Choice ${n}</span><span class="ini">${d} &nbsp; ${rng}</span></div>`;
     });
-    inner+=`<div class="ln" style="margin-top:10px"><span>If more than 10 min early/late, I will call/text the office.</span><span class="ini">${ini('sch1')}</span></div>`;
-    inner+=`<div class="ln"><span>Office will call if I am more than 15 min late.</span><span class="ini">${ini('sch2')}</span></div>`;
+    inner+=`<p style="margin-top:12px">If I am more than 10 minutes early/late I will call or text the office; the office will call if I am more than 15 minutes late.</p>`;
   }else if(key==='agreements'){
     const items=[
       ['pa1','Take all nutritional supplementation as prescribed.'],
@@ -727,7 +735,7 @@ function buildPolicyPrint(key){
       ['pa8','I am solely responsible for the financial burden of all services/products received.'],
       ['pa9','If I break these commitments, my results of care may be jeopardized.'],
     ];
-    inner=items.map(it=>`<div class="ln"><span>${it[1]}</span><span class="ini">${ini(it[0])}</span></div>`).join('');
+    inner=items.map(it=>`<div class="ln"><span>${it[1]}</span></div>`).join('');
   }
   return `<div class="pp">
     <div class="pp__head"><img src="${LOGO}"><span class="ttl">${PRINT_TITLES[key]}</span></div>
