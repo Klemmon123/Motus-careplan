@@ -513,10 +513,13 @@ body.pres-mode .app-header{display:none;}
 /* ── CARE PLAN PRINT OVERLAY ──────────────────────── */
 #__cpOverlay{display:none;position:fixed;inset:0;background:#fff;z-index:99999;padding:24px;font-family:Helvetica,Arial,sans-serif;font-size:9pt;color:#2A2A2A;overflow:auto;}
 @media print{
-  body>*:not(#__cpOverlay):not(#__adminOverlay){display:none!important;}
+  body>*:not(#__cpOverlay):not(#__adminOverlay):not(#__nfOverlay){display:none!important;}
   #__cpOverlay{display:flex!important;flex-direction:column!important;position:static!important;padding:0!important;height:10.55in!important;overflow:hidden!important;}
   #__adminOverlay{display:block!important;position:static!important;padding:0.12in 0.18in!important;overflow:visible!important;}
+  #__nfOverlay{display:block!important;position:static!important;padding:0!important;overflow:visible!important;}
   @page{size:letter;margin:.22in;}
+  @page nfland{size:letter landscape;margin:.35in;}
+  .nfp-land{page:nfland;}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
 }
 /* Light, form-matching aesthetic: white cards, navy-tint accents, navy text — no heavy navy blocks */
@@ -581,6 +584,9 @@ body.pres-mode .app-header{display:none;}
 
 /* ── ADMIN CARE PLAN SUMMARY (internal print) ── */
 #__adminOverlay{display:none;position:fixed;inset:0;background:#fff;z-index:99999;padding:24px;overflow:auto;}
+#__nfOverlay{display:none;position:fixed;inset:0;background:#fff;z-index:99999;padding:24px;overflow:auto;}
+.nfp-land .as-tbl{font-size:8.5pt;}
+.nfp-land .as-tbl th,.nfp-land .as-tbl td{padding:5px 7px;}
 .as-doc{font-family:'Inter',system-ui,sans-serif;color:#23262E;}
 .as-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;border-top:3px solid #EEAF21;border-bottom:1.5px solid #1E2D63;padding:11px 2px;}
 .as-brand{display:flex;align-items:center;gap:12px;}
@@ -975,6 +981,7 @@ body.pres-mode .app-header{display:none;}
       <button class="nf-btn" id="nfAddMonth" type="button">+ Add Month</button>
       <span class="nf-spacer"></span>
       <button class="nf-btn nf-btn--primary" id="nfSend" type="button">Send Total → Care Plan</button>
+      <button class="nf-btn" id="nfPrint" type="button">Print Flow Sheet</button>
       <button class="nf-btn" id="nfDrive" type="button">Save to Drive (Sheet)</button>
     </div>
     <div class="nf-table-wrap" id="nfTableWrap"></div>
@@ -2060,6 +2067,7 @@ function nfRecalc(){
   });
   if(el('nfAddRow')) el('nfAddRow').addEventListener('click', function(){ nfState.rows.push(newNFRow()); renderNutriFlow(); nfSave(); });
   if(el('nfAddMonth')) el('nfAddMonth').addEventListener('click', function(){ nfState.months.push('Month '+(nfState.months.length+1)); nfState.rows.forEach(function(r){ r.cells.push(''); }); renderNutriFlow(); nfSave(); });
+  if(el('nfPrint')) el('nfPrint').addEventListener('click', printNutriFlow);
   if(el('nfDrive')) el('nfDrive').addEventListener('click', nfSaveToDrive);
 })();
 function nfBuildAOA(){
@@ -2082,6 +2090,33 @@ function nfBuildAOA(){
 }
 function nfFilename(){ var name=(el('patientName')&&el('patientName').value.trim())||'Patient'; return name.replace(/[^\w \-]/g,'').trim()+' Nutritional Flow'; }
 function nfDateTab(){ var d=new Date(); return ('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)+'-'+d.getFullYear(); }
+// Condensed, printable flow sheet (same look as the care-plan / admin PDFs)
+function printNutriFlow(){
+  var name=(el('patientName')&&el('patientName').value.trim())||'—';
+  var now=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  var logoImg=document.querySelector('img[alt="Motus Health"]');
+  var logoSrc=logoImg?logoImg.src:'';
+  var monthHeads=nfState.months.map(function(m){return '<th class="c">'+nfEsc(m)+'</th>';}).join('');
+  var rows=nfState.rows.filter(function(r){return (r.product||'').trim() || nfLineTotal(r);}).map(function(r){
+    var cells=r.cells.map(function(c){return '<td class="c">'+(nfEsc(c)||'—')+'</td>';}).join('');
+    return '<tr><td>'+nfEsc(r.product||'—')+'</td>'+cells+'<td class="c">'+(parseFloat(r.qty)||0)+'</td><td class="r">'+fmt(parseFloat(r.price)||0)+'</td><td class="r">'+fmt(nfLineTotal(r))+'</td></tr>';
+  }).join('');
+  if(!rows) rows='<tr><td colspan="'+(nfState.months.length+4)+'" style="text-align:center;color:#9098A6;">No supplements added yet</td></tr>';
+  var html='<div class="as-doc nfp-land">'+
+    '<div class="as-head"><div class="as-brand">'+(logoSrc?'<img src="'+logoSrc+'">':'<span style="font-size:14pt;font-weight:700;color:#1E2D63;font-family:Georgia,serif;">Motus Health</span>')+'<div class="as-kicker">Nutrition Flow Sheet</div></div>'+
+      '<div class="as-meta"><div class="as-meta-l">Prepared For</div><div class="as-meta-v">'+nfEsc(name)+'</div><div class="as-meta-d">'+now+'</div></div></div>'+
+    '<div class="as-sec"><div class="as-sec-t">Monthly Supplement Plan</div>'+
+      '<table class="as-tbl"><thead><tr><th>Product</th>'+monthHeads+'<th class="c">Qty</th><th class="r">$ / Unit</th><th class="r">Total</th></tr></thead>'+
+      '<tbody>'+rows+'</tbody>'+
+      '<tfoot><tr><td colspan="'+(nfState.months.length+3)+'">Total Price</td><td class="r">'+fmt(nfGrandTotal())+'</td></tr></tfoot></table></div>'+
+    '<div class="as-foot">Motus Health · Nutrition Flow Sheet · '+now+'</div>'+
+  '</div>';
+  var old=document.getElementById('__nfOverlay'); if(old) document.body.removeChild(old);
+  var ov=document.createElement('div'); ov.id='__nfOverlay'; ov.innerHTML=html; document.body.appendChild(ov);
+  var fin=function(){ window.print(); setTimeout(function(){var x=document.getElementById('__nfOverlay'); if(x) document.body.removeChild(x);},2000); };
+  if(logoSrc){ var im=new Image(); im.onload=function(){ setTimeout(fin,60); }; im.onerror=fin; im.src=logoSrc; }
+  else { fin(); }
+}
 function nfWorkbook(){ var ws=XLSX.utils.aoa_to_sheet(nfBuildAOA()); var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,nfDateTab()); return wb; }
 function nfSaveToDrive(){
   if(typeof XLSX==='undefined'){ alert('Spreadsheet library is still loading — please try again in a moment.'); return; }
