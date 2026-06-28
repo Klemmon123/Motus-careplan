@@ -2319,13 +2319,24 @@ renderNFVersions();
   function initPlans(){ plans = [{ name:'Full Plan', state: serialize() }]; currentPlan = 0; buildPlanBar(); }
   function buildSavePayload(){
     snapshotCurrent();
-    return { _type:'motus-care-plan', _version:2, savedAt:new Date().toISOString(), patientName: el('patientName').value || '', plans: plans, currentPlan: currentPlan };
+    return { _type:'motus-care-plan', _version:2, savedAt:new Date().toISOString(), patientName: el('patientName').value || '', plans: plans, currentPlan: currentPlan,
+             nutriFlows: (typeof nfDoc !== 'undefined' ? nfDoc : null) };   // all Nutrition Flow versions travel with the patient
   }
   function loadPayload(j){
     if(!j || j._type !== 'motus-care-plan') throw new Error('not-a-care-plan');
     if(j.plans && j.plans.length){ plans = j.plans; currentPlan = Math.min(j.currentPlan||0, plans.length-1); }
     else { plans = [{ name:'Full Plan', state:j }]; currentPlan = 0; }   // backward-compatible: old single-plan file
     applyPlan(currentPlan);
+    // Restore the patient's Nutrition Flow versions, if the file has them
+    if(j.nutriFlows && j.nutriFlows.flows && j.nutriFlows.flows.length && typeof nfDoc !== 'undefined'){
+      nfDoc = j.nutriFlows;
+      if(nfDoc.cur==null || nfDoc.cur<0 || nfDoc.cur>=nfDoc.flows.length) nfDoc.cur=0;
+      nfState = nfDoc.flows[nfDoc.cur];
+      nfState.rows.forEach(function(r){ while(r.cells.length<nfState.months.length) r.cells.push(''); });
+      if(typeof nfSave==='function') nfSave();
+      if(typeof renderNutriFlow==='function') renderNutriFlow();
+      if(typeof renderNFVersions==='function') renderNFVersions();
+    }
   }
 
   // ---- OAuth (Google Identity Services) ----
