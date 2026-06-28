@@ -615,6 +615,41 @@ body.pres-mode .app-header{display:none;}
 .as-print-btn{width:100%;margin-top:14px;font-family:'Inter',sans-serif;font-size:.84rem;font-weight:600;padding:11px 16px;border-radius:10px;border:1.5px solid var(--navy);background:var(--navy-tint);color:var(--navy);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:background .15s,border-color .15s;}
 .as-print-btn:hover{background:var(--navy);color:#fff;}
 .as-print-btn svg{width:16px;height:16px;}
+/* ── NUTRITION FLOW TAB ── */
+.nf-page{max-width:1180px;margin:0 auto;padding:20px 26px 60px;}
+.nf-head{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:16px;flex-wrap:wrap;}
+.nf-title{font-family:'Playfair Display',Georgia,serif;font-size:1.5rem;color:var(--navy);}
+.nf-sub{font-size:.82rem;color:var(--gray);line-height:1.55;margin:6px 0 0;max-width:70ch;}
+.nf-grand-box{background:var(--navy);color:#fff;border-radius:14px;padding:14px 22px;text-align:right;flex-shrink:0;box-shadow:0 8px 24px -12px rgba(27,43,94,.5);}
+.nf-grand-l{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6);font-weight:700;}
+.nf-grand-v{font-family:'IBM Plex Mono',monospace;font-size:1.9rem;font-weight:700;line-height:1.1;}
+.nf-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.nf-spacer{flex:1;}
+.nf-btn{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;padding:9px 15px;border-radius:9px;border:1.5px solid var(--line);background:var(--surface);color:var(--navy);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.nf-btn:hover{border-color:var(--navy-light);background:var(--navy-tint);}
+.nf-btn--ghost{color:var(--gray);}
+.nf-btn--primary{background:var(--navy);border-color:var(--navy);color:#fff;}
+.nf-btn--primary:hover{background:var(--navy-light);border-color:var(--navy-light);color:#fff;}
+.nf-table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow-sm);}
+.nf-table{border-collapse:collapse;width:100%;min-width:780px;}
+.nf-table th{position:sticky;top:0;background:var(--navy-tint);font-size:.64rem;text-transform:uppercase;letter-spacing:.08em;color:var(--navy);font-weight:700;padding:9px 8px;text-align:left;border-bottom:1.5px solid var(--navy);white-space:nowrap;}
+.nf-table td{padding:5px 8px;border-bottom:1px solid var(--line);vertical-align:middle;}
+.nf-table tbody tr:hover{background:#FAFBFD;}
+.nf-table input{width:100%;font-family:'Inter',sans-serif;font-size:.86rem;border:1px solid transparent;border-radius:6px;padding:6px 7px;background:transparent;color:var(--charcoal);box-sizing:border-box;}
+.nf-table input:hover{border-color:var(--line);}
+.nf-table input:focus{outline:none;border-color:var(--navy-light);background:#fff;box-shadow:0 0 0 2px rgba(61,95,160,.12);}
+.nf-prod{min-width:200px;}.nf-prod-in{font-weight:600;color:var(--navy)!important;}
+.nf-mo{min-width:80px;}.nf-mo-name{font-size:.62rem!important;font-weight:700!important;text-transform:uppercase;color:var(--navy)!important;letter-spacing:.06em;}
+.nf-cell{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.78rem!important;color:var(--charcoal);}
+.nf-qty,.nf-price,.nf-total{min-width:74px;}
+.nf-qty-in,.nf-price-in{font-family:'IBM Plex Mono',monospace;text-align:right;}
+.nf-line{font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--navy);text-align:right;white-space:nowrap;}
+.nf-x{width:30px;}
+.nf-del{width:24px;height:24px;border-radius:6px;border:1px solid var(--line);background:var(--paper);color:var(--gray);cursor:pointer;font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center;}
+.nf-del:hover{border-color:#E4A0A0;background:#FCEDED;color:#B4231F;}
+.nf-foot td{background:var(--navy-tint);font-weight:700;color:var(--navy);font-size:.92rem;border-top:1.5px solid var(--navy);border-bottom:none;padding:11px 10px;}
+.nf-foot td:first-child{text-align:right;text-transform:uppercase;letter-spacing:.08em;font-size:.72rem;}
+.nf-grand{font-family:'IBM Plex Mono',monospace;font-size:1.05rem;text-align:right;}
 /* GOOGLE DRIVE BAR */
 .drive-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .drive-btn{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;padding:8px 14px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--charcoal);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:border-color .15s,background .15s,opacity .15s;}
@@ -630,6 +665,8 @@ body.pres-mode .app-header{display:none;}
 <!-- Google Drive integration (OAuth + Drive REST + Picker) — async so a blocked/slow Google (e.g. Safari Private Relay) never stops the page from loading -->
 <script src="https://apis.google.com/js/api.js" async defer></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<!-- SheetJS for exporting the Nutrition Flow sheet as .xlsx -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" async defer></script>
 </head>
 <body>
 
@@ -666,6 +703,10 @@ body.pres-mode .app-header{display:none;}
       <span class="tab-dot"></span>
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
       Patient View
+    </button>
+    <button class="tab-btn" data-tab="nutrition">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v18H3z"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+      Nutrition Flow
     </button>
   </nav>
   <div class="plan-bar" id="planBar"></div>
@@ -919,6 +960,27 @@ body.pres-mode .app-header{display:none;}
 </div><!-- /.pres-page -->
 </div><!-- /.tab-present -->
 
+<!-- NUTRITION FLOW TAB -->
+<div class="tab-pane" id="tab-nutrition">
+  <div class="nf-page">
+    <div class="nf-head">
+      <div>
+        <h2 class="nf-title">Nutrition Flow Sheet</h2>
+        <p class="nf-sub">Monthly supplement plan. The <strong>Total Price</strong> flows straight into the care plan's <strong>Nutrition Supplements</strong> line. Pick a product to auto-fill its price (every price is editable). Mark each month with the date you gave the product to the patient.</p>
+      </div>
+      <div class="nf-grand-box"><div class="nf-grand-l">Total Price</div><div class="nf-grand-v" id="nfGrand">$0.00</div></div>
+    </div>
+    <div class="nf-toolbar">
+      <button class="nf-btn" id="nfAddRow" type="button">+ Add Supplement</button>
+      <button class="nf-btn" id="nfAddMonth" type="button">+ Add Month</button>
+      <span class="nf-spacer"></span>
+      <button class="nf-btn nf-btn--ghost" id="nfDownload" type="button">Download .xlsx</button>
+      <button class="nf-btn nf-btn--primary" id="nfDrive" type="button">Save to Drive</button>
+    </div>
+    <div class="nf-table-wrap" id="nfTableWrap"></div>
+  </div>
+</div>
+
 
 
 <script>
@@ -1017,6 +1079,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.id==='tab-'+t));
     document.body.classList.toggle('pres-mode', t==='present');
     if(t==='present') { renderPres(); if(sigResize) sigResize(); }
+    if(t==='nutrition' && typeof renderNutriFlow==='function') renderNutriFlow();
   });
 });
 
@@ -1913,6 +1976,119 @@ if(el('logPlanBtn')) {
   });
 }
 
+// ── NUTRITION FLOW SHEET ──────────────────────────────────────────
+// Default placeholder prices = retail from the practice "Nutrition Pricing and Dosage List" (all editable in-app)
+const NUTRI_CATALOG = [
+  {n:'Gut Health Kit',p:1997},{n:'Knee Pain Kit',p:600},{n:'Neuropathy Kit',p:970},{n:'Wellness Kit',p:200},{n:'Weight Loss Kit',p:997},{n:'Weight Loss Kit Additional Round',p:370},
+  {n:'Artho Complete Cream',p:80},{n:'Cleanse',p:90},{n:'Cortiflame',p:60},{n:'CortiShield',p:90},{n:'Electro Spray',p:50},{n:'Fibro',p:90},{n:'GI Pro',p:240},{n:'Greens Berry (60)',p:90},{n:'Greens Berry (180)',p:235},{n:'Immune',p:80},{n:'Immuni-D Rest Cream',p:80},{n:'InflammX',p:90},{n:'Keto Fuel',p:115},{n:'Keto Pro',p:80},{n:'Lean Plus',p:90},{n:'Lean Chocolate Protein',p:90},{n:'Metabolic H3',p:90},{n:'Mobile Max 60',p:100},{n:'Mobile Max 180',p:300},{n:'One BB',p:110},{n:'Neuro-Soothe Cream',p:65},{n:'Neuro-Soothe w/ Menthol',p:40},{n:'PlantPro+',p:225},{n:'RL Accelerator',p:65},{n:'Sea Synergy',p:90},{n:'Seal Pro',p:240},{n:'Sleep',p:70},{n:'Slim',p:90},{n:'SlimPlus',p:90},{n:'VasoPro Plus 60',p:140},{n:'VasoPro Plus 180',p:380},
+  {n:'Anodyne 300',p:1255},{n:'Rebuilder 300',p:860},
+  {n:'Acetyl L-Carnitine',p:45},{n:'ADK Evail',p:40},{n:'Adrenal Complex (120)',p:44},{n:'Adrenal Complex (240)',p:85},{n:'Adrenal Flow',p:35},{n:'Adrenotone',p:35},{n:'Amino Acid Supreme',p:75},{n:'Amino Acid Synergy',p:43},{n:'Annatto-E 300 (30)',p:45},{n:'Annatto-E 300 (60)',p:80},{n:'ArthroSoothe',p:55},{n:'ArthroSoothe Supreme',p:80},{n:'B-Supreme (60)',p:27},{n:'B-Supreme (120)',p:47},{n:'Berberine Synergy',p:48},{n:'Betaine HCL',p:35},{n:'Bone Broth Protein',p:85},{n:'BrainVitale (60)',p:40},{n:'BrainVitale (120)',p:140},{n:'C+BioFizz',p:40},{n:'Calcium D-Glucarate',p:41},{n:'Cal/Mag 1:1',p:48},{n:'Cal/Mag 2:1',p:48},{n:'CLA',p:50},{n:'Collagen (Whole Body)',p:65},{n:'CoQnol 200',p:80},{n:'CoQnol 100',p:50},{n:'Creatine Monohydrate',p:35},{n:'DigestZymes (60)',p:30},{n:'DigestZymes (90)',p:40},{n:'DigestZymes (180)',p:75},{n:'DIM-Evail (60)',p:36},{n:'DIM-Evail (120)',p:65},{n:'EssentiaGreens and Reds',p:60},{n:'FemGuard + Balance',p:60},{n:'FemGuard - HF',p:50},{n:'Ferrochel',p:20},{n:'Fiber Prebiotic Complete',p:50},{n:'FloraMyces',p:50},{n:'GastroMend-HP (60)',p:60},{n:'GastroMend-HP (120)',p:100},{n:'GI Microb-X (60)',p:60},{n:'GI Microb-X (120)',p:100},{n:'GI Revive',p:80},{n:'Hi-Po Emulsi-A',p:35},{n:'HistaGest-DAO',p:65},{n:'IgGI Shield Powder',p:75},{n:'IgGI Shield Capsules',p:65},{n:'Iodine Synergy',p:30},{n:'L-Glutamine Powder (250g)',p:55},{n:'L-Glutamine Powder (500g)',p:100},{n:'Liposomal NMN Synergy',p:77},{n:'LV-GB Complex',p:30},{n:'MagCitrate Powder',p:45},{n:'Magnesium Chelate',p:37},{n:'Metabolic Synergy (180)',p:100},{n:'Metabolic Synergy (360)',p:150},{n:'MitoChondrial NRG',p:75},{n:'Monolaurin-Avail',p:46},{n:'Multi + Phyto',p:70},{n:'Myosedate',p:40},{n:'NeuroLink',p:65},{n:'NeuroMag',p:65},{n:'PaleoFiber RS',p:60},{n:'Pancreatic Enzyme Complex',p:66},{n:'PrenatalPro',p:50},{n:'PrimalMulti',p:65},{n:'ProbioMed 100',p:86},{n:'ProbioSpore',p:65},{n:'Quercetin Ascorbate',p:65},{n:'Red Yeast Rice',p:51},{n:'Tri-Butyrin Supreme',p:47},{n:'Vitamin C powder',p:46},{n:'Vitamin D Evail Supreme',p:40},{n:'Vitamin D Supreme (60)',p:35},{n:'Vitamin D Supreme (180)',p:90},{n:'Vitamin D Synergy',p:28},{n:'WheyCool',p:115},{n:'Whole Body Collagen',p:65},{n:'Zinc Supreme',p:22},{n:'Zinc+',p:24},
+  {n:'Advanced TUDCA',p:100},{n:'BC-ATP',p:95},{n:'Biotoxin Binder',p:77},{n:'Bowel Mover',p:56},{n:'Carboxy',p:100},{n:'Drainage Activator',p:60},{n:'HM-ET Binder',p:106},{n:'IS-BAB',p:48},{n:'IS-BART',p:48},{n:'IS-BOOST',p:48},{n:'IS-BORR',p:48},{n:'KL Support',p:64},{n:'LymphActiv',p:55},{n:'Methyl-B Complex',p:30},{n:'MitoActive',p:95},{n:'Para 1',p:50},{n:'Para 2',p:56},{n:'Para 3',p:56},{n:'ViRadChem Binder',p:76},
+  {n:'ProOmega Curcumin',p:80},{n:'ProOmega 2000',p:65},{n:'ProOmega Lemon Liquid',p:95},
+  {n:'Acetyl-CH Active',p:61},{n:'Adaptocrine',p:50},{n:'AdrenaCalm',p:50},{n:'BioFilm CLR',p:62},{n:'Brain-E DHA',p:47},{n:'CatecoStim',p:30},{n:'Cholestar-RF',p:45},{n:'EnteroVite',p:62},{n:'EnzymixPro',p:55},{n:'Gastro-ULC',p:46},{n:'H-PLR',p:48},{n:'Moldetox',p:50},{n:'Neuro O2',p:50},{n:'NeuroFlam',p:62},{n:'Nitric Balance',p:52},{n:'Parastonil',p:42},{n:'Resvero Active',p:65},{n:'Resvero-SE Active',p:75},{n:'Serotone Active',p:70},{n:'Turmero Active',p:60},{n:'Turmero-SE Active',p:70},{n:'X-Viromin',p:45},
+  {n:'Body Bio TUDCA',p:66},{n:"Children's DHA Gummy",p:26},{n:'Cystistatin',p:55},{n:'Glutenza',p:60},{n:'OptiMag Neuro (75g)',p:58},{n:'OptiMag Neuro (150g)',p:88},{n:'Ovasitol',p:105},{n:'TestoQuench for Women',p:72},{n:'Thyrodex T-150',p:30},{n:'TraceMinerals',p:36},{n:'Licorice Root Extract',p:30},{n:'Mannose Powder (50g)',p:45},{n:'Mannose Powder (100g)',p:80},{n:'PhosphaLine',p:160},{n:'Pure Chaste Tree (60)',p:17},{n:'Pure Chaste Tree (120)',p:31},
+  {n:'BPC-157',p:150},{n:'BPC-157 (Quick Silver)',p:140},{n:'BPC-157/TB-500',p:210},{n:'BPC-157 + KPV Combo',p:210},{n:'Cerebro Pep',p:160},{n:'Gut Feeling',p:170},{n:'KPV',p:150},{n:'Testes Bioregulator',p:80},{n:'TB4 Frag',p:150},
+  {n:'D3K2',p:55},{n:'H2 Elite',p:55},{n:'Kidney Care',p:73},{n:'Liposomal Glutathione',p:45},{n:'Liver Sauce',p:75},{n:'Melatonin',p:36},{n:'Ultra Binder Capsules',p:80},{n:'Ultra Binder Powder',p:84},
+  {n:'Deep Blue Rub (4oz)',p:77},{n:'ATP 360',p:74},{n:'MycoPul (30)',p:40},{n:'MycoPul (90)',p:110},{n:'ToxinPul',p:50},{n:'Lauricidin',p:50}
+];
+const NF_KEY = 'motusNutriFlow';
+var nfState = { months:['Month 1','Month 2','Month 3'], rows:[] };
+function newNFRow(){ return { product:'', price:'', qty:'', cells: nfState.months.map(function(){return '';}) }; }
+(function loadNF(){ try{ var s=JSON.parse(localStorage.getItem(NF_KEY)); if(s && s.months && s.rows){ nfState=s; nfState.rows.forEach(function(r){ while(r.cells.length<nfState.months.length) r.cells.push(''); }); } }catch(e){} if(!nfState.rows.length){ nfState.rows=[newNFRow(),newNFRow(),newNFRow(),newNFRow()]; } })();
+function nfSave(){ try{ localStorage.setItem(NF_KEY, JSON.stringify(nfState)); }catch(e){} }
+function nfEsc(s){ return (s==null?'':String(s)).replace(/"/g,'&quot;'); }
+function nfLineTotal(r){ return (parseFloat(r.qty)||0)*(parseFloat(r.price)||0); }
+function nfGrandTotal(){ return nfState.rows.reduce(function(s,r){return s+nfLineTotal(r);},0); }
+function nfSyncToCarePlan(){
+  var total = nfGrandTotal();
+  var it = ITEMS.find(function(x){return x.id==='nutrition';});
+  if(it){ it.price = total; it.qty = total>0?1:0; }
+  var pi=document.querySelector('[data-pid="nutrition"]'); if(pi) pi.value = total;
+  var qi=document.querySelector('[data-qty="nutrition"]'); if(qi) qi.value = total>0?1:0;
+  if(typeof render==='function') render();
+}
+function renderNutriFlow(){
+  var wrap = el('nfTableWrap'); if(!wrap) return;
+  var dl = '<datalist id="nfCatalog">'+NUTRI_CATALOG.map(function(c){return '<option value="'+nfEsc(c.n)+'">';}).join('')+'</datalist>';
+  var monthHeads = nfState.months.map(function(m,mi){ return '<th class="nf-mo"><input class="nf-mo-name" data-mhead="'+mi+'" value="'+nfEsc(m)+'"></th>'; }).join('');
+  var head = '<tr><th class="nf-prod">Product</th>'+monthHeads+'<th class="nf-qty">Qty</th><th class="nf-price">$ / unit</th><th class="nf-total">Total</th><th class="nf-x"></th></tr>';
+  var body = nfState.rows.map(function(r,ri){
+    var cells = r.cells.map(function(cv,ci){ return '<td><input class="nf-cell" data-r="'+ri+'" data-c="'+ci+'" value="'+nfEsc(cv)+'" placeholder="—"></td>'; }).join('');
+    return '<tr>'+
+      '<td><input class="nf-prod-in" list="nfCatalog" data-rp="'+ri+'" value="'+nfEsc(r.product)+'" placeholder="Type or pick a product"></td>'+
+      cells+
+      '<td><input class="nf-qty-in" type="number" min="0" step="1" data-rq="'+ri+'" value="'+nfEsc(r.qty)+'" placeholder="0"></td>'+
+      '<td><input class="nf-price-in" type="number" min="0" step="0.01" data-rpr="'+ri+'" value="'+nfEsc(r.price)+'" placeholder="0.00"></td>'+
+      '<td class="nf-line">'+fmt(nfLineTotal(r))+'</td>'+
+      '<td><button class="nf-del" data-del="'+ri+'" title="Remove" type="button">×</button></td>'+
+    '</tr>';
+  }).join('');
+  var foot = '<tr class="nf-foot"><td colspan="'+(nfState.months.length+2)+'">Total Price</td><td class="nf-grand">'+fmt(nfGrandTotal())+'</td><td></td></tr>';
+  wrap.innerHTML = dl + '<table class="nf-table"><thead>'+head+'</thead><tbody>'+body+'</tbody><tfoot>'+foot+'</tfoot></table>';
+  if(el('nfGrand')) el('nfGrand').textContent = fmt(nfGrandTotal());
+}
+function nfRecalc(){
+  var wrap=el('nfTableWrap'); if(!wrap) return;
+  var lines=wrap.querySelectorAll('.nf-line');
+  nfState.rows.forEach(function(r,ri){ if(lines[ri]) lines[ri].textContent=fmt(nfLineTotal(r)); });
+  var g=wrap.querySelector('.nf-grand'); if(g) g.textContent=fmt(nfGrandTotal());
+  if(el('nfGrand')) el('nfGrand').textContent=fmt(nfGrandTotal());
+  nfSave(); nfSyncToCarePlan();
+}
+(function bindNutriFlow(){
+  var wrap = el('nfTableWrap');
+  if(wrap){
+    wrap.addEventListener('input', function(e){
+      var t=e.target;
+      if(t.classList.contains('nf-prod-in')){ var ri=+t.dataset.rp; nfState.rows[ri].product=t.value; var hit=NUTRI_CATALOG.find(function(c){return c.n===t.value;}); if(hit){ nfState.rows[ri].price=hit.p; var pin=wrap.querySelector('[data-rpr="'+ri+'"]'); if(pin) pin.value=hit.p; nfRecalc(); } else { nfSave(); } }
+      else if(t.classList.contains('nf-qty-in')){ nfState.rows[+t.dataset.rq].qty=t.value; nfRecalc(); }
+      else if(t.classList.contains('nf-price-in')){ nfState.rows[+t.dataset.rpr].price=t.value; nfRecalc(); }
+      else if(t.classList.contains('nf-cell')){ nfState.rows[+t.dataset.r].cells[+t.dataset.c]=t.value; nfSave(); }
+      else if(t.classList.contains('nf-mo-name')){ nfState.months[+t.dataset.mhead]=t.value; nfSave(); }
+    });
+    wrap.addEventListener('click', function(e){
+      var d=e.target.closest && e.target.closest('.nf-del');
+      if(d){ nfState.rows.splice(+d.dataset.del,1); if(!nfState.rows.length) nfState.rows.push(newNFRow()); renderNutriFlow(); nfSave(); nfSyncToCarePlan(); }
+    });
+  }
+  if(el('nfAddRow')) el('nfAddRow').addEventListener('click', function(){ nfState.rows.push(newNFRow()); renderNutriFlow(); nfSave(); });
+  if(el('nfAddMonth')) el('nfAddMonth').addEventListener('click', function(){ nfState.months.push('Month '+(nfState.months.length+1)); nfState.rows.forEach(function(r){ r.cells.push(''); }); renderNutriFlow(); nfSave(); });
+  if(el('nfDownload')) el('nfDownload').addEventListener('click', nfDownloadXlsx);
+  if(el('nfDrive')) el('nfDrive').addEventListener('click', nfSaveToDrive);
+})();
+function nfBuildAOA(){
+  var name=(el('patientName')&&el('patientName').value.trim())||'';
+  var date=new Date().toLocaleDateString('en-US');
+  var aoa=[];
+  aoa.push([ (name?name+' ':'')+'Monthly Nutritional Breakdown' ]);
+  aoa.push(['Patient Name:', name, '', '', '', 'Date:', date]);
+  aoa.push([]);
+  aoa.push(['Products'].concat(nfState.months).concat(['Quantity','$ per unit','Total Price']));
+  nfState.rows.forEach(function(r){
+    if(!(r.product||'').trim() && !nfLineTotal(r)) return;
+    aoa.push([r.product||''].concat(r.cells.map(function(c){return c||'';})).concat([parseFloat(r.qty)||0, parseFloat(r.price)||0, nfLineTotal(r)]));
+  });
+  aoa.push([]);
+  var totRow=[]; for(var i=0;i<nfState.months.length+1;i++) totRow.push('');
+  totRow.push('Total Price'); totRow.push(''); totRow.push(nfGrandTotal());
+  aoa.push(totRow);
+  return aoa;
+}
+function nfFilename(){ var name=(el('patientName')&&el('patientName').value.trim())||'Patient'; return name.replace(/[^\w \-]/g,'').trim()+' Nutritional Flow'; }
+function nfWorkbook(){ var ws=XLSX.utils.aoa_to_sheet(nfBuildAOA()); var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Sheet1'); return wb; }
+function nfDownloadXlsx(){
+  if(typeof XLSX==='undefined'){ alert('Spreadsheet library is still loading — please try again in a moment.'); return; }
+  XLSX.writeFile(nfWorkbook(), nfFilename()+'.xlsx');
+}
+function nfSaveToDrive(){
+  if(typeof XLSX==='undefined'){ alert('Spreadsheet library is still loading — please try again in a moment.'); return; }
+  if(typeof window.motusDriveUploadXlsx!=='function'){ alert('Google Drive saving is not available in this build.'); return; }
+  var b64=XLSX.write(nfWorkbook(),{bookType:'xlsx',type:'base64'});
+  window.motusDriveUploadXlsx(nfFilename(), b64);
+}
+renderNutriFlow();
+nfSyncToCarePlan();
+
 // ── GOOGLE DRIVE SAVE / LOAD ──────────────────────────────────────
 // Each patient is stored as one <Patient Name>.json file in a Drive
 // folder (use a Shared Drive folder so the whole practice can see them).
@@ -2214,6 +2390,39 @@ if(el('logPlanBtn')) {
       });
     });
   }
+
+  // ---- Save the Nutrition Flow sheet to Drive as a real .xlsx ----
+  window.motusDriveUploadXlsx = function(name, base64){
+    if(!configured()){ alert('Google Drive is not configured yet.'); return; }
+    withToken(function(){
+      setStatus('Saving flow sheet…');
+      ensureFolder(function(fid){
+        var meta = { name: name + '.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', parents: [fid] };
+        var boundary = 'motusx_' + Date.now() + '_' + Math.random().toString(16).slice(2);
+        var body =
+          '--' + boundary + '\r\n' +
+          'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+          JSON.stringify(meta) + '\r\n' +
+          '--' + boundary + '\r\n' +
+          'Content-Type: ' + meta.mimeType + '\r\n' +
+          'Content-Transfer-Encoding: base64\r\n\r\n' +
+          base64 + '\r\n' +
+          '--' + boundary + '--';
+        driveFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true&fields=id,name', {
+          method: 'POST',
+          headers: { 'Content-Type': 'multipart/related; boundary=' + boundary },
+          body: body
+        }).then(function(r){ return r.json().then(function(j){ if(!r.ok) throw j; return j; }); })
+          .then(function(res){ setStatus('Flow sheet saved: ' + res.name, 'ok'); alert('Saved to Drive: ' + res.name); })
+          .catch(function(err){
+            if(err && err.code === 401){ window.motusDriveUploadXlsx(name, base64); return; }
+            console.error('Flow sheet save failed', err);
+            setStatus('Flow save failed', 'err');
+            alert('Drive save failed: ' + ((err && err.error && err.error.message) || 'see browser console for details'));
+          });
+      });
+    });
+  };
 
   // ---- Load ----
   function loadFromDrive(){
