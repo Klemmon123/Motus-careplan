@@ -704,6 +704,10 @@ body.pres-mode .app-header{display:none;}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
         Load Patient
       </button>
+      <button type="button" class="drive-btn" id="driveCalc">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v18H3z"/><path d="M3 9h18M9 3v18"/></svg>
+        Save Calc Sheet
+      </button>
       <span class="drive-status" id="driveStatus">Not connected</span>
     </div>
     <div class="header-date" id="headerDate"></div>
@@ -2484,54 +2488,100 @@ renderNFVersions();
   }
 
   // Find (or create) a "Nutritional Flow Sheets" subfolder inside the care-plans folder
-  function ensureFlowFolder(parentFid, cb){
-    var q = "mimeType='application/vnd.google-apps.folder' and name='Nutritional Flow Sheets' and '" + parentFid + "' in parents and trashed=false";
+  function ensureSubFolder(parentFid, folderName, cb){
+    var q = "mimeType='application/vnd.google-apps.folder' and name='" + folderName.replace(/'/g,"\\'") + "' and '" + parentFid + "' in parents and trashed=false";
     driveFetch('https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent(q) + '&fields=files(id,name)&supportsAllDrives=true&includeItemsFromAllDrives=true', {})
       .then(function(r){ return r.json(); })
       .then(function(j){
         if(j && j.files && j.files.length){ cb(j.files[0].id); return; }
         driveFetch('https://www.googleapis.com/drive/v3/files?supportsAllDrives=true&fields=id', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: 'Nutritional Flow Sheets', mimeType: 'application/vnd.google-apps.folder', parents: [parentFid] })
+          body: JSON.stringify({ name: folderName, mimeType: 'application/vnd.google-apps.folder', parents: [parentFid] })
         }).then(function(r){ return r.json(); }).then(function(f){ cb(f.id || parentFid); }).catch(function(){ cb(parentFid); });
       })
       .catch(function(){ cb(parentFid); });
   }
 
-  // ---- Save the Nutrition Flow sheet to Drive as a native Google Sheet, in the "Nutritional Flow Sheets" folder ----
-  window.motusDriveUploadXlsx = function(name, base64){
+  // Upload xlsx bytes as a native Google Sheet into a named subfolder of the care-plans folder (Drive converts on upload)
+  function uploadSheet(name, base64, folderName, okMsg){
     if(!configured()){ alert('Google Drive is not configured yet.'); return; }
     withToken(function(){
-      setStatus('Saving flow sheet…');
+      setStatus('Saving…');
       ensureFolder(function(careFid){
-        ensureFlowFolder(careFid, function(fid){
-          // Upload xlsx bytes but target a Google Sheet mimeType → Drive converts it on the way in
+        ensureSubFolder(careFid, folderName, function(fid){
           var meta = { name: name, mimeType: 'application/vnd.google-apps.spreadsheet', parents: [fid] };
           var boundary = 'motusx_' + Date.now() + '_' + Math.random().toString(16).slice(2);
           var body =
-            '--' + boundary + '\r\n' +
-            'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-            JSON.stringify(meta) + '\r\n' +
-            '--' + boundary + '\r\n' +
-            'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\r\n' +
-            'Content-Transfer-Encoding: base64\r\n\r\n' +
-            base64 + '\r\n' +
-            '--' + boundary + '--';
+            '--' + boundary + '\r\n' + 'Content-Type: application/json; charset=UTF-8\r\n\r\n' + JSON.stringify(meta) + '\r\n' +
+            '--' + boundary + '\r\n' + 'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\r\n' +
+            'Content-Transfer-Encoding: base64\r\n\r\n' + base64 + '\r\n' + '--' + boundary + '--';
           driveFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true&fields=id,name', {
-            method: 'POST',
-            headers: { 'Content-Type': 'multipart/related; boundary=' + boundary },
-            body: body
+            method: 'POST', headers: { 'Content-Type': 'multipart/related; boundary=' + boundary }, body: body
           }).then(function(r){ return r.json().then(function(j){ if(!r.ok) throw j; return j; }); })
-            .then(function(res){ setStatus('Flow sheet saved: ' + res.name, 'ok'); alert('Saved to Drive as a Google Sheet:\n' + res.name + '\n(in the "Nutritional Flow Sheets" folder)'); })
+            .then(function(res){ setStatus('Saved: ' + res.name, 'ok'); alert((okMsg||'Saved to Drive as a Google Sheet:\n') + res.name + '\n(in the "' + folderName + '" folder)'); })
             .catch(function(err){
-              if(err && err.code === 401){ window.motusDriveUploadXlsx(name, base64); return; }
-              console.error('Flow sheet save failed', err);
-              setStatus('Flow save failed', 'err');
+              if(err && err.code === 401){ uploadSheet(name, base64, folderName, okMsg); return; }
+              console.error('Sheet save failed', err);
+              setStatus('Save failed', 'err');
               alert('Drive save failed: ' + ((err && err.error && err.error.message) || 'see browser console for details'));
             });
         });
       });
     });
+  }
+
+  // Nutrition Flow → "Nutritional Flow Sheets" folder
+  window.motusDriveUploadXlsx = function(name, base64){ uploadSheet(name, base64, 'Nutritional Flow Sheets', 'Saved to Drive as a Google Sheet:\n'); };
+
+  // ---- Care Plan → calc sheet (one tab per plan version) → "Calc Sheets" folder ----
+  function calcFromState(st){
+    var get=function(it){ var s=st.items&&st.items[it.id]; return { name:it.name, cat:it.cat, qty:(s&&s.qty)||0, price:(s&&s.price!=null)?s.price:it.price, copay:(s&&s.copay)||0 }; };
+    var all=ITEMS.map(get);
+    var cash=all.filter(function(i){return i.cat!=='insurance';}).reduce(function(s,i){return s+i.price*i.qty;},0);
+    var iDB=all.filter(function(i){return i.cat==='insurance'&&!(i.copay>0);}).reduce(function(s,i){return s+i.price*i.qty;},0);
+    var ded=st.deductible||0, dedMet=st.deductibleMet||0, pct=(st.insurancePct!=null?st.insurancePct:100);
+    var dedRem=Math.max(0,ded-dedMet), preDed=Math.min(iDB,dedRem), afterDed=Math.max(0,iDB-preDed);
+    var iDP=preDed+afterDed*(pct/100);
+    var iCT=all.filter(function(i){return i.cat==='insurance'&&(i.copay>0);}).reduce(function(s,i){return s+i.copay*i.qty;},0);
+    var insP=iDP+iCT, base=cash+insP;
+    return { all:all, insP:insP, base:base, pif:base*0.9, pct:pct, selIns:st.selIns, phases:st.phases||[] };
+  }
+  function calcSheetAOA(st, pname, date){
+    var c=calcFromState(st);
+    var insName=(c.selIns && typeof INS_RATES!=='undefined' && INS_RATES[c.selIns]) ? INS_RATES[c.selIns].label : '';
+    var aoa=[['Patient Name: '+(pname||''), '', 'Acct #', 'Date: '+(date||'')],
+             ['Service/Product/Nutrition','# Provided','Price per session','Total']];
+    c.all.filter(function(i){return i.cat==='insurance'&&i.qty>0;}).forEach(function(i){ aoa.push([i.name, i.qty, i.price, i.price*i.qty]); });
+    aoa.push(['Ins Total'+(insName?': '+insName:''), '', c.pct+'%', c.insP]);
+    c.all.filter(function(i){return i.cat!=='insurance'&&i.qty>0;}).forEach(function(i){ aoa.push([i.name, i.qty, i.price, i.price*i.qty]); });
+    aoa.push([]);
+    aoa.push(['Total cost of program:', '', '', c.base]);
+    aoa.push(['10% Discount amount', '', '', c.pif]);
+    aoa.push(['Notes: '+c.phases.filter(function(p){return (p.f||0)>0&&(p.w||0)>0;}).map(function(p){return p.f+'x'+p.w;}).join(', ')]);
+    return aoa;
+  }
+  function fmtCalc(ws){   // currency-format the Price + Total columns (number formats are supported in free SheetJS)
+    if(!ws['!ref']) return ws;
+    var r=XLSX.utils.decode_range(ws['!ref']);
+    for(var R=r.s.r;R<=r.e.r;R++){ [2,3].forEach(function(C){ var a=XLSX.utils.encode_cell({r:R,c:C}); var cell=ws[a]; if(cell && cell.t==='n'){ cell.z='"$"#,##0.00'; } }); }
+    ws['!cols']=[{wch:42},{wch:11},{wch:16},{wch:13}];
+    return ws;
+  }
+  window.motusSaveCalcSheet = function(){
+    if(typeof XLSX==='undefined'){ alert('Spreadsheet library is still loading — try again in a moment.'); return; }
+    if(!plans || !plans.length){ alert('Build a care plan first.'); return; }
+    snapshotCurrent();
+    var pname=(el('patientName').value||'').trim();
+    var date=new Date().toLocaleDateString('en-US');
+    var wb=XLSX.utils.book_new(), used={};
+    plans.forEach(function(p,i){
+      var tab=((p.name||('Plan '+(i+1))).replace(/[\\\/\?\*\[\]:]/g,' ').slice(0,28).trim())||('Plan '+(i+1));
+      var b=tab, n=2; while(used[tab]){ tab=(b+' '+n).slice(0,28); n++; } used[tab]=1;
+      XLSX.utils.book_append_sheet(wb, fmtCalc(XLSX.utils.aoa_to_sheet(calcSheetAOA(p.state, pname, date))), tab);
+    });
+    var b64=XLSX.write(wb,{bookType:'xlsx',type:'base64'});
+    var fname=((pname||'Patient')+' Calc Sheet '+date).replace(/[\\\?\*\[\]:]/g,' ').replace(/\s+/g,' ').trim();
+    uploadSheet(fname, b64, 'Calc Sheets', 'Saved care plan calc sheet to Drive:\n');
   };
 
   // ---- Load ----
@@ -2577,6 +2627,7 @@ renderNFVersions();
   if($connect) $connect.addEventListener('click', function(){ withToken(function(){}); });
   if($save) $save.addEventListener('click', saveToDrive);
   if($load) $load.addEventListener('click', loadFromDrive);
+  if(el('driveCalc')) el('driveCalc').addEventListener('click', function(){ window.motusSaveCalcSheet(); });
 
   initPlans();   // start with one "Full Plan" version
   setStatus(configured() ? 'Not connected' : 'Drive not set up — add API keys', configured() ? '' : 'err');
