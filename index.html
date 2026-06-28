@@ -94,6 +94,9 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
 .item:last-child{border-bottom:none;}
 .item__info{display:flex;flex-direction:column;gap:2px;}
 .item__name{font-weight:500;font-size:.97rem;color:var(--charcoal);}
+.item__desc{width:100%;max-width:340px;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--charcoal);border:none;border-bottom:1px dashed var(--line);background:transparent;padding:2px 0;margin:1px 0 2px;}
+.item__desc::placeholder{color:var(--gray);font-style:italic;font-size:.72rem;}
+.item__desc:focus{outline:none;border-bottom-style:solid;border-bottom-color:var(--navy-light);}
 .item__price{font-size:.8rem;color:var(--gray);display:none;align-items:center;gap:4px;}
 .category.prices-visible .item__price{display:flex;}.category[data-cat="nutrition"] .item__price{display:flex;}
 .item__price .price-input{width:62px;font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--navy);text-align:right;border:none;border-bottom:1px solid var(--line);background:transparent;padding:0 2px;}
@@ -1193,6 +1196,7 @@ function buildCats() {
       }
       row.innerHTML = '<div class="item__info">' +
         '<span class="item__name">' + item.name + '</span>' +
+        '<input class="item__desc" data-desc="' + item.id + '" placeholder="Custom description for calc sheet (optional)" value="' + (item.desc ? String(item.desc).replace(/"/g,'&quot;') : '') + '">' +
         '<span class="item__price"><span class="mono">$</span>' +
         '<input type="number" class="price-input mono" data-pid="' + item.id + '" value="' + item.price + '" min="0" step="0.01">' +
         '<span class="unit">· ' + item.unit + '</span></span>' +
@@ -1208,6 +1212,7 @@ function buildCats() {
       row.querySelector('[data-inc]').addEventListener('click', function() { chQty(item.id,1); });
       row.querySelector('[data-qty]').addEventListener('input', function(e) { setQty(item.id,e.target.value); });
       row.querySelector('[data-pid]').addEventListener('input', function(e) { setPrice(item.id,e.target.value); });
+      var dd = row.querySelector('[data-desc]'); if(dd) dd.addEventListener('input', function(e) { item.desc = e.target.value; });
       var sb = row.querySelector('[data-sid]');
       if(sb) sb.addEventListener('click', function() {
         syncSet.has(item.id) ? syncSet.delete(item.id) : syncSet.add(item.id);
@@ -2207,6 +2212,7 @@ renderNFVersions();
     ITEMS.forEach(function(it){
       var rec = { qty: it.qty || 0, price: it.price };
       if('copay' in it) rec.copay = it.copay || 0;
+      if(it.desc) rec.desc = it.desc;
       items[it.id] = rec;
     });
     var sig = '';
@@ -2238,6 +2244,7 @@ renderNFVersions();
         it.qty = s.qty || 0;
         if(typeof s.price === 'number') it.price = s.price;
         if('copay' in it && typeof s.copay === 'number') it.copay = s.copay;
+        it.desc = (typeof s.desc === 'string') ? s.desc : '';
       });
     }
     if(Array.isArray(d.priceCats)){ priceCats.clear(); d.priceCats.forEach(function(x){ priceCats.add(x); }); }
@@ -2535,7 +2542,7 @@ renderNFVersions();
 
   // ---- Care Plan → calc sheet (one tab per plan version) → "Calc Sheets" folder ----
   function calcFromState(st){
-    var get=function(it){ var s=st.items&&st.items[it.id]; return { name:it.name, cat:it.cat, qty:(s&&s.qty)||0, price:(s&&s.price!=null)?s.price:it.price, copay:(s&&s.copay)||0 }; };
+    var get=function(it){ var s=st.items&&st.items[it.id]; return { name:it.name, cat:it.cat, qty:(s&&s.qty)||0, price:(s&&s.price!=null)?s.price:it.price, copay:(s&&s.copay)||0, desc:(s&&s.desc)||'' }; };
     var all=ITEMS.map(get);
     var cash=all.filter(function(i){return i.cat!=='insurance';}).reduce(function(s,i){return s+i.price*i.qty;},0);
     var iDB=all.filter(function(i){return i.cat==='insurance'&&!(i.copay>0);}).reduce(function(s,i){return s+i.price*i.qty;},0);
@@ -2549,11 +2556,12 @@ renderNFVersions();
   function calcSheetAOA(st, pname, date){
     var c=calcFromState(st);
     var insName=(c.selIns && typeof INS_RATES!=='undefined' && INS_RATES[c.selIns]) ? INS_RATES[c.selIns].label : '';
+    var lbl=function(i){ return i.desc ? (i.name+' – '+i.desc) : i.name; };
     var aoa=[['Patient Name: '+(pname||''), '', 'Acct #', 'Date: '+(date||'')],
              ['Service/Product/Nutrition','# Provided','Price per session','Total']];
-    c.all.filter(function(i){return i.cat==='insurance'&&i.qty>0;}).forEach(function(i){ aoa.push([i.name, i.qty, i.price, i.price*i.qty]); });
+    c.all.filter(function(i){return i.cat==='insurance'&&i.qty>0;}).forEach(function(i){ aoa.push([lbl(i), i.qty, i.price, i.price*i.qty]); });
     aoa.push(['Ins Total'+(insName?': '+insName:''), '', c.pct+'%', c.insP]);
-    c.all.filter(function(i){return i.cat!=='insurance'&&i.qty>0;}).forEach(function(i){ aoa.push([i.name, i.qty, i.price, i.price*i.qty]); });
+    c.all.filter(function(i){return i.cat!=='insurance'&&i.qty>0;}).forEach(function(i){ aoa.push([lbl(i), i.qty, i.price, i.price*i.qty]); });
     aoa.push([]);
     aoa.push(['Total cost of program:', '', '', c.base]);
     aoa.push(['10% Discount amount', '', '', c.pif]);
