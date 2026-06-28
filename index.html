@@ -629,6 +629,14 @@ body.pres-mode .app-header{display:none;}
 .nf-grand-box{background:var(--navy);color:#fff;border-radius:14px;padding:14px 22px;text-align:right;flex-shrink:0;box-shadow:0 8px 24px -12px rgba(27,43,94,.5);}
 .nf-grand-l{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6);font-weight:700;}
 .nf-grand-v{font-family:'IBM Plex Mono',monospace;font-size:1.9rem;font-weight:700;line-height:1.1;}
+.nf-versions{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.nf-ver{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;color:var(--gray);background:var(--surface);border:1.5px solid var(--line);border-radius:99px;padding:6px 14px;cursor:pointer;transition:all .15s;}
+.nf-ver:hover{border-color:var(--navy-light);color:var(--navy);}
+.nf-ver.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+.nf-ver-x{border:none;background:none;color:inherit;opacity:.55;cursor:pointer;font-size:.95rem;line-height:1;padding:0 0 0 2px;}
+.nf-ver-x:hover{opacity:1;}
+.nf-ver-add{font-size:.78rem;font-weight:600;color:var(--navy);background:var(--navy-tint);border:1.5px dashed var(--navy-light);border-radius:99px;padding:6px 14px;cursor:pointer;transition:all .15s;}
+.nf-ver-add:hover{background:#E2E8F6;border-style:solid;}
 .nf-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
 .nf-spacer{flex:1;}
 .nf-btn{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;padding:9px 15px;border-radius:9px;border:1.5px solid var(--line);background:var(--surface);color:var(--navy);cursor:pointer;transition:all .15s;white-space:nowrap;}
@@ -976,6 +984,7 @@ body.pres-mode .app-header{display:none;}
       </div>
       <div class="nf-grand-box"><div class="nf-grand-l">Total Price</div><div class="nf-grand-v" id="nfGrand">$0.00</div></div>
     </div>
+    <div class="nf-versions" id="nfVersions"></div>
     <div class="nf-toolbar">
       <button class="nf-btn" id="nfAddRow" type="button">+ Add Supplement</button>
       <button class="nf-btn" id="nfAddMonth" type="button">+ Add Month</button>
@@ -1086,7 +1095,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.id==='tab-'+t));
     document.body.classList.toggle('pres-mode', t==='present');
     if(t==='present') { renderPres(); if(sigResize) sigResize(); }
-    if(t==='nutrition' && typeof renderNutriFlow==='function') renderNutriFlow();
+    if(t==='nutrition' && typeof renderNutriFlow==='function'){ renderNutriFlow(); renderNFVersions(); }
   });
 });
 
@@ -1999,10 +2008,30 @@ const NUTRI_CATALOG = [
   {n:'Deep Blue Rub (4oz)',p:77},{n:'ATP 360',p:74},{n:'MycoPul (30)',p:40},{n:'MycoPul (90)',p:110},{n:'ToxinPul',p:50},{n:'Lauricidin',p:50}
 ];
 const NF_KEY = 'motusNutriFlow';
-var nfState = { months:['Month 1','Month 2','Month 3'], rows:[] };
-function newNFRow(){ return { product:'', price:'', qty:'', cells: nfState.months.map(function(){return '';}) }; }
-(function loadNF(){ try{ var s=JSON.parse(localStorage.getItem(NF_KEY)); if(s && s.months && s.rows){ nfState=s; nfState.rows.forEach(function(r){ while(r.cells.length<nfState.months.length) r.cells.push(''); }); } }catch(e){} if(!nfState.rows.length){ nfState.rows=[newNFRow(),newNFRow(),newNFRow(),newNFRow()]; } })();
-function nfSave(){ try{ localStorage.setItem(NF_KEY, JSON.stringify(nfState)); }catch(e){} }
+var nfDoc = { flows:[], cur:0 };   // multiple flow versions; nfState points at the active one
+var nfState;
+function newNFRow(){ var n = nfState ? nfState.months.length : 3; var cells=[]; for(var i=0;i<n;i++) cells.push(''); return { product:'', price:'', qty:'', cells:cells }; }
+function newNFFlow(name){ var f={ name:name, months:['Month 1','Month 2','Month 3'], rows:[] }; for(var i=0;i<4;i++){ f.rows.push({product:'',price:'',qty:'',cells:['','','']}); } return f; }
+(function loadNF(){
+  try{ var s=JSON.parse(localStorage.getItem(NF_KEY));
+    if(s && s.flows && s.flows.length){ nfDoc=s; }
+    else if(s && s.months && s.rows){ nfDoc={ flows:[{name:'Nutrition Flow', months:s.months, rows:s.rows}], cur:0 }; }   // migrate old single-flow format
+  }catch(e){}
+  if(!nfDoc.flows || !nfDoc.flows.length){ nfDoc={ flows:[newNFFlow('Nutrition Flow')], cur:0 }; }
+  if(nfDoc.cur==null || nfDoc.cur<0 || nfDoc.cur>=nfDoc.flows.length) nfDoc.cur=0;
+  nfState = nfDoc.flows[nfDoc.cur];
+  nfState.rows.forEach(function(r){ while(r.cells.length<nfState.months.length) r.cells.push(''); });
+})();
+function nfSave(){ try{ localStorage.setItem(NF_KEY, JSON.stringify(nfDoc)); }catch(e){} }
+function nfSwitch(i){ if(i<0||i>=nfDoc.flows.length) return; nfDoc.cur=i; nfState=nfDoc.flows[i]; nfState.rows.forEach(function(r){ while(r.cells.length<nfState.months.length) r.cells.push(''); }); renderNutriFlow(); renderNFVersions(); nfSave(); }
+function nfAddVersion(){ nfDoc.flows.push(newNFFlow('Condensed Flow '+nfDoc.flows.length)); nfDoc.cur=nfDoc.flows.length-1; nfState=nfDoc.flows[nfDoc.cur]; renderNutriFlow(); renderNFVersions(); nfSave(); }
+function nfDeleteVersion(i){ if(nfDoc.flows.length<=1) return; nfDoc.flows.splice(i,1); if(nfDoc.cur>=nfDoc.flows.length) nfDoc.cur=nfDoc.flows.length-1; nfState=nfDoc.flows[nfDoc.cur]; renderNutriFlow(); renderNFVersions(); nfSave(); }
+function renderNFVersions(){
+  var bar=el('nfVersions'); if(!bar) return;
+  bar.innerHTML = nfDoc.flows.map(function(f,i){
+    return '<span class="nf-ver'+(i===nfDoc.cur?' active':'')+'" data-ver="'+i+'">'+nfEsc(f.name)+(nfDoc.flows.length>1?'<button class="nf-ver-x" data-delver="'+i+'" title="Delete this version" type="button">×</button>':'')+'</span>';
+  }).join('') + '<button class="nf-ver-add" id="nfAddVersion" type="button">+ Condensed Flow</button>';
+}
 function nfEsc(s){ return (s==null?'':String(s)).replace(/"/g,'&quot;'); }
 function nfLineTotal(r){ return (parseFloat(r.qty)||0)*(parseFloat(r.price)||0); }
 function nfGrandTotal(){ return nfState.rows.reduce(function(s,r){return s+nfLineTotal(r);},0); }
@@ -2058,6 +2087,20 @@ function nfRecalc(){
       if(d){ nfState.rows.splice(+d.dataset.del,1); if(!nfState.rows.length) nfState.rows.push(newNFRow()); renderNutriFlow(); nfSave(); nfSyncToCarePlan(); }
     });
   }
+  var vbar=el('nfVersions');
+  if(vbar){
+    vbar.addEventListener('click', function(e){
+      var del=e.target.closest && e.target.closest('.nf-ver-x');
+      if(del){ e.stopPropagation(); var di=+del.dataset.delver; var f=nfDoc.flows[di]; var hasData=f && f.rows.some(function(r){return (r.product||'').trim()||nfLineTotal(r);}); if(hasData && !confirm('Delete "'+f.name+'"? This cannot be undone.')) return; nfDeleteVersion(di); return; }
+      if(e.target.closest && e.target.closest('#nfAddVersion')){ nfAddVersion(); return; }
+      var ver=e.target.closest && e.target.closest('.nf-ver');
+      if(ver && ver.dataset.ver!=null){ nfSwitch(+ver.dataset.ver); }
+    });
+    vbar.addEventListener('dblclick', function(e){
+      var ver=e.target.closest && e.target.closest('.nf-ver');
+      if(ver && ver.dataset.ver!=null){ var i=+ver.dataset.ver; var nn=prompt('Rename this version:', nfDoc.flows[i].name); if(nn!=null){ nfDoc.flows[i].name=(nn.trim()||nfDoc.flows[i].name); renderNFVersions(); nfSave(); } }
+    });
+  }
   if(el('nfSend')) el('nfSend').addEventListener('click', function(){
     nfSyncToCarePlan();
     var b=el('nfSend'), orig=b.textContent;
@@ -2088,7 +2131,7 @@ function nfBuildAOA(){
   aoa.push(totRow);
   return aoa;
 }
-function nfFilename(){ var name=(el('patientName')&&el('patientName').value.trim())||'Patient'; return name.replace(/[^\w \-]/g,'').trim()+' Nutritional Flow'; }
+function nfFilename(){ var name=(el('patientName')&&el('patientName').value.trim())||'Patient'; var vname=(nfState&&nfState.name)||'Nutritional Flow'; return (name+' '+vname).replace(/[^\w \-]/g,'').replace(/\s+/g,' ').trim(); }
 function nfDateTab(){ var d=new Date(); return ('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)+'-'+d.getFullYear(); }
 // Condensed, printable flow sheet (same look as the care-plan / admin PDFs)
 function printNutriFlow(){
@@ -2103,13 +2146,13 @@ function printNutriFlow(){
   }).join('');
   if(!rows) rows='<tr><td colspan="'+(nfState.months.length+4)+'" style="text-align:center;color:#9098A6;">No supplements added yet</td></tr>';
   var html='<div class="as-doc nfp-land">'+
-    '<div class="as-head"><div class="as-brand">'+(logoSrc?'<img src="'+logoSrc+'">':'<span style="font-size:14pt;font-weight:700;color:#1E2D63;font-family:Georgia,serif;">Motus Health</span>')+'<div class="as-kicker">Nutrition Flow Sheet</div></div>'+
+    '<div class="as-head"><div class="as-brand">'+(logoSrc?'<img src="'+logoSrc+'">':'<span style="font-size:14pt;font-weight:700;color:#1E2D63;font-family:Georgia,serif;">Motus Health</span>')+'<div class="as-kicker">'+nfEsc((nfState&&nfState.name)||'Nutrition Flow')+' &middot; Flow Sheet</div></div>'+
       '<div class="as-meta"><div class="as-meta-l">Prepared For</div><div class="as-meta-v">'+nfEsc(name)+'</div><div class="as-meta-d">'+now+'</div></div></div>'+
     '<div class="as-sec"><div class="as-sec-t">Monthly Supplement Plan</div>'+
       '<table class="as-tbl"><thead><tr><th>Product</th>'+monthHeads+'<th class="c">Qty</th><th class="r">$ / Unit</th><th class="r">Total</th></tr></thead>'+
       '<tbody>'+rows+'</tbody>'+
       '<tfoot><tr><td colspan="'+(nfState.months.length+3)+'">Total Price</td><td class="r">'+fmt(nfGrandTotal())+'</td></tr></tfoot></table></div>'+
-    '<div class="as-foot">Motus Health · Nutrition Flow Sheet · '+now+'</div>'+
+    '<div class="as-foot">Motus Health · '+nfEsc((nfState&&nfState.name)||'Nutrition Flow')+' · '+now+'</div>'+
   '</div>';
   var old=document.getElementById('__nfOverlay'); if(old) document.body.removeChild(old);
   var ov=document.createElement('div'); ov.id='__nfOverlay'; ov.innerHTML=html; document.body.appendChild(ov);
@@ -2125,6 +2168,7 @@ function nfSaveToDrive(){
   window.motusDriveUploadXlsx(nfFilename(), b64);
 }
 renderNutriFlow();
+renderNFVersions();
 
 // ── GOOGLE DRIVE SAVE / LOAD ──────────────────────────────────────
 // Each patient is stored as one <Patient Name>.json file in a Drive
