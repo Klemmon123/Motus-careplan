@@ -975,7 +975,6 @@ body.pres-mode .app-header{display:none;}
       <button class="nf-btn" id="nfAddMonth" type="button">+ Add Month</button>
       <span class="nf-spacer"></span>
       <button class="nf-btn nf-btn--primary" id="nfSend" type="button">Send Total → Care Plan</button>
-      <button class="nf-btn nf-btn--ghost" id="nfDownload" type="button">Download .xlsx</button>
       <button class="nf-btn" id="nfDrive" type="button">Save to Drive (Sheet)</button>
     </div>
     <div class="nf-table-wrap" id="nfTableWrap"></div>
@@ -2061,7 +2060,6 @@ function nfRecalc(){
   });
   if(el('nfAddRow')) el('nfAddRow').addEventListener('click', function(){ nfState.rows.push(newNFRow()); renderNutriFlow(); nfSave(); });
   if(el('nfAddMonth')) el('nfAddMonth').addEventListener('click', function(){ nfState.months.push('Month '+(nfState.months.length+1)); nfState.rows.forEach(function(r){ r.cells.push(''); }); renderNutriFlow(); nfSave(); });
-  if(el('nfDownload')) el('nfDownload').addEventListener('click', nfDownloadXlsx);
   if(el('nfDrive')) el('nfDrive').addEventListener('click', nfSaveToDrive);
 })();
 function nfBuildAOA(){
@@ -2083,11 +2081,8 @@ function nfBuildAOA(){
   return aoa;
 }
 function nfFilename(){ var name=(el('patientName')&&el('patientName').value.trim())||'Patient'; return name.replace(/[^\w \-]/g,'').trim()+' Nutritional Flow'; }
-function nfWorkbook(){ var ws=XLSX.utils.aoa_to_sheet(nfBuildAOA()); var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Sheet1'); return wb; }
-function nfDownloadXlsx(){
-  if(typeof XLSX==='undefined'){ alert('Spreadsheet library is still loading — please try again in a moment.'); return; }
-  XLSX.writeFile(nfWorkbook(), nfFilename()+'.xlsx');
-}
+function nfDateTab(){ var d=new Date(); return ('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)+'-'+d.getFullYear(); }
+function nfWorkbook(){ var ws=XLSX.utils.aoa_to_sheet(nfBuildAOA()); var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,nfDateTab()); return wb; }
 function nfSaveToDrive(){
   if(typeof XLSX==='undefined'){ alert('Spreadsheet library is still loading — please try again in a moment.'); return; }
   if(typeof window.motusDriveUploadXlsx!=='function'){ alert('Google Drive saving is not available in this build.'); return; }
