@@ -974,8 +974,9 @@ body.pres-mode .app-header{display:none;}
       <button class="nf-btn" id="nfAddRow" type="button">+ Add Supplement</button>
       <button class="nf-btn" id="nfAddMonth" type="button">+ Add Month</button>
       <span class="nf-spacer"></span>
+      <button class="nf-btn nf-btn--primary" id="nfSend" type="button">Send Total → Care Plan</button>
       <button class="nf-btn nf-btn--ghost" id="nfDownload" type="button">Download .xlsx</button>
-      <button class="nf-btn nf-btn--primary" id="nfDrive" type="button">Save to Drive</button>
+      <button class="nf-btn" id="nfDrive" type="button">Save to Drive (Sheet)</button>
     </div>
     <div class="nf-table-wrap" id="nfTableWrap"></div>
   </div>
@@ -2033,7 +2034,7 @@ function nfRecalc(){
   nfState.rows.forEach(function(r,ri){ if(lines[ri]) lines[ri].textContent=fmt(nfLineTotal(r)); });
   var g=wrap.querySelector('.nf-grand'); if(g) g.textContent=fmt(nfGrandTotal());
   if(el('nfGrand')) el('nfGrand').textContent=fmt(nfGrandTotal());
-  nfSave(); nfSyncToCarePlan();
+  nfSave();
 }
 (function bindNutriFlow(){
   var wrap = el('nfTableWrap');
@@ -2051,6 +2052,13 @@ function nfRecalc(){
       if(d){ nfState.rows.splice(+d.dataset.del,1); if(!nfState.rows.length) nfState.rows.push(newNFRow()); renderNutriFlow(); nfSave(); nfSyncToCarePlan(); }
     });
   }
+  if(el('nfSend')) el('nfSend').addEventListener('click', function(){
+    nfSyncToCarePlan();
+    var b=el('nfSend'), orig=b.textContent;
+    b.textContent='✓ Sent '+fmt(nfGrandTotal())+' to Care Plan';
+    b.disabled=true;
+    setTimeout(function(){ b.textContent=orig; b.disabled=false; }, 2200);
+  });
   if(el('nfAddRow')) el('nfAddRow').addEventListener('click', function(){ nfState.rows.push(newNFRow()); renderNutriFlow(); nfSave(); });
   if(el('nfAddMonth')) el('nfAddMonth').addEventListener('click', function(){ nfState.months.push('Month '+(nfState.months.length+1)); nfState.rows.forEach(function(r){ r.cells.push(''); }); renderNutriFlow(); nfSave(); });
   if(el('nfDownload')) el('nfDownload').addEventListener('click', nfDownloadXlsx);
@@ -2087,7 +2095,6 @@ function nfSaveToDrive(){
   window.motusDriveUploadXlsx(nfFilename(), b64);
 }
 renderNutriFlow();
-nfSyncToCarePlan();
 
 // ── GOOGLE DRIVE SAVE / LOAD ──────────────────────────────────────
 // Each patient is stored as one <Patient Name>.json file in a Drive
@@ -2391,35 +2398,53 @@ nfSyncToCarePlan();
     });
   }
 
-  // ---- Save the Nutrition Flow sheet to Drive as a real .xlsx ----
+  // Find (or create) a "Nutritional Flow Sheets" subfolder inside the care-plans folder
+  function ensureFlowFolder(parentFid, cb){
+    var q = "mimeType='application/vnd.google-apps.folder' and name='Nutritional Flow Sheets' and '" + parentFid + "' in parents and trashed=false";
+    driveFetch('https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent(q) + '&fields=files(id,name)&supportsAllDrives=true&includeItemsFromAllDrives=true', {})
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        if(j && j.files && j.files.length){ cb(j.files[0].id); return; }
+        driveFetch('https://www.googleapis.com/drive/v3/files?supportsAllDrives=true&fields=id', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: 'Nutritional Flow Sheets', mimeType: 'application/vnd.google-apps.folder', parents: [parentFid] })
+        }).then(function(r){ return r.json(); }).then(function(f){ cb(f.id || parentFid); }).catch(function(){ cb(parentFid); });
+      })
+      .catch(function(){ cb(parentFid); });
+  }
+
+  // ---- Save the Nutrition Flow sheet to Drive as a native Google Sheet, in the "Nutritional Flow Sheets" folder ----
   window.motusDriveUploadXlsx = function(name, base64){
     if(!configured()){ alert('Google Drive is not configured yet.'); return; }
     withToken(function(){
       setStatus('Saving flow sheet…');
-      ensureFolder(function(fid){
-        var meta = { name: name + '.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', parents: [fid] };
-        var boundary = 'motusx_' + Date.now() + '_' + Math.random().toString(16).slice(2);
-        var body =
-          '--' + boundary + '\r\n' +
-          'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-          JSON.stringify(meta) + '\r\n' +
-          '--' + boundary + '\r\n' +
-          'Content-Type: ' + meta.mimeType + '\r\n' +
-          'Content-Transfer-Encoding: base64\r\n\r\n' +
-          base64 + '\r\n' +
-          '--' + boundary + '--';
-        driveFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true&fields=id,name', {
-          method: 'POST',
-          headers: { 'Content-Type': 'multipart/related; boundary=' + boundary },
-          body: body
-        }).then(function(r){ return r.json().then(function(j){ if(!r.ok) throw j; return j; }); })
-          .then(function(res){ setStatus('Flow sheet saved: ' + res.name, 'ok'); alert('Saved to Drive: ' + res.name); })
-          .catch(function(err){
-            if(err && err.code === 401){ window.motusDriveUploadXlsx(name, base64); return; }
-            console.error('Flow sheet save failed', err);
-            setStatus('Flow save failed', 'err');
-            alert('Drive save failed: ' + ((err && err.error && err.error.message) || 'see browser console for details'));
-          });
+      ensureFolder(function(careFid){
+        ensureFlowFolder(careFid, function(fid){
+          // Upload xlsx bytes but target a Google Sheet mimeType → Drive converts it on the way in
+          var meta = { name: name, mimeType: 'application/vnd.google-apps.spreadsheet', parents: [fid] };
+          var boundary = 'motusx_' + Date.now() + '_' + Math.random().toString(16).slice(2);
+          var body =
+            '--' + boundary + '\r\n' +
+            'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+            JSON.stringify(meta) + '\r\n' +
+            '--' + boundary + '\r\n' +
+            'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\r\n' +
+            'Content-Transfer-Encoding: base64\r\n\r\n' +
+            base64 + '\r\n' +
+            '--' + boundary + '--';
+          driveFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true&fields=id,name', {
+            method: 'POST',
+            headers: { 'Content-Type': 'multipart/related; boundary=' + boundary },
+            body: body
+          }).then(function(r){ return r.json().then(function(j){ if(!r.ok) throw j; return j; }); })
+            .then(function(res){ setStatus('Flow sheet saved: ' + res.name, 'ok'); alert('Saved to Drive as a Google Sheet:\n' + res.name + '\n(in the "Nutritional Flow Sheets" folder)'); })
+            .catch(function(err){
+              if(err && err.code === 401){ window.motusDriveUploadXlsx(name, base64); return; }
+              console.error('Flow sheet save failed', err);
+              setStatus('Flow save failed', 'err');
+              alert('Drive save failed: ' + ((err && err.error && err.error.message) || 'see browser console for details'));
+            });
+        });
       });
     });
   };
