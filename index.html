@@ -1480,6 +1480,8 @@ function renderPres() {
   }
   // Services \u2014 Patient View therapy stack; naming/aggregation use the shared module-scope maps (PS_STACK/PS_NAME/PS_AGG/aggQty)
   var svcItems = PS_STACK.map(function(id){ return ITEMS.find(function(x){return x.id===id;}); }).filter(Boolean);
+  // Selected items fill the grid first (top-left down); unselected shuffle to the end — order preserved within each group
+  svcItems = svcItems.filter(function(i){return aggQty(i.id)>0;}).concat(svcItems.filter(function(i){return aggQty(i.id)===0;}));
   var spAct = svcItems.filter(function(i){return aggQty(i.id)>0;});
   el('psSvcCount').textContent = spAct.length;
   var catLabel = {therapy:'Therapy',nutrition:'Nutrition',equipment:'Equipment',insurance:'Therapy'};
