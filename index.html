@@ -94,6 +94,9 @@ h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--navy);}
 .item:last-child{border-bottom:none;}
 .item__info{display:flex;flex-direction:column;gap:2px;}
 .item__name{font-weight:500;font-size:.97rem;color:var(--charcoal);}
+.item__name-edit{font-weight:600;font-size:.97rem;color:var(--navy);border:none;border-bottom:1.5px dashed var(--navy-light);background:transparent;padding:2px 0;width:100%;max-width:280px;}
+.item__name-edit::placeholder{color:var(--gray);font-style:italic;font-weight:500;}
+.item__name-edit:focus{outline:none;border-bottom-style:solid;border-bottom-color:var(--navy);}
 .item__desc{width:100%;max-width:340px;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--charcoal);border:none;border-bottom:1px dashed var(--line);background:transparent;padding:2px 0;margin:1px 0 2px;}
 .item__desc::placeholder{color:var(--gray);font-style:italic;font-size:.72rem;}
 .item__desc:focus{outline:none;border-bottom-style:solid;border-bottom-color:var(--navy-light);}
@@ -1027,31 +1030,31 @@ const ITEMS = [
   {cat:'insurance', id:'manualtherapy',name:'Manual Therapy (97140)',          price:65,    unit:'per visit',     qty:0, copay:0},
   {cat:'insurance', id:'rehab',        name:'Rehab (97110)',                   price:65,    unit:'per visit',     qty:0, copay:0},
   {cat:'insurance', id:'reexam',       name:'Re-Exam (99213)',                 price:48.75, unit:'per visit',     qty:0, copay:0},
-  {cat:'therapy',   id:'thacu',        name:'Acupuncture',                     price:0,     unit:'per visit',     qty:0},
   {cat:'therapy',   id:'th98941',      name:'98941',                           price:0,     unit:'per visit',     qty:0},
   {cat:'therapy',   id:'th98940',      name:'98940',                           price:0,     unit:'per visit',     qty:0},
   {cat:'therapy',   id:'th98943',      name:'98943',                           price:0,     unit:'per visit',     qty:0},
-  {cat:'therapy',   id:'istcash',      name:'IST',                             price:7,     unit:'per session',   qty:0},
   {cat:'therapy',   id:'wellnessadj',  name:'Adjustment',                      price:75,    unit:'per visit',     qty:0},
-  {cat:'therapy',   id:'pemf',         name:'PEMF',                            price:60,    unit:'per session',   qty:0},
-  {cat:'therapy',   id:'coldlaser',    name:'Cold Laser',                      price:60,    unit:'per session',   qty:0},
-  {cat:'therapy',   id:'class4',       name:'Class 4 Laser',                   price:60,    unit:'per session',   qty:0},
-  {cat:'therapy',   id:'contour',      name:'Contour',                         price:75,    unit:'per session',   qty:0},
-  {cat:'therapy',   id:'shockwave',    name:'Shockwave Therapy',               price:125,   unit:'per session',   qty:0},
-  {cat:'therapy',   id:'stimpod',      name:'StimPod',                         price:60,    unit:'per session',   qty:0},
-  {cat:'therapy',   id:'acupuncture',  name:'Dry Needling/Acupuncture',        price:60,    unit:'per session',   qty:0},
-  {cat:'therapy',   id:'spinaldecomp', name:'Spinal Decompression',            price:60,    unit:'per session',   qty:0},
-  {cat:'therapy',   id:'kneedecomp',   name:'Knee Decompression',              price:60,    unit:'per session',   qty:0},
-  {cat:'therapy',   id:'neuromed',     name:'NeuroMed',                        price:60,    unit:'per session',   qty:0},
   {cat:'therapy',   id:'massage',      name:'Massage Therapy',                 price:60,    unit:'per session',   qty:0},
   {cat:'therapy',   id:'trigenics',    name:'Trigenics',                       price:75,    unit:'per session',   qty:0},
+  {cat:'therapy',   id:'pemf',         name:'PEMF',                            price:60,    unit:'per session',   qty:0},
+  {cat:'therapy',   id:'coldlaser',    name:'Cold Laser',                      price:60,    unit:'per session',   qty:0},
+  {cat:'therapy',   id:'spinaldecomp', name:'Spinal Decompression',            price:60,    unit:'per session',   qty:0},
+  {cat:'therapy',   id:'kneedecomp',   name:'Knee Decompression',              price:60,    unit:'per session',   qty:0},
+  {cat:'therapy',   id:'shockwave',    name:'Shockwave Therapy',               price:125,   unit:'per session',   qty:0},
+  {cat:'therapy',   id:'contour',      name:'Contour',                         price:75,    unit:'per session',   qty:0},
+  {cat:'therapy',   id:'class4',       name:'Class 4 Laser',                   price:60,    unit:'per session',   qty:0},
+  {cat:'therapy',   id:'neuromed',     name:'NeuroMed',                        price:60,    unit:'per session',   qty:0},
   {cat:'therapy',   id:'injection',    name:'Injectable Nutrients',            price:60,    unit:'per injection', qty:0},
+  {cat:'therapy',   id:'footorthotic', name:'Foot Orthotic',                   price:0,     unit:'one-time',      qty:0},
+  {cat:'therapy',   id:'neckorthotic', name:'Neck Orthotic',                   price:0,     unit:'one-time',      qty:0},
+  {cat:'therapy',   id:'nasalrelease', name:'Nasal Release',                   price:0,     unit:'per session',   qty:0},
+  {cat:'therapy',   id:'oxygen',       name:'Oxygen',                          price:0,     unit:'per session',   qty:0},
   {cat:'therapy',   id:'casemgmt',     name:'Case Management',                 price:99,    unit:'one-time',      qty:0},
   {cat:'therapy',   id:'coaching',     name:'Coaching Session',                price:30,    unit:'per session',   qty:0},
-  {cat:'therapy',   id:'neckorthotic', name:'Neck Orthotic',                   price:0,     unit:'one-time',      qty:0},
-  {cat:'therapy',   id:'footorthotic', name:'Foot Orthotic',                   price:0,     unit:'one-time',      qty:0},
-  {cat:'therapy',   id:'oxygen',       name:'Oxygen',                          price:0,     unit:'per session',   qty:0},
-  {cat:'therapy',   id:'nasalrelease', name:'Nasal Release',                   price:0,     unit:'per session',   qty:0},
+  {cat:'therapy',   id:'custom',       name:'Custom',                          price:0,     unit:'each',          qty:0, custom:true},
+  {cat:'therapy',   id:'istcash',      name:'IST',                             price:7,     unit:'per session',   qty:0},
+  {cat:'therapy',   id:'stimpod',      name:'StimPod',                         price:60,    unit:'per session',   qty:0},
+  {cat:'therapy',   id:'acupuncture',  name:'Dry Needling/Acupuncture',        price:60,    unit:'per session',   qty:0},
   {cat:'therapy',   id:'llxray',       name:'LLXray',                          price:0,     unit:'one-time',      qty:0},
   {cat:'nutrition', id:'labs',         name:'Lab testing',                     price:0,     unit:'one-time',      qty:0},
   {cat:'nutrition', id:'nutrition',    name:'Nutrition Supplements',           price:0,     unit:'per month',     qty:0},
@@ -1064,7 +1067,7 @@ const INS_DISP = {cpt98941:'Spinal Adjustments', cpt98943:'Extremity Adjustments
 const PS_STACK = ['wellnessadj','ist','manualtherapy','trigenics','rehab','acupuncture',
                   'spinaldecomp','kneedecomp','neckorthotic','footorthotic','shockwave','pemf',
                   'coldlaser','class4','stimpod','neuromed','contour','oxygen',
-                  'nasalrelease','llxray','reexam','injection','labs','nutrition'];
+                  'nasalrelease','llxray','reexam','injection','custom','labs','nutrition'];
 const PS_NAME = {ist:'IST', manualtherapy:'Manual Therapy', rehab:'Corrective Exercise', reexam:'ReExams'};
 const PS_AGG = {
   wellnessadj: ['cpt98941','cpt98940','wellnessadj'],
@@ -1199,7 +1202,9 @@ function buildCats() {
           (syncSet.has(item.id)?'Synced':'Sync') + '</button>';
       }
       row.innerHTML = '<div class="item__info">' +
-        '<span class="item__name">' + item.name + '</span>' +
+        (item.custom
+          ? '<input class="item__name-edit" data-nameedit="' + item.id + '" placeholder="Name this item…" value="' + (item.name ? String(item.name).replace(/"/g,'&quot;') : '') + '">'
+          : '<span class="item__name">' + item.name + '</span>') +
         '<input class="item__desc" data-desc="' + item.id + '" placeholder="Custom description for calc sheet (optional)" value="' + (item.desc ? String(item.desc).replace(/"/g,'&quot;') : '') + '">' +
         '<span class="item__price"><span class="mono">$</span>' +
         '<input type="number" class="price-input mono" data-pid="' + item.id + '" value="' + item.price + '" min="0" step="0.01">' +
@@ -1217,6 +1222,7 @@ function buildCats() {
       row.querySelector('[data-qty]').addEventListener('input', function(e) { setQty(item.id,e.target.value); });
       row.querySelector('[data-pid]').addEventListener('input', function(e) { setPrice(item.id,e.target.value); });
       var dd = row.querySelector('[data-desc]'); if(dd) dd.addEventListener('input', function(e) { item.desc = e.target.value; });
+      var ne = row.querySelector('[data-nameedit]'); if(ne) ne.addEventListener('input', function(e) { item.name = e.target.value; render(); });
       var sb = row.querySelector('[data-sid]');
       if(sb) sb.addEventListener('click', function() {
         syncSet.has(item.id) ? syncSet.delete(item.id) : syncSet.add(item.id);
@@ -2217,6 +2223,7 @@ renderNFVersions();
       var rec = { qty: it.qty || 0, price: it.price };
       if('copay' in it) rec.copay = it.copay || 0;
       if(it.desc) rec.desc = it.desc;
+      if(it.custom) rec.name = it.name;
       items[it.id] = rec;
     });
     var sig = '';
@@ -2249,6 +2256,7 @@ renderNFVersions();
         if(typeof s.price === 'number') it.price = s.price;
         if('copay' in it && typeof s.copay === 'number') it.copay = s.copay;
         it.desc = (typeof s.desc === 'string') ? s.desc : '';
+        if(it.custom && typeof s.name === 'string' && s.name) it.name = s.name;
       });
     }
     if(Array.isArray(d.priceCats)){ priceCats.clear(); d.priceCats.forEach(function(x){ priceCats.add(x); }); }
