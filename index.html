@@ -517,14 +517,15 @@ body.pres-mode .app-header{display:none;}
 
 
 /* ── CARE PLAN PRINT OVERLAY ──────────────────────── */
-#__cpOverlay{display:none;position:fixed;inset:0;background:#fff;z-index:99999;padding:24px;font-family:Helvetica,Arial,sans-serif;font-size:9pt;color:#2A2A2A;overflow:auto;}
+#__cpOverlay{display:none;position:fixed;inset:0;background:#fff;z-index:99999;padding:24px;font-family:'Inter',system-ui,sans-serif;font-size:9pt;color:#2A2F39;overflow:auto;}
 @media print{
   body>*:not(#__cpOverlay):not(#__adminOverlay):not(#__nfOverlay){display:none!important;}
-  #__cpOverlay{display:flex!important;flex-direction:column!important;position:static!important;padding:0!important;height:10.55in!important;overflow:hidden!important;}
+  #__cpOverlay{display:flex!important;flex-direction:column!important;position:static!important;width:8.5in!important;height:10.92in!important;padding:0.26in 0.36in!important;overflow:hidden!important;page:cppage;page-break-inside:avoid;}
   #__adminOverlay{display:block!important;position:static!important;padding:0.12in 0.18in!important;overflow:visible!important;}
   #__nfOverlay{display:block!important;position:static!important;padding:0!important;overflow:visible!important;}
   @page{size:letter;margin:.22in;}
   @page nfland{size:letter landscape;margin:.35in;}
+  @page cppage{size:letter;margin:0;}
   .nfp-land{page:nfland;}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
 }
